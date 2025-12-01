@@ -44,14 +44,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   CP
                 </span>
               </div>
-              <div className="flex flex-col">
-                <span className="font-heading font-bold text-xl leading-none tracking-wider uppercase">
-                  Caspers
-                </span>
-                <span className="font-body text-xs tracking-[0.2em] text-muted-foreground uppercase">
-                  Paintworks
-                </span>
-              </div>
+              <img src="/images/logo-full.png" alt="Caspers Paintworks" className="h-12 w-auto object-contain" />
             </div>
           </Link>
 
@@ -125,17 +118,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <div className="container relative z-10">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
             <div className="col-span-1 md:col-span-1">
-              <div className="flex items-center gap-2 mb-6">
-                <div className="w-8 h-8 bg-primary skew-x-[-10deg] flex items-center justify-center">
-                  <span className="font-heading font-bold text-lg text-primary-foreground skew-x-[10deg]">
-                    CP
-                  </span>
-                </div>
-                <span className="font-heading font-bold text-lg uppercase">
-                  Caspers Paintworks
-                </span>
-              </div>
-              <p className="text-muted-foreground text-sm leading-relaxed mb-6">
+             <div className="mb-6">
+                <img src="/images/logo-full.png" alt="Caspers Paintworks" className="h-16 w-auto object-contain" />
+              </div>              <p className="text-muted-foreground text-sm leading-relaxed mb-6">
                 Taking all Automotive Paintwork Enquiries! Premium automotive restoration and custom paint services in Adelaide.
               </p>
               <div className="flex gap-4">

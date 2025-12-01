@@ -25,10 +25,13 @@ export default function About() {
           </div>
           <div className="relative">
             <div className="absolute inset-0 bg-primary/20 translate-x-4 translate-y-4" />
-            <img 
-              src="/images/about-workshop.jpg" 
-              alt="Our Workshop Team" 
-              className="relative z-10 w-full border border-border grayscale hover:grayscale-0 transition-all duration-500" 
+            <video 
+              src="/images/owner-painting-video.mp4" 
+              autoPlay 
+              loop 
+              muted 
+              playsInline
+              className="relative z-10 w-full border border-border grayscale hover:grayscale-0 transition-all duration-500 object-cover aspect-[4/5]" 
             />
           </div>
         </div>

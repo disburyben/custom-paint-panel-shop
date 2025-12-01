@@ -46,17 +46,7 @@ export default function RollerDoorLoader({ onComplete }: { onComplete?: () => vo
         <div className="absolute inset-0 flex items-center justify-center z-10">
           <div className="bg-black/80 p-8 border-2 border-primary/50 backdrop-blur-sm skew-x-[-10deg]">
             <div className="flex flex-col items-center skew-x-[10deg]">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-12 h-12 bg-primary flex items-center justify-center">
-                  <span className="font-heading font-bold text-2xl text-primary-foreground">CP</span>
-                </div>
-                <h1 className="font-heading font-bold text-4xl uppercase text-white tracking-wider">
-                  Caspers
-                </h1>
-              </div>
-              <span className="font-body text-sm tracking-[0.4em] text-primary uppercase">
-                Paintworks
-              </span>
+              <img src="/images/logo-full.png" alt="Caspers Paintworks" className="h-32 w-auto object-contain drop-shadow-[0_0_15px_rgba(0,0,0,0.8)]" />
             </div>
           </div>
         </div>
