@@ -13,7 +13,7 @@ export default function About() {
             </h1>
             <div className="space-y-6 text-muted-foreground text-lg leading-relaxed">
               <p>
-                Founded in 2008, Custom Paint & Panel Shop started with a simple mission: to provide a level of automotive finish that exceeds factory standards. What began as a small two-bay garage has evolved into a premier restoration and customization facility.
+                Caspers Paintworks is Adelaide's premier destination for automotive styling. Located in Para Hills, South Australia, we started with a simple mission: to provide a level of automotive finish that exceeds factory standards.
               </p>
               <p>
                 We are not just technicians; we are artists and engineers. We understand that your vehicle is an extension of your personality, a piece of history, or a high-performance machine that deserves to look as fast as it drives.

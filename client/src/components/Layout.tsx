@@ -46,10 +46,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               </div>
               <div className="flex flex-col">
                 <span className="font-heading font-bold text-xl leading-none tracking-wider uppercase">
-                  Custom Paint
+                  Caspers
                 </span>
                 <span className="font-body text-xs tracking-[0.2em] text-muted-foreground uppercase">
-                  & Panel Shop
+                  Paintworks
                 </span>
               </div>
             </div>
@@ -132,14 +132,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   </span>
                 </div>
                 <span className="font-heading font-bold text-lg uppercase">
-                  Custom Paint
+                  Caspers Paintworks
                 </span>
               </div>
               <p className="text-muted-foreground text-sm leading-relaxed mb-6">
-                Premium automotive restoration and custom paint services. Where precision engineering meets artistic passion.
+                Taking all Automotive Paintwork Enquiries! Premium automotive restoration and custom paint services in Adelaide.
               </p>
               <div className="flex gap-4">
-                <a href="#" className="w-10 h-10 rounded-none border border-border flex items-center justify-center hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300 group">
+                <a href="https://www.instagram.com/casperspaintworks" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-none border border-border flex items-center justify-center hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300 group">
                   <Instagram className="w-5 h-5" />
                 </a>
                 <a href="#" className="w-10 h-10 rounded-none border border-border flex items-center justify-center hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300 group">
@@ -168,11 +168,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 </li>
                 <li className="flex items-start gap-3">
                   <Mail className="w-5 h-5 text-primary shrink-0" />
-                  <span>info@custompaint.com</span>
+                  <span>enquiries@casperspaintworks.com</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <div className="w-5 h-5 text-primary shrink-0 font-heading font-bold">AD</div>
-                  <span>123 Auto Avenue,<br />Motor City, MC 90210</span>
+                  <span>Para Hills,<br />Adelaide, South Australia</span>
                 </li>
               </ul>
             </div>
@@ -197,7 +197,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </div>
 
           <div className="border-t border-border pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-muted-foreground uppercase tracking-wider">
-            <p>&copy; {new Date().getFullYear()} Custom Paint & Panel Shop. All rights reserved.</p>
+            <p>&copy; {new Date().getFullYear()} Caspers Paintworks. All rights reserved.</p>
             <div className="flex gap-6">
               <a href="#" className="hover:text-primary transition-colors">Privacy Policy</a>
               <a href="#" className="hover:text-primary transition-colors">Terms of Service</a>

@@ -47,7 +47,7 @@ export default function Contact() {
                   <MapPin className="w-6 h-6 text-primary shrink-0 mt-1" />
                   <div>
                     <h4 className="font-bold uppercase mb-1">Visit Us</h4>
-                    <p className="text-muted-foreground">123 Auto Avenue<br />Motor City, MC 90210</p>
+                    <p className="text-muted-foreground">Para Hills<br />Adelaide, South Australia</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
@@ -61,7 +61,7 @@ export default function Contact() {
                   <Mail className="w-6 h-6 text-primary shrink-0 mt-1" />
                   <div>
                     <h4 className="font-bold uppercase mb-1">Email Us</h4>
-                    <p className="text-muted-foreground">info@custompaint.com</p>
+                    <p className="text-muted-foreground">enquiries@casperspaintworks.com</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
@@ -82,11 +82,11 @@ export default function Contact() {
                 className="w-full h-full"
                 onMapReady={(map: google.maps.Map) => {
                   new google.maps.Marker({
-                    position: { lat: 34.0522, lng: -118.2437 }, // Example coordinates (LA)
+                    position: { lat: -34.8333, lng: 138.6500 }, // Para Hills, SA
                     map: map,
-                    title: "Custom Paint & Panel Shop"
+                    title: "Caspers Paintworks"
                   });
-                  map.setCenter({ lat: 34.0522, lng: -118.2437 });
+                  map.setCenter({ lat: -34.8333, lng: 138.6500 });
                   map.setZoom(14);
                 }}
               />
