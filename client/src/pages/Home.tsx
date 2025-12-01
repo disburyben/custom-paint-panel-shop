@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle2, Star, Wrench, ShieldCheck, Paintbrush } from "lucide-react";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
+import BeforeAfterSlider from "@/components/BeforeAfterSlider";
 
 export default function Home() {
   const fadeIn = {
@@ -176,9 +177,15 @@ export default function Home() {
             <div className="relative">
               <div className="absolute -inset-4 border border-primary/30 translate-x-4 translate-y-4 z-0" />
               <img src="/images/about-workshop.jpg" alt="Our Workshop" className="relative z-10 w-full shadow-2xl grayscale hover:grayscale-0 transition-all duration-700" />
-              <div className="absolute -bottom-6 -right-6 bg-background border border-border p-6 shadow-xl z-20 max-w-[200px]">
-                <div className="text-4xl font-heading font-bold text-primary mb-1">15+</div>
-                <div className="text-xs uppercase tracking-widest text-muted-foreground">Years of Excellence</div>
+              <div className="absolute -bottom-6 -right-6 bg-background border border-border p-4 shadow-xl z-20 w-[300px]">
+                <BeforeAfterSlider 
+                  beforeImage="/images/engine-bay-prep-1.jpg"
+                  afterImage="/images/engine-bay-paint-1.jpg"
+                  alt="Engine Bay Restoration"
+                />
+                <div className="mt-2 text-center">
+                  <p className="text-[10px] uppercase tracking-widest text-muted-foreground">Drag to Compare</p>
+                </div>
               </div>
             </div>
             
