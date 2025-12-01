@@ -23,15 +23,18 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative h-screen min-h-[800px] flex items-center overflow-hidden">
         {/* Background Image with Overlay */}
-        <div className="absolute inset-0 z-0">
-          <img 
-            src="/images/hero-bg.jpg" 
-            alt="Custom Sports Car in Neon Garage" 
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-background via-background/80 to-transparent" />
-          <div className="absolute inset-0 bg-[linear-gradient(to_bottom,transparent_0%,var(--background)_100%)] opacity-80" />
-        </div>
+<div className="absolute inset-0 z-0">
+        <video 
+          src="/images/owner-painting-video.mp4" 
+          autoPlay 
+          loop 
+          muted 
+          playsInline
+          className="w-full h-full object-cover opacity-40"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-background via-transparent to-transparent" />
+      </div>
 
         <div className="container relative z-10 pt-20">
           <motion.div 
