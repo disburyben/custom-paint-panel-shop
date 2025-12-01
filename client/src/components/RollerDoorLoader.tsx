@@ -23,6 +23,7 @@ export default function RollerDoorLoader({ onComplete }: { onComplete?: () => vo
       }}
       onAnimationComplete={() => {
         setIsVisible(false);
+        document.body.style.overflow = "unset";
         onComplete?.();
       }}
       className="fixed inset-0 z-[100] flex flex-col items-center justify-end pointer-events-none"
