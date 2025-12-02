@@ -1,30 +1,8 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 import { MapView } from "@/components/Map";
-
-type ContactForm = {
-  name: string;
-  email: string;
-  phone: string;
-  vehicle: string;
-  message: string;
-};
+import QuoteWizard from "@/components/QuoteWizard";
 
 export default function Contact() {
-  const { register, handleSubmit, reset, formState: { isSubmitting } } = useForm<ContactForm>();
-
-  const onSubmit = async (data: ContactForm) => {
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    console.log(data);
-    toast.success("Message sent successfully! We'll be in touch shortly.");
-    reset();
-  };
-
   return (
     <div className="pt-24 pb-20">
       <div className="container">
@@ -33,7 +11,7 @@ export default function Contact() {
             Get In <span className="text-primary">Touch</span>
           </h1>
           <p className="text-muted-foreground text-lg">
-            Ready to start your project? Visit our shop, give us a call, or fill out the form below for a free estimate.
+            Ready to start your project? Visit our shop, give us a call, or use our interactive wizard below for a free estimate.
           </p>
         </div>
 
@@ -93,43 +71,13 @@ export default function Contact() {
             </div>
           </div>
 
-          {/* Form */}
-          <div className="bg-card border border-border p-8 lg:p-12">
-            <h3 className="font-heading font-bold text-2xl uppercase mb-8 text-primary">Send a Message</h3>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="text-sm font-bold uppercase tracking-wider">Name</label>
-                  <Input {...register("name", { required: true })} placeholder="John Doe" className="bg-background border-border focus:border-primary rounded-none h-12" />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-bold uppercase tracking-wider">Email</label>
-                  <Input {...register("email", { required: true })} type="email" placeholder="john@example.com" className="bg-background border-border focus:border-primary rounded-none h-12" />
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="text-sm font-bold uppercase tracking-wider">Phone</label>
-                  <Input {...register("phone", { required: true })} placeholder="(555) 123-4567" className="bg-background border-border focus:border-primary rounded-none h-12" />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-bold uppercase tracking-wider">Vehicle Info</label>
-                  <Input {...register("vehicle")} placeholder="Year, Make, Model" className="bg-background border-border focus:border-primary rounded-none h-12" />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-bold uppercase tracking-wider">Message</label>
-                <Textarea {...register("message", { required: true })} placeholder="Tell us about your project..." className="bg-background border-border focus:border-primary rounded-none min-h-[150px]" />
-              </div>
-
-              <Button type="submit" disabled={isSubmitting} size="lg" className="w-full h-14 skew-x-[-10deg] font-heading uppercase tracking-widest text-lg">
-                <span className="skew-x-[10deg]">
-                  {isSubmitting ? "Sending..." : "Send Message"}
-                </span>
-              </Button>
-            </form>
+          {/* Quote Wizard */}
+          <div className="w-full">
+            <div className="text-center mb-8 lg:hidden">
+              <h2 className="font-heading font-bold text-2xl uppercase mb-2">Start Your Project</h2>
+              <p className="text-sm text-muted-foreground">Use our interactive wizard to get a precise estimate.</p>
+            </div>
+            <QuoteWizard />
           </div>
         </div>
       </div>

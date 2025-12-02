@@ -3,6 +3,7 @@ import { ArrowRight, CheckCircle2, Star, Wrench, ShieldCheck, Paintbrush } from 
 import { Link } from "wouter";
 import { motion } from "framer-motion";
 import BeforeAfterSlider from "@/components/BeforeAfterSlider";
+import ProcessTimeline from "@/components/ProcessTimeline";
 
 export default function Home() {
   const fadeIn = {
@@ -90,9 +91,11 @@ export default function Home() {
         </motion.div>
       </section>
 
-      {/* Services Preview Section */}
-      <section className="py-24 bg-background relative">
-        <div className="container">
+    {/* Process Timeline */}
+      <ProcessTimeline />
+
+      {/* Services Section */}
+      <section className="py-20 bg-black relative overflow-hidden">        <div className="container">
           <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
             <div>
               <h2 className="font-heading font-bold text-4xl md:text-5xl uppercase mb-4">
