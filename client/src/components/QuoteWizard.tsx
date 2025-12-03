@@ -1,37 +1,81 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Car, Truck, Bike, Wrench, Paintbrush, ShieldCheck, Upload, Check, ArrowRight, ArrowLeft } from "lucide-react";
+import { Car, Truck, Bike, Wrench, Paintbrush, ShieldCheck, Upload, Check, ArrowRight, ArrowLeft, X, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { trpc } from "@/lib/trpc";
+import { toast } from "sonner";
 
 type Step = "vehicle" | "service" | "details" | "contact";
 
 const vehicleTypes = [
-  { id: "sedan", label: "Sedan/Coupe", icon: Car },
+  { id: "car", label: "Sedan/Coupe", icon: Car },
   { id: "suv", label: "SUV/4x4", icon: Truck },
-  { id: "ute", label: "Ute/Van", icon: Truck },
-  { id: "bike", label: "Motorcycle", icon: Bike },
+  { id: "truck", label: "Ute/Van", icon: Truck },
+  { id: "motorcycle", label: "Motorcycle", icon: Bike },
 ];
 
 const serviceTypes = [
-  { id: "respray", label: "Full Respray", icon: Paintbrush },
+  { id: "custom-paint", label: "Full Respray", icon: Paintbrush },
   { id: "restoration", label: "Restoration", icon: Wrench },
-  { id: "repair", label: "Collision Repair", icon: ShieldCheck },
-  { id: "custom", label: "Custom Paint", icon: Paintbrush },
+  { id: "collision-repair", label: "Collision Repair", icon: ShieldCheck },
+  { id: "detailing", label: "Custom Paint", icon: Paintbrush },
 ];
+
+interface UploadedFile {
+  fileName: string;
+  fileType: string;
+  fileData: string; // base64
+  preview: string;
+}
 
 export default function QuoteWizard() {
   const [currentStep, setCurrentStep] = useState<Step>("vehicle");
+  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  
   const [formData, setFormData] = useState({
     vehicleType: "",
+    vehicleMake: "",
+    vehicleModel: "",
+    vehicleYear: "",
     serviceType: "",
+    paintFinish: "",
     description: "",
+    budget: "",
+    timeline: "",
     name: "",
     email: "",
     phone: "",
+  });
+
+  const submitQuote = trpc.quotes.submit.useMutation({
+    onSuccess: () => {
+      toast.success("Quote request submitted successfully! We'll be in touch soon.");
+      // Reset form
+      setFormData({
+        vehicleType: "",
+        vehicleMake: "",
+        vehicleModel: "",
+        vehicleYear: "",
+        serviceType: "",
+        paintFinish: "",
+        description: "",
+        budget: "",
+        timeline: "",
+        name: "",
+        email: "",
+        phone: "",
+      });
+      setUploadedFiles([]);
+      setCurrentStep("vehicle");
+    },
+    onError: (error) => {
+      toast.error(`Failed to submit quote: ${error.message}`);
+    },
   });
 
   const nextStep = () => {
@@ -54,11 +98,60 @@ export default function QuoteWizard() {
     setFormData((prev) => ({ ...prev, [key]: value }));
   };
 
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    Array.from(files).forEach((file) => {
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error(`File ${file.name} is too large. Maximum size is 5MB.`);
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const base64 = event.target?.result as string;
+        setUploadedFiles((prev) => [
+          ...prev,
+          {
+            fileName: file.name,
+            fileType: file.type,
+            fileData: base64,
+            preview: base64,
+          },
+        ]);
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const removeFile = (index: number) => {
+    setUploadedFiles((prev) => prev.filter((_, i) => i !== index));
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission logic here
-    console.log("Form submitted:", formData);
-    alert("Quote request submitted! We will be in touch shortly.");
+    
+    if (!formData.name || !formData.email) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+
+    submitQuote.mutate({
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone || undefined,
+      vehicleType: formData.vehicleType,
+      vehicleMake: formData.vehicleMake || undefined,
+      vehicleModel: formData.vehicleModel || undefined,
+      vehicleYear: formData.vehicleYear || undefined,
+      serviceType: formData.serviceType,
+      paintFinish: formData.paintFinish || undefined,
+      description: formData.description || undefined,
+      budget: formData.budget || undefined,
+      timeline: formData.timeline || undefined,
+      files: uploadedFiles.length > 0 ? uploadedFiles : undefined,
+    });
   };
 
   const variants = {
@@ -173,21 +266,78 @@ export default function QuoteWizard() {
             >
               <h2 className="text-2xl font-heading font-bold text-white mb-6 uppercase">Project Details</h2>
               <div className="space-y-6">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="vehicleMake" className="text-white text-xs">Make</Label>
+                    <Input
+                      id="vehicleMake"
+                      placeholder="e.g., Ford"
+                      className="bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-white/50"
+                      value={formData.vehicleMake}
+                      onChange={(e) => updateData("vehicleMake", e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="vehicleModel" className="text-white text-xs">Model</Label>
+                    <Input
+                      id="vehicleModel"
+                      placeholder="e.g., Mustang"
+                      className="bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-white/50"
+                      value={formData.vehicleModel}
+                      onChange={(e) => updateData("vehicleModel", e.target.value)}
+                    />
+                  </div>
+                </div>
+                
                 <div className="space-y-2">
                   <Label htmlFor="description" className="text-white">Tell us about your project</Label>
                   <Textarea
                     id="description"
-                    placeholder="Year, make, model, and specific requirements..."
-                    className="min-h-[150px] bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-white/50"
+                    placeholder="Specific requirements, color preferences, timeline..."
+                    className="min-h-[120px] bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-white/50"
                     value={formData.description}
                     onChange={(e) => updateData("description", e.target.value)}
                   />
                 </div>
                 
-                <div className="border-2 border-dashed border-white/10 rounded-lg p-8 flex flex-col items-center justify-center text-center hover:border-white/30 transition-colors cursor-pointer bg-white/5">
-                  <Upload className="w-8 h-8 text-white/50 mb-4" />
-                  <p className="text-sm text-white font-medium">Upload Photos</p>
-                  <p className="text-xs text-white/50 mt-1">Drag & drop or click to browse</p>
+                <div>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    onChange={handleFileUpload}
+                    className="hidden"
+                  />
+                  <div
+                    onClick={() => fileInputRef.current?.click()}
+                    className="border-2 border-dashed border-white/10 rounded-lg p-6 flex flex-col items-center justify-center text-center hover:border-white/30 transition-colors cursor-pointer bg-white/5"
+                  >
+                    <Upload className="w-8 h-8 text-white/50 mb-2" />
+                    <p className="text-sm text-white font-medium">Upload Photos</p>
+                    <p className="text-xs text-white/50 mt-1">Click to browse (max 5MB each)</p>
+                  </div>
+                  
+                  {uploadedFiles.length > 0 && (
+                    <div className="mt-4 grid grid-cols-3 gap-2">
+                      {uploadedFiles.map((file, index) => (
+                        <div key={index} className="relative group">
+                          <img
+                            src={file.preview}
+                            alt={file.fileName}
+                            className="w-full h-20 object-cover rounded border border-white/10"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => removeFile(index)}
+                            className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <X className="w-4 h-4 text-white" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             </motion.div>
@@ -206,19 +356,21 @@ export default function QuoteWizard() {
               <h2 className="text-2xl font-heading font-bold text-white mb-6 uppercase">Contact Information</h2>
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="name" className="text-white">Full Name</Label>
+                  <Label htmlFor="name" className="text-white">Full Name *</Label>
                   <Input
                     id="name"
+                    required
                     className="bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-white/50"
                     value={formData.name}
                     onChange={(e) => updateData("name", e.target.value)}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-white">Email Address</Label>
+                  <Label htmlFor="email" className="text-white">Email Address *</Label>
                   <Input
                     id="email"
                     type="email"
+                    required
                     className="bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-white/50"
                     value={formData.email}
                     onChange={(e) => updateData("email", e.target.value)}
@@ -244,15 +396,27 @@ export default function QuoteWizard() {
             type="button"
             variant="ghost"
             onClick={prevStep}
-            disabled={currentStep === "vehicle"}
+            disabled={currentStep === "vehicle" || submitQuote.isPending}
             className="text-white/50 hover:text-white hover:bg-white/5"
           >
             <ArrowLeft className="w-4 h-4 mr-2" /> Back
           </Button>
           
           {currentStep === "contact" ? (
-            <Button type="submit" className="bg-white text-black hover:bg-white/90">
-              Submit Request <Check className="w-4 h-4 ml-2" />
+            <Button 
+              type="submit" 
+              className="bg-white text-black hover:bg-white/90"
+              disabled={submitQuote.isPending}
+            >
+              {submitQuote.isPending ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" /> Submitting...
+                </>
+              ) : (
+                <>
+                  Submit Request <Check className="w-4 h-4 ml-2" />
+                </>
+              )}
             </Button>
           ) : (
             <Button

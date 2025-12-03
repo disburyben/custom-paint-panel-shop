@@ -1,3 +1,4 @@
+import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle2, Star, Wrench, ShieldCheck, Paintbrush } from "lucide-react";
 import { Link } from "wouter";
@@ -6,6 +7,10 @@ import BeforeAfterSlider from "@/components/BeforeAfterSlider";
 import ProcessTimeline from "@/components/ProcessTimeline";
 
 export default function Home() {
+  // The userAuth hooks provides authentication state
+  // To implement login/logout functionality, simply call logout() or redirect to getLoginUrl()
+  let { user, loading, error, isAuthenticated, logout } = useAuth();
+
   const fadeIn = {
     initial: { opacity: 0, y: 20 },
     animate: { opacity: 1, y: 0 },
