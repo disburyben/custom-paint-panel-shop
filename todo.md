@@ -47,3 +47,8 @@
 - [x] Include all quote details and customer info
 - [x] Add direct link to admin dashboard
 - [x] Test admin email delivery
+
+## Admin Access Button (Completed)
+- [x] Add admin button to website footer
+- [x] Style button to be subtle but accessible
+- [x] Link button to admin login page

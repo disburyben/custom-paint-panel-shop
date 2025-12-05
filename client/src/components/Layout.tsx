@@ -183,9 +183,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
           <div className="border-t border-border pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-muted-foreground uppercase tracking-wider">
             <p>&copy; {new Date().getFullYear()} Caspers Paintworks. All rights reserved.</p>
-            <div className="flex gap-6">
+            <div className="flex gap-6 items-center">
               <a href="#" className="hover:text-primary transition-colors">Privacy Policy</a>
               <a href="#" className="hover:text-primary transition-colors">Terms of Service</a>
+              <Link href="/admin/login">
+                <span className="text-muted-foreground/50 hover:text-primary transition-colors cursor-pointer text-[10px]">
+                  Admin
+                </span>
+              </Link>
             </div>
           </div>
         </div>
