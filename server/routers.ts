@@ -9,7 +9,7 @@ import { createQuoteSubmission, addQuoteFile, getAllQuoteSubmissions, getQuoteSu
 import { storagePut } from "./storage";
 import { nanoid } from "nanoid";
 import { notifyOwner } from "./_core/notification";
-import { sendQuoteConfirmationEmail } from "./email";
+import { sendQuoteConfirmationEmail, sendAdminNotificationEmail } from "./email";
 
 export const appRouter = router({
     // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
@@ -124,6 +124,21 @@ export const appRouter = router({
           vehicleYear: input.vehicleYear,
           serviceType: input.serviceType,
           description: input.description,
+        });
+
+        // Send notification email to admin
+        await sendAdminNotificationEmail({
+          quoteId,
+          customerName: input.name,
+          customerEmail: input.email,
+          customerPhone: input.phone,
+          vehicleType: input.vehicleType,
+          vehicleMake: input.vehicleMake,
+          vehicleModel: input.vehicleModel,
+          vehicleYear: input.vehicleYear,
+          serviceType: input.serviceType,
+          description: input.description,
+          fileCount: input.files?.length || 0,
         });
 
         return { success: true, quoteId };
