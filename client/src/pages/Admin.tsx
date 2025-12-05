@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useAuth } from "@/_core/hooks/useAuth";
+import { useState, useEffect } from "react";
+import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,7 +23,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Search, Eye, Loader2, Calendar, Mail, Phone, Car, Wrench } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { getLoginUrl } from "@/const";
 
 const statusColors = {
   new: "bg-blue-500",
@@ -44,13 +43,23 @@ const statusLabels = {
 };
 
 export default function Admin() {
-  const { user, loading: authLoading } = useAuth();
+  const [, setLocation] = useLocation();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [selectedQuoteId, setSelectedQuoteId] = useState<number | null>(null);
 
+  // Check admin authentication
+  const { data: authCheck, isLoading: authLoading } = trpc.adminAuth.check.useQuery();
+  
+  // Logout mutation
+  const logoutMutation = trpc.adminAuth.logout.useMutation({
+    onSuccess: () => {
+      setLocation("/admin/login");
+    },
+  });
+
   const { data: quotes, isLoading, refetch } = trpc.quotes.list.useQuery(undefined, {
-    enabled: !!user && user.role === "admin",
+    enabled: authCheck?.authenticated === true,
   });
 
   const { data: quoteDetail } = trpc.quotes.getById.useQuery(
@@ -64,7 +73,13 @@ export default function Admin() {
     },
   });
 
-  // Redirect if not logged in or not admin
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!authLoading && !authCheck?.authenticated) {
+      setLocation("/admin/login");
+    }
+  }, [authCheck, authLoading, setLocation]);
+
   if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -73,20 +88,8 @@ export default function Admin() {
     );
   }
 
-  if (!user) {
-    window.location.href = getLoginUrl();
+  if (!authCheck?.authenticated) {
     return null;
-  }
-
-  if (user.role !== "admin") {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-4xl font-heading font-bold mb-4">Access Denied</h1>
-          <p className="text-muted-foreground">You don't have permission to access this page.</p>
-        </div>
-      </div>
-    );
   }
 
   // Filter quotes
@@ -109,11 +112,20 @@ export default function Admin() {
   return (
     <div className="min-h-screen bg-background pt-24 pb-20">
       <div className="container">
-        <div className="mb-8">
-          <h1 className="font-heading font-bold text-4xl md:text-5xl uppercase mb-2">
-            Quote <span className="text-primary">Dashboard</span>
-          </h1>
-          <p className="text-muted-foreground">Manage and track all customer quote requests</p>
+        <div className="mb-8 flex justify-between items-start">
+          <div>
+            <h1 className="font-heading font-bold text-4xl md:text-5xl uppercase mb-2">
+              Quote <span className="text-primary">Dashboard</span>
+            </h1>
+            <p className="text-muted-foreground">Manage and track all customer quote requests</p>
+          </div>
+          <Button
+            variant="outline"
+            onClick={() => logoutMutation.mutate()}
+            disabled={logoutMutation.isPending}
+          >
+            {logoutMutation.isPending ? "Logging out..." : "Logout"}
+          </Button>
         </div>
 
         {/* Filters */}

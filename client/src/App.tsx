@@ -12,6 +12,7 @@ import Gallery from "./pages/Gallery";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Admin from "./pages/Admin";
+import AdminLogin from "./pages/AdminLogin";
 function Router() {
   // make sure to consider if you need authentication for certain routes
   return (
@@ -22,6 +23,7 @@ function Router() {
         <Route path="/gallery" component={Gallery} />
         <Route path="/about" component={About} />
         <Route path="/contact" component={Contact} />
+        <Route path="/admin/login" component={AdminLogin} />
         <Route path="/admin" component={Admin} />
         <Route component={NotFound} />
       </Switch>

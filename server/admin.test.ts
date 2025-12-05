@@ -7,7 +7,9 @@ import { TRPCError } from "@trpc/server";
 // Mock the dependencies
 vi.mock("./db");
 
-function createMockContext(role: "admin" | "user" | null = null): TrpcContext {
+function createMockContext(role: "admin" | "user" | null = null, adminSession = false): TrpcContext {
+  const cookies = adminSession ? { admin_session: "authenticated" } : {};
+  
   return {
     user: role
       ? {
@@ -25,7 +27,8 @@ function createMockContext(role: "admin" | "user" | null = null): TrpcContext {
     req: {
       protocol: "https",
       headers: {},
-    } as TrpcContext["req"],
+      cookies,
+    } as any,
     res: {} as TrpcContext["res"],
   };
 }
@@ -36,7 +39,7 @@ describe("quotes.list (admin)", () => {
   });
 
   it("should return all quotes for admin users", async () => {
-    const ctx = createMockContext("admin");
+    const ctx = createMockContext(null, true); // Use admin session instead of role
     const caller = appRouter.createCaller(ctx);
 
     const mockQuotes = [
@@ -87,10 +90,10 @@ describe("quotes.list (admin)", () => {
   });
 
   it("should reject non-admin users", async () => {
-    const ctx = createMockContext("user");
+    const ctx = createMockContext("user", false); // No admin session
     const caller = appRouter.createCaller(ctx);
 
-    await expect(caller.quotes.list()).rejects.toThrow("Admin access required");
+    await expect(caller.quotes.list()).rejects.toThrow("Admin authentication required");
   });
 
   it("should reject unauthenticated users", async () => {
@@ -107,7 +110,7 @@ describe("quotes.updateStatus (admin)", () => {
   });
 
   it("should update quote status for admin users", async () => {
-    const ctx = createMockContext("admin");
+    const ctx = createMockContext(null, true); // Use admin session
     const caller = appRouter.createCaller(ctx);
 
     const mockQuote = {
@@ -143,7 +146,7 @@ describe("quotes.updateStatus (admin)", () => {
   });
 
   it("should reject non-admin users", async () => {
-    const ctx = createMockContext("user");
+    const ctx = createMockContext("user", false); // No admin session
     const caller = appRouter.createCaller(ctx);
 
     await expect(
@@ -151,11 +154,11 @@ describe("quotes.updateStatus (admin)", () => {
         id: 1,
         status: "reviewed",
       })
-    ).rejects.toThrow("Admin access required");
+    ).rejects.toThrow("Admin authentication required");
   });
 
   it("should throw error when quote not found", async () => {
-    const ctx = createMockContext("admin");
+    const ctx = createMockContext(null, true); // Use admin session
     const caller = appRouter.createCaller(ctx);
 
     vi.mocked(db.getQuoteSubmissionById).mockResolvedValue(undefined);

@@ -155,7 +155,9 @@ describe("quotes.submit", () => {
 
 describe("quotes.list", () => {
   it("should return all quote submissions (admin)", async () => {
-    const ctx = createMockContext("admin");
+    // Create context with admin session cookie
+    const ctx = createMockContext();
+    ctx.req.cookies = { admin_session: "authenticated" };
     const caller = appRouter.createCaller(ctx);
 
     const mockQuotes = [

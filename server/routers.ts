@@ -3,6 +3,7 @@ import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import { TRPCError } from "@trpc/server";
+import { adminAuthRouter } from "./adminAuth";
 import { z } from "zod";
 import { createQuoteSubmission, addQuoteFile, getAllQuoteSubmissions, getQuoteSubmissionById, getQuoteFiles, updateQuoteStatus } from "./db";
 import { storagePut } from "./storage";
@@ -12,6 +13,7 @@ import { notifyOwner } from "./_core/notification";
 export const appRouter = router({
     // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
   system: systemRouter,
+  adminAuth: adminAuthRouter,
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
     logout: publicProcedure.mutation(({ ctx }) => {
@@ -116,24 +118,31 @@ export const appRouter = router({
     /**
      * Get all quote submissions (admin only)
      */
-    list: protectedProcedure.query(async ({ ctx }) => {
-      if (ctx.user.role !== 'admin') {
-        throw new TRPCError({ code: 'FORBIDDEN', message: 'Admin access required' });
+    list: publicProcedure.query(async ({ ctx }) => {
+      // Check admin session cookie
+      const isAdminAuthenticated = ctx.req.cookies?.['admin_session'] === 'authenticated';
+      
+      if (!isAdminAuthenticated) {
+        throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Admin authentication required' });
       }
+      
       return await getAllQuoteSubmissions();
     }),
 
     /**
      * Update quote status (admin only)
      */
-    updateStatus: protectedProcedure
+    updateStatus: publicProcedure
       .input(z.object({
         id: z.number(),
         status: z.enum(["new", "reviewed", "quoted", "accepted", "declined", "completed"]),
       }))
       .mutation(async ({ ctx, input }) => {
-        if (ctx.user.role !== 'admin') {
-          throw new TRPCError({ code: 'FORBIDDEN', message: 'Admin access required' });
+        // Check admin session cookie
+        const isAdminAuthenticated = ctx.req.cookies?.['admin_session'] === 'authenticated';
+        
+        if (!isAdminAuthenticated) {
+          throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Admin authentication required' });
         }
         
         const quote = await getQuoteSubmissionById(input.id);
