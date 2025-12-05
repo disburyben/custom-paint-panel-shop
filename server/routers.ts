@@ -9,6 +9,7 @@ import { createQuoteSubmission, addQuoteFile, getAllQuoteSubmissions, getQuoteSu
 import { storagePut } from "./storage";
 import { nanoid } from "nanoid";
 import { notifyOwner } from "./_core/notification";
+import { sendQuoteConfirmationEmail } from "./email";
 
 export const appRouter = router({
     // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
@@ -106,10 +107,23 @@ export const appRouter = router({
           }
         }
 
-        // Notify owner about new quote submission
+        // Notify owner
         await notifyOwner({
           title: "New Quote Request",
-          content: `${input.name} (${input.email}) has submitted a quote request for ${input.serviceType} on a ${input.vehicleType}.`,
+          content: `${input.name} has submitted a quote request for ${input.vehicleType} ${input.serviceType}`,
+        });
+
+        // Send confirmation email to customer
+        await sendQuoteConfirmationEmail({
+          customerName: input.name,
+          customerEmail: input.email,
+          quoteId,
+          vehicleType: input.vehicleType,
+          vehicleMake: input.vehicleMake,
+          vehicleModel: input.vehicleModel,
+          vehicleYear: input.vehicleYear,
+          serviceType: input.serviceType,
+          description: input.description,
         });
 
         return { success: true, quoteId };
