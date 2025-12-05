@@ -10,9 +10,21 @@ vi.mock("./db");
 vi.mock("./storage");
 vi.mock("./_core/notification");
 
-function createMockContext(): TrpcContext {
+function createMockContext(role: "admin" | "user" | null = null): TrpcContext {
   return {
-    user: null,
+    user: role
+      ? {
+          id: 1,
+          openId: "test-open-id",
+          name: "Test User",
+          email: "test@example.com",
+          loginMethod: "oauth",
+          role,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          lastSignedIn: new Date(),
+        }
+      : null,
     req: {
       protocol: "https",
       headers: {},
@@ -142,8 +154,8 @@ describe("quotes.submit", () => {
 });
 
 describe("quotes.list", () => {
-  it("should return all quote submissions", async () => {
-    const ctx = createMockContext();
+  it("should return all quote submissions (admin)", async () => {
+    const ctx = createMockContext("admin");
     const caller = appRouter.createCaller(ctx);
 
     const mockQuotes = [

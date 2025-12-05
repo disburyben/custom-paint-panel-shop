@@ -1,0 +1,25 @@
+# Project TODO
+
+## Completed Features
+- [x] Basic homepage layout with roller door loader
+- [x] Navigation menu
+- [x] Services page
+- [x] Gallery page with lightbox
+- [x] About page
+- [x] Contact page with Google Maps
+- [x] Interactive Quote Wizard with multi-step form
+- [x] Process Timeline on homepage
+- [x] Full-stack upgrade (Server + Database + User auth)
+- [x] Database schema for quote submissions and files
+- [x] Backend API for quote submission with file upload
+- [x] S3 file storage integration
+- [x] Owner notifications for new quotes
+
+## Admin Dashboard Features (In Progress)
+- [x] Admin-only API procedures with role-based access control
+- [x] Admin dashboard page with authentication check
+- [x] Quote submissions table with sorting and filtering
+- [x] Status badges and management (new, reviewed, quoted, accepted, declined, completed)
+- [x] Detailed quote view modal with customer info
+- [x] File gallery viewer for uploaded vehicle photos
+- [x] Search functionality for quotes

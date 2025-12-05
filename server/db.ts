@@ -150,3 +150,15 @@ export async function getQuoteFiles(quoteId: number) {
 
   return await db.select().from(quoteFiles).where(eq(quoteFiles.quoteId, quoteId));
 }
+
+/**
+ * Update quote submission status
+ */
+export async function updateQuoteStatus(id: number, status: "new" | "reviewed" | "quoted" | "accepted" | "declined" | "completed") {
+  const db = await getDb();
+  if (!db) {
+    throw new Error("Database not available");
+  }
+
+  await db.update(quoteSubmissions).set({ status }).where(eq(quoteSubmissions.id, id));
+}

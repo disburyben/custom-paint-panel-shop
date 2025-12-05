@@ -1,9 +1,10 @@
 import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
-import { publicProcedure, router } from "./_core/trpc";
+import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { createQuoteSubmission, addQuoteFile, getAllQuoteSubmissions, getQuoteSubmissionById, getQuoteFiles } from "./db";
+import { createQuoteSubmission, addQuoteFile, getAllQuoteSubmissions, getQuoteSubmissionById, getQuoteFiles, updateQuoteStatus } from "./db";
 import { storagePut } from "./storage";
 import { nanoid } from "nanoid";
 import { notifyOwner } from "./_core/notification";
@@ -113,11 +114,36 @@ export const appRouter = router({
       }),
 
     /**
-     * Get all quote submissions (admin only for now, can add auth later)
+     * Get all quote submissions (admin only)
      */
-    list: publicProcedure.query(async () => {
+    list: protectedProcedure.query(async ({ ctx }) => {
+      if (ctx.user.role !== 'admin') {
+        throw new TRPCError({ code: 'FORBIDDEN', message: 'Admin access required' });
+      }
       return await getAllQuoteSubmissions();
     }),
+
+    /**
+     * Update quote status (admin only)
+     */
+    updateStatus: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        status: z.enum(["new", "reviewed", "quoted", "accepted", "declined", "completed"]),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        if (ctx.user.role !== 'admin') {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'Admin access required' });
+        }
+        
+        const quote = await getQuoteSubmissionById(input.id);
+        if (!quote) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Quote not found' });
+        }
+
+        await updateQuoteStatus(input.id, input.status);
+        return { success: true };
+      }),
 
     /**
      * Get a single quote with its files
