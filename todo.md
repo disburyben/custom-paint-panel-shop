@@ -74,3 +74,9 @@
 - [x] Update Gallery page with team showcase section
 - [x] Click on team member to view their individual portfolio
 - [x] Test complete team gallery workflow
+
+## Footer Business Details Update (Completed)
+- [x] Update phone number to 0466254055
+- [x] Update email to admin@Casperspaintworks.com.au
+- [x] Update address to 33 Ayfield Road, Para Hills West
+- [x] Update business hours to Monday - Friday 8:30 AM - 4:30 PM

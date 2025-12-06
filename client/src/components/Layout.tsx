@@ -149,15 +149,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <ul className="space-y-4 text-sm text-muted-foreground">
                 <li className="flex items-start gap-3">
                   <Phone className="w-5 h-5 text-primary shrink-0" />
-                  <span>(555) 123-4567</span>
+                  <span>0466 254 055</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <Mail className="w-5 h-5 text-primary shrink-0" />
-                  <span>enquiries@casperspaintworks.com</span>
+                  <span>admin@casperspaintworks.com.au</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <div className="w-5 h-5 text-primary shrink-0 font-heading font-bold">AD</div>
-                  <span>Para Hills,<br />Adelaide, South Australia</span>
+                  <span>33 Ayfield Road,<br />Para Hills West, SA</span>
                 </li>
               </ul>
             </div>
@@ -167,11 +167,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li className="flex justify-between border-b border-border/50 pb-2">
                   <span>Mon - Fri</span>
-                  <span className="text-foreground font-medium">8:00 AM - 6:00 PM</span>
+                  <span className="text-foreground font-medium">8:30 AM - 4:30 PM</span>
                 </li>
                 <li className="flex justify-between border-b border-border/50 pb-2">
                   <span>Saturday</span>
-                  <span className="text-foreground font-medium">9:00 AM - 2:00 PM</span>
+                  <span className="text-destructive">Closed</span>
                 </li>
                 <li className="flex justify-between pb-2">
                   <span>Sunday</span>
