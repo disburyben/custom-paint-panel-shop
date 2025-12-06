@@ -52,3 +52,8 @@
 - [x] Add admin button to website footer
 - [x] Style button to be subtle but accessible
 - [x] Link button to admin login page
+
+## Admin Login Issue (Completed)
+- [x] Diagnose why admin dashboard doesn't load after login
+- [x] Fix authentication flow and redirect (added cookie-parser middleware)
+- [x] Test login and dashboard display
