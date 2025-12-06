@@ -2,8 +2,33 @@ import { z } from "zod";
 import { publicProcedure, router } from "./_core/trpc";
 import { TRPCError } from "@trpc/server";
 import { ENV } from "./_core/env";
+import { initTRPC } from "@trpc/server";
+import type { TrpcContext } from "./_core/context";
+import superjson from "superjson";
+
+const t = initTRPC.context<TrpcContext>().create({
+  transformer: superjson,
+});
 
 const ADMIN_SESSION_COOKIE = "admin_session";
+
+// Middleware to check admin session
+const requireAdminSession = t.middleware(async opts => {
+  const { ctx, next } = opts;
+  
+  const isAuthenticated = ctx.req.cookies?.[ADMIN_SESSION_COOKIE] === "authenticated";
+  
+  if (!isAuthenticated) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "Admin authentication required",
+    });
+  }
+  
+  return next({ ctx });
+});
+
+export const adminSessionProcedure = t.procedure.use(requireAdminSession);
 
 export const adminAuthRouter = router({
   /**

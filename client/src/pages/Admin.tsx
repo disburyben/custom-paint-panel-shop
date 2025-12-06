@@ -119,13 +119,21 @@ export default function Admin() {
             </h1>
             <p className="text-muted-foreground">Manage and track all customer quote requests</p>
           </div>
-          <Button
-            variant="outline"
-            onClick={() => logoutMutation.mutate()}
-            disabled={logoutMutation.isPending}
-          >
-            {logoutMutation.isPending ? "Logging out..." : "Logout"}
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setLocation("/admin/team")}
+            >
+              Team Management
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => logoutMutation.mutate()}
+              disabled={logoutMutation.isPending}
+            >
+              {logoutMutation.isPending ? "Logging out..." : "Logout"}
+            </Button>
+          </div>
         </div>
 
         {/* Filters */}

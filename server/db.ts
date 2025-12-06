@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users, quoteSubmissions, InsertQuoteSubmission, quoteFiles, InsertQuoteFile } from "../drizzle/schema";
+import { InsertUser, users, quoteSubmissions, InsertQuoteSubmission, quoteFiles, InsertQuoteFile, teamMembers, InsertTeamMember, portfolioItems, InsertPortfolioItem } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -161,4 +161,90 @@ export async function updateQuoteStatus(id: number, status: "new" | "reviewed" |
   }
 
   await db.update(quoteSubmissions).set({ status }).where(eq(quoteSubmissions.id, id));
+}
+
+// ========================================
+// Team Members
+// ========================================
+
+export async function createTeamMember(member: InsertTeamMember) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const [result] = await db.insert(teamMembers).values(member);
+  return result.insertId;
+}
+
+export async function getAllTeamMembers() {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return await db.select().from(teamMembers).orderBy(teamMembers.displayOrder);
+}
+
+export async function getTeamMemberById(id: number) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const [member] = await db.select().from(teamMembers).where(eq(teamMembers.id, id));
+  return member || null;
+}
+
+export async function updateTeamMember(id: number, updates: Partial<InsertTeamMember>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(teamMembers).set(updates).where(eq(teamMembers.id, id));
+}
+
+export async function deleteTeamMember(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Delete all portfolio items first
+  await db.delete(portfolioItems).where(eq(portfolioItems.teamMemberId, id));
+  // Then delete the team member
+  await db.delete(teamMembers).where(eq(teamMembers.id, id));
+}
+
+// ========================================
+// Portfolio Items
+// ========================================
+
+export async function createPortfolioItem(item: InsertPortfolioItem) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const [result] = await db.insert(portfolioItems).values(item);
+  return result.insertId;
+}
+
+export async function getPortfolioItemsByTeamMember(teamMemberId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return await db.select().from(portfolioItems)
+    .where(eq(portfolioItems.teamMemberId, teamMemberId))
+    .orderBy(portfolioItems.displayOrder);
+}
+
+export async function getAllPortfolioItems() {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return await db.select().from(portfolioItems).orderBy(portfolioItems.displayOrder);
+}
+
+export async function updatePortfolioItem(id: number, updates: Partial<InsertPortfolioItem>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(portfolioItems).set(updates).where(eq(portfolioItems.id, id));
+}
+
+export async function deletePortfolioItem(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.delete(portfolioItems).where(eq(portfolioItems.id, id));
 }

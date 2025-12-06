@@ -15,6 +15,13 @@
       "when": 1764771465909,
       "tag": "0001_funny_lorna_dane",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1765024334168,
+      "tag": "0002_funny_silver_centurion",
+      "breakpoints": true
     }
   ]
 }

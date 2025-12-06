@@ -82,3 +82,59 @@ export const quoteFiles = mysqlTable("quote_files", {
 
 export type QuoteFile = typeof quoteFiles.$inferSelect;
 export type InsertQuoteFile = typeof quoteFiles.$inferInsert;
+
+/**
+ * Team members (owner and employees) for gallery showcase
+ */
+export const teamMembers = mysqlTable("team_members", {
+  id: int("id").autoincrement().primaryKey(),
+  
+  // Profile Information
+  name: varchar("name", { length: 255 }).notNull(),
+  title: varchar("title", { length: 255 }).notNull(), // e.g., "Master Painter", "Restoration Specialist"
+  bio: text("bio"), // Short bio about the team member
+  specialty: varchar("specialty", { length: 255 }), // e.g., "Custom Candy Finishes", "Classic Car Restoration"
+  
+  // Headshot Image
+  headshotKey: varchar("headshotKey", { length: 500 }), // S3 key for headshot
+  headshotUrl: varchar("headshotUrl", { length: 1000 }), // Public URL for headshot
+  
+  // Display Settings
+  displayOrder: int("displayOrder").default(0).notNull(), // Order to display on gallery page
+  isActive: int("isActive").default(1).notNull(), // 1 = active, 0 = hidden
+  
+  // Metadata
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type TeamMember = typeof teamMembers.$inferSelect;
+export type InsertTeamMember = typeof teamMembers.$inferInsert;
+
+/**
+ * Portfolio items for each team member (their individual work)
+ */
+export const portfolioItems = mysqlTable("portfolio_items", {
+  id: int("id").autoincrement().primaryKey(),
+  teamMemberId: int("teamMemberId").notNull(), // Foreign key to team_members
+  
+  // Project Information
+  title: varchar("title", { length: 255 }).notNull(), // e.g., "1967 Mustang Candy Apple Red"
+  description: text("description"), // Details about the project
+  category: varchar("category", { length: 100 }), // e.g., "Custom Paint", "Restoration", "Collision Repair"
+  
+  // Image Information
+  imageKey: varchar("imageKey", { length: 500 }).notNull(), // S3 key for portfolio image
+  imageUrl: varchar("imageUrl", { length: 1000 }).notNull(), // Public URL for image
+  
+  // Display Settings
+  displayOrder: int("displayOrder").default(0).notNull(),
+  isFeatured: int("isFeatured").default(0).notNull(), // 1 = featured, 0 = normal
+  
+  // Metadata
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type PortfolioItem = typeof portfolioItems.$inferSelect;
+export type InsertPortfolioItem = typeof portfolioItems.$inferInsert;
