@@ -80,3 +80,9 @@
 - [x] Update email to admin@Casperspaintworks.com.au
 - [x] Update address to 33 Ayfield Road, Para Hills West
 - [x] Update business hours to Monday - Friday 8:30 AM - 4:30 PM
+
+## Map Container Error Fix (Completed)
+- [x] Investigate map container error on homepage
+- [x] Fix Google Maps initialization to check for container existence
+- [x] Added try-catch error handling and DOM ready delay
+- [x] Test homepage to ensure no errors
