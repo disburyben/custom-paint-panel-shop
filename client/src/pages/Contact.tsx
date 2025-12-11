@@ -1,38 +1,10 @@
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
-import { Loader2 } from "lucide-react";
 import { MapView } from "@/components/Map";
 import QuoteWizard from "@/components/QuoteWizard";
-import ContactForm from "@/components/ContactForm";
-import { trpc } from "@/lib/trpc";
-import { SEOHead } from "@/components/SEOHead";
 
 export default function Contact() {
-  const seoConfig = {
-    title: "Contact Us - Caspers Paintworks",
-    description: "Get in touch with our professional automotive refinishing team. Request a quote or contact us for more information about our services.",
-    image: "/og-image.jpg",
-    url: "/contact",
-  };
-
-  // Fetch business info from CMS
-  const { data: businessInfo, isLoading } = trpc.cms.businessInfo.get.useQuery();
-
-  // Parse business hours
-  const businessHours = businessInfo?.businessHours 
-    ? JSON.parse(businessInfo.businessHours) 
-    : null;
-
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
-      </div>
-    );
-  }
-
   return (
     <div className="pt-24 pb-20">
-      <SEOHead config={seoConfig} includeLocalBusiness={true} />
       <div className="container">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h1 className="font-heading font-bold text-5xl md:text-6xl uppercase mb-6">
@@ -49,52 +21,36 @@ export default function Contact() {
             <div className="bg-card border border-border p-8">
               <h3 className="font-heading font-bold text-2xl uppercase mb-6 text-primary">Contact Info</h3>
               <div className="space-y-6">
-                {businessInfo?.address && (
-                  <div className="flex items-start gap-4">
-                    <MapPin className="w-6 h-6 text-primary shrink-0 mt-1" />
-                    <div>
-                      <h4 className="font-bold uppercase mb-1">Visit Us</h4>
-                      <p className="text-muted-foreground whitespace-pre-line">{businessInfo.address}</p>
-                    </div>
+                <div className="flex items-start gap-4">
+                  <MapPin className="w-6 h-6 text-primary shrink-0 mt-1" />
+                  <div>
+                    <h4 className="font-bold uppercase mb-1">Visit Us</h4>
+                    <p className="text-muted-foreground">Para Hills<br />Adelaide, South Australia</p>
                   </div>
-                )}
-                {businessInfo?.phone && (
-                  <div className="flex items-start gap-4">
-                    <Phone className="w-6 h-6 text-primary shrink-0 mt-1" />
-                    <div>
-                      <h4 className="font-bold uppercase mb-1">Call Us</h4>
-                      <a href={`tel:${businessInfo.phone}`} className="text-muted-foreground hover:text-primary transition-colors">
-                        {businessInfo.phone}
-                      </a>
-                    </div>
+                </div>
+                <div className="flex items-start gap-4">
+                  <Phone className="w-6 h-6 text-primary shrink-0 mt-1" />
+                  <div>
+                    <h4 className="font-bold uppercase mb-1">Call Us</h4>
+                    <p className="text-muted-foreground">(555) 123-4567</p>
                   </div>
-                )}
-                {businessInfo?.email && (
-                  <div className="flex items-start gap-4">
-                    <Mail className="w-6 h-6 text-primary shrink-0 mt-1" />
-                    <div>
-                      <h4 className="font-bold uppercase mb-1">Email Us</h4>
-                      <a href={`mailto:${businessInfo.email}`} className="text-muted-foreground hover:text-primary transition-colors">
-                        {businessInfo.email}
-                      </a>
-                    </div>
+                </div>
+                <div className="flex items-start gap-4">
+                  <Mail className="w-6 h-6 text-primary shrink-0 mt-1" />
+                  <div>
+                    <h4 className="font-bold uppercase mb-1">Email Us</h4>
+                    <p className="text-muted-foreground">enquiries@casperspaintworks.com</p>
                   </div>
-                )}
-                {businessHours && (
-                  <div className="flex items-start gap-4">
-                    <Clock className="w-6 h-6 text-primary shrink-0 mt-1" />
-                    <div>
-                      <h4 className="font-bold uppercase mb-1">Hours</h4>
-                      <div className="text-muted-foreground space-y-1">
-                        {Object.entries(businessHours).map(([day, hours]: [string, any]) => (
-                          <p key={day}>
-                            {day}: {hours.open} - {hours.close}
-                          </p>
-                        ))}
-                      </div>
-                    </div>
+                </div>
+                <div className="flex items-start gap-4">
+                  <Clock className="w-6 h-6 text-primary shrink-0 mt-1" />
+                  <div>
+                    <h4 className="font-bold uppercase mb-1">Hours</h4>
+                    <p className="text-muted-foreground">Mon - Fri: 8:00 AM - 6:00 PM</p>
+                    <p className="text-muted-foreground">Sat: 9:00 AM - 2:00 PM</p>
+                    <p className="text-muted-foreground">Sun: Closed</p>
                   </div>
-                )}
+                </div>
               </div>
             </div>
 
@@ -106,7 +62,7 @@ export default function Contact() {
                   new google.maps.Marker({
                     position: { lat: -34.8333, lng: 138.6500 }, // Para Hills, SA
                     map: map,
-                    title: businessInfo?.businessName || "Caspers Paintworks"
+                    title: "Caspers Paintworks"
                   });
                   map.setCenter({ lat: -34.8333, lng: 138.6500 });
                   map.setZoom(14);
@@ -123,19 +79,6 @@ export default function Contact() {
             </div>
             <QuoteWizard />
           </div>
-        </div>
-
-        {/* Contact Form Section */}
-        <div className="mt-20 max-w-2xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="font-heading font-bold text-4xl md:text-5xl uppercase mb-4">
-              Send Us a <span className="text-primary">Message</span>
-            </h2>
-            <p className="text-muted-foreground text-lg">
-              Have a question or want to discuss your project? Fill out the form below and we'll get back to you shortly.
-            </p>
-          </div>
-          <ContactForm />
         </div>
       </div>
     </div>

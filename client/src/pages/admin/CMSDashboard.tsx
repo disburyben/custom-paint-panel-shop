@@ -43,10 +43,10 @@ export default function CMSDashboard() {
     },
     {
       title: "Sprayers",
-      description: "Manage painters/technicians and their logos",
+      description: "Manage team member profiles and certifications",
       icon: Users,
       href: "/admin/cms/sprayers",
-      color: "bg-yellow-500/10 text-yellow-600",
+      color: "bg-cyan-500/10 text-cyan-600",
     },
     {
       title: "Business Info",

@@ -1,28 +1,15 @@
+import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, CheckCircle2, Star, Wrench, ShieldCheck, Paintbrush, Loader2 } from "lucide-react";
+import { ArrowRight, CheckCircle2, Star, Wrench, ShieldCheck, Paintbrush } from "lucide-react";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
 import BeforeAfterSlider from "@/components/BeforeAfterSlider";
 import ProcessTimeline from "@/components/ProcessTimeline";
-import { trpc } from "@/lib/trpc";
-import { SEOHead } from "@/components/SEOHead";
-import { useAuth } from "@/_core/hooks/useAuth";
 
 export default function Home() {
-  // SEO Head for homepage
-  const seoConfig = {
-    title: "Professional Automotive Refinishing & Custom Paint",
-    description: "Expert automotive refinishing, custom paint, and panel repairs in Adelaide. Professional quality with fast turnaround times.",
-    image: "/og-image.jpg",
-    url: "/",
-  };
-
-  // Fetch testimonials from CMS
-  const { data: testimonials = [] } = trpc.cms.testimonials.getAll.useQuery();
-
-  // The useAuth hook provides authentication state
+  // The userAuth hooks provides authentication state
   // To implement login/logout functionality, simply call logout() or redirect to getLoginUrl()
-  const { user, loading, error, isAuthenticated, logout } = useAuth();
+  let { user, loading, error, isAuthenticated, logout } = useAuth();
 
   const fadeIn = {
     initial: { opacity: 0, y: 20 },
@@ -40,7 +27,6 @@ export default function Home() {
 
   return (
     <div className="flex flex-col">
-      <SEOHead config={seoConfig} includeLocalBusiness={true} includeOrganization={true} />
       {/* Hero Section */}
       <section className="relative h-screen min-h-[800px] flex items-center overflow-hidden">
         {/* Background Image with Overlay */}
@@ -197,7 +183,9 @@ export default function Home() {
         <div className="container relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div className="relative">
-              <div className="absolute -bottom-6 -right-6 bg-background border border-border p-4 shadow-xl z-20 w-[300px]" style={{width: '720px', height: '250px'}}>
+              <div className="absolute -inset-4 border border-primary/30 translate-x-4 translate-y-4 z-0" />
+              <img src="/images/about-workshop.jpg" alt="Our Workshop" className="relative z-10 w-full shadow-2xl grayscale hover:grayscale-0 transition-all duration-700" />
+              <div className="absolute -bottom-6 -right-6 bg-background border border-border p-4 shadow-xl z-20 w-[300px]">
                 <BeforeAfterSlider 
                   beforeImage="/images/engine-bay-prep-1.jpg"
                   afterImage="/images/engine-bay-paint-1.jpg"
@@ -265,35 +253,29 @@ export default function Home() {
           <h2 className="font-heading font-bold text-3xl uppercase mb-12 tracking-widest">Trusted By Enthusiasts</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {testimonials.length > 0 ? (
-              testimonials.slice(0, 3).map((testimonial: any) => (
-                <div key={testimonial.id} className="bg-card p-8 border border-border relative group hover:-translate-y-2 transition-transform duration-300">
-                  <div className="flex justify-center gap-1 mb-6">
-                    {[...Array(testimonial.rating || 5)].map((_, idx) => (
-                      <Star key={idx} className="w-4 h-4 text-primary fill-primary" />
-                    ))}
-                  </div>
-                  <p className="text-muted-foreground italic mb-6 text-sm leading-relaxed">
-                    "{testimonial.quote}"
-                  </p>
-                  <div className="font-heading font-bold uppercase text-sm">
-                    {testimonial.customerName}
-                  </div>
-                  {testimonial.customerTitle && (
-                    <div className="text-xs text-primary mt-1 uppercase tracking-wider">
-                      {testimonial.customerTitle}
-                    </div>
-                  )}
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="bg-card p-8 border border-border relative group hover:-translate-y-2 transition-transform duration-300">
+                <div className="flex justify-center gap-1 mb-6">
+                  {[...Array(5)].map((_, idx) => (
+                    <Star key={idx} className="w-4 h-4 text-primary fill-primary" />
+                  ))}
                 </div>
-              ))
-            ) : (
-              <div className="col-span-3 text-muted-foreground">No testimonials available yet.</div>
-            )}
+                <p className="text-muted-foreground italic mb-6 text-sm leading-relaxed">
+                  "{i === 1 ? "Absolutely floored by the quality. The candy apple red finish on my Mustang is deeper than the ocean. Worth every penny." : 
+                    i === 2 ? "They brought my grandfather's F100 back from the dead. The metal work is invisible. True artisans." : 
+                    "Professional, timely, and the communication was excellent. My Tesla looks better than the day I bought it."}"
+                </p>
+                <div className="font-heading font-bold uppercase text-sm">
+                  {i === 1 ? "Michael R." : i === 2 ? "David S." : "Sarah J."}
+                </div>
+                <div className="text-xs text-primary mt-1 uppercase tracking-wider">
+                  {i === 1 ? "1967 Mustang Fastback" : i === 2 ? "1956 Ford F100" : "Tesla Model S"}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
-
-
 
       {/* CTA Section */}
       <section className="py-32 relative overflow-hidden flex items-center justify-center">

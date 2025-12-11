@@ -1,13 +1,16 @@
 import { getDb } from "./db";
 import {
+  blogPosts,
   testimonials,
   services,
   businessInfo,
   galleryItems,
+  InsertBlogPost,
   InsertTestimonial,
   InsertService,
   InsertBusinessInfo,
   InsertGalleryItem,
+  BlogPost,
   Testimonial,
   Service,
   BusinessInfo,
@@ -20,6 +23,77 @@ const getDbInstance = async () => {
   if (!db) throw new Error("Database not available");
   return db;
 };
+
+/**
+ * BLOG POSTS
+ */
+
+export async function createBlogPost(data: InsertBlogPost) {
+  const db = await getDbInstance();
+  const result = await db.insert(blogPosts).values(data);
+  return result;
+}
+
+export async function updateBlogPost(id: number, data: Partial<InsertBlogPost>) {
+  const db = await getDbInstance();
+  const result = await db
+    .update(blogPosts)
+    .set(data)
+    .where(eq(blogPosts.id, id));
+  return result;
+}
+
+export async function deleteBlogPost(id: number) {
+  const db = await getDbInstance();
+  const result = await db.delete(blogPosts).where(eq(blogPosts.id, id));
+  return result;
+}
+
+export async function getBlogPostById(id: number): Promise<BlogPost | null> {
+  const db = await getDbInstance();
+  const result = await db
+    .select()
+    .from(blogPosts)
+    .where(eq(blogPosts.id, id))
+    .limit(1);
+  return result[0] || null;
+}
+
+export async function getBlogPostBySlug(slug: string): Promise<BlogPost | null> {
+  const db = await getDbInstance();
+  const result = await db
+    .select()
+    .from(blogPosts)
+    .where(eq(blogPosts.slug, slug))
+    .limit(1);
+  return result[0] || null;
+}
+
+export async function getAllBlogPosts(
+  published: boolean = true
+): Promise<BlogPost[]> {
+  const db = await getDbInstance();
+  const query = db.select().from(blogPosts);
+
+  if (published) {
+    return await query
+      .where(eq(blogPosts.isPublished, 1))
+      .orderBy(desc(blogPosts.publishedAt))
+      .execute();
+  }
+
+  return await query.orderBy(desc(blogPosts.createdAt)).execute();
+}
+
+export async function getFeaturedBlogPosts(limit: number = 3): Promise<BlogPost[]> {
+  const db = await getDbInstance();
+  return await db
+    .select()
+    .from(blogPosts)
+    .where(and(eq(blogPosts.isPublished, 1), eq(blogPosts.isFeatured, 1)))
+    .orderBy(asc(blogPosts.displayOrder))
+    .limit(limit);
+}
 
 /**
  * TESTIMONIALS

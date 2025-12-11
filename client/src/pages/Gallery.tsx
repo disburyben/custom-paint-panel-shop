@@ -1,41 +1,32 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { X, User, Loader2 } from "lucide-react";
+import { X, User } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { SEOHead } from "@/components/SEOHead";
 
 export default function Gallery() {
-  const seoConfig = {
-    title: "Gallery - Before & After Project Showcase",
-    description: "View our professional automotive refinishing and custom paint projects. Before and after gallery showcasing quality workmanship.",
-    image: "/og-image.jpg",
-    url: "/gallery",
-  };
-
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [selectedTeamMember, setSelectedTeamMember] = useState<number | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
-  // Fetch data
   const { data: teamMembers } = trpc.team.list.useQuery();
   const { data: memberPortfolio } = trpc.team.getWithPortfolio.useQuery(
     { id: selectedTeamMember! },
     { enabled: !!selectedTeamMember }
   );
-  const { data: galleryItems = [], isLoading: galleryLoading } = trpc.cms.gallery.getAll.useQuery();
 
-  // Get unique categories
-  const categories = Array.from(new Set(galleryItems.map((item: any) => item.category)));
-
-  // Filter gallery items by selected category
-  const filteredItems = selectedCategory 
-    ? galleryItems.filter((item: any) => item.category === selectedCategory)
-    : galleryItems;
+  // Using the generated images for the gallery
+  const images = [
+    { src: "/images/hero-bg.jpg", category: "Custom Paint", title: "Neon Noir Sports Car" },
+    { src: "/images/service-paint.jpg", category: "Process", title: "Candy Red Application" },
+    { src: "/images/service-restoration.jpg", category: "Restoration", title: "Muscle Car Restoration" },
+    { src: "/images/feature-detail.jpg", category: "Detailing", title: "Carbon & Chrome Detail" },
+    // Reusing images to fill the grid for demo purposes
+    { src: "/images/hero-bg.jpg", category: "Custom Paint", title: "Project Midnight" },
+    { src: "/images/service-paint.jpg", category: "Process", title: "Clear Coat Finish" },
+  ];
 
   return (
     <div className="pt-24 pb-20">
-      <SEOHead config={seoConfig} includeLocalBusiness={true} />
       <div className="container">
         {/* Gallery Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
@@ -102,105 +93,32 @@ export default function Gallery() {
           <h2 className="font-heading font-bold text-4xl uppercase text-center mb-12">
             Recent <span className="text-primary">Projects</span>
           </h2>
-
-          {/* Category Filter */}
-          {categories.length > 0 && (
-            <div className="flex flex-wrap justify-center gap-3 mb-12">
-              <button
-                onClick={() => setSelectedCategory(null)}
-                className={`px-4 py-2 rounded-md font-medium transition-colors ${
-                  selectedCategory === null
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-card border border-border text-foreground hover:border-primary"
-                }`}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {images.map((img, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+                className="group relative aspect-[4/3] overflow-hidden cursor-pointer border border-border bg-card"
+                onClick={() => setSelectedImage(img.src)}
               >
-                All Projects
-              </button>
-              {categories.map((category) => (
-                <button
-                  key={category}
-                  onClick={() => setSelectedCategory(category)}
-                  className={`px-4 py-2 rounded-md font-medium transition-colors capitalize ${
-                    selectedCategory === category
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-card border border-border text-foreground hover:border-primary"
-                  }`}
-                >
-                  {category}
-                </button>
-              ))}
-            </div>
-          )}
-
-          {galleryLoading ? (
-            <div className="flex justify-center items-center py-20">
-              <Loader2 className="w-8 h-8 animate-spin text-primary" />
-            </div>
-          ) : filteredItems.length === 0 ? (
-            <div className="text-center py-20">
-              <p className="text-muted-foreground">No projects available in this category.</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredItems.map((item: any, index: number) => (
-                <motion.div
-                  key={item.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  className="group"
-                >
-                  {/* Before/After Comparison */}
-                  <div className="grid grid-cols-2 gap-2 mb-4">
-                    <div
-                      className="group/before relative aspect-[4/3] overflow-hidden cursor-pointer border border-border bg-card"
-                      onClick={() => setSelectedImage(item.beforeImageUrl)}
-                    >
-                      <img
-                        src={item.beforeImageUrl}
-                        alt={`${item.title} - Before`}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover/before:scale-110"
-                      />
-                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover/before:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                        <span className="text-white font-heading font-bold uppercase text-xs">Before</span>
-                      </div>
-                    </div>
-                    <div
-                      className="group/after relative aspect-[4/3] overflow-hidden cursor-pointer border border-border bg-card"
-                      onClick={() => setSelectedImage(item.afterImageUrl)}
-                    >
-                      <img
-                        src={item.afterImageUrl}
-                        alt={`${item.title} - After`}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover/after:scale-110"
-                      />
-                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover/after:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                        <span className="text-white font-heading font-bold uppercase text-xs">After</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Project Info */}
-                  <h3 className="font-heading font-bold text-lg uppercase mb-1 group-hover:text-primary transition-colors">
-                    {item.title}
+                <img
+                  src={img.src}
+                  alt={img.title}
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center p-4 text-center">
+                  <span className="text-primary font-heading font-bold uppercase tracking-widest text-sm mb-2 translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                    {img.category}
+                  </span>
+                  <h3 className="text-white font-heading font-bold text-2xl uppercase translate-y-4 group-hover:translate-y-0 transition-transform duration-300 delay-75">
+                    {img.title}
                   </h3>
-                  <p className="text-primary text-sm uppercase tracking-wider mb-2 capitalize">
-                    {item.category}
-                  </p>
-                  {item.description && (
-                    <p className="text-muted-foreground text-sm line-clamp-2">
-                      {item.description}
-                    </p>
-                  )}
-                  {item.isFeatured === 1 && (
-                    <div className="mt-2 inline-block bg-primary text-primary-foreground text-xs font-bold px-2 py-1 uppercase">
-                      Featured
-                    </div>
-                  )}
-                </motion.div>
-              ))}
-            </div>
-          )}
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </div>
 

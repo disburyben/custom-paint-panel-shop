@@ -337,6 +337,39 @@ export type InsertGiftCertificate = typeof giftCertificates.$inferInsert;
 /**
  * Blog Posts
  */
+export const blogPosts = mysqlTable("blog_posts", {
+  id: int("id").autoincrement().primaryKey(),
+  
+  // Content
+  title: varchar("title", { length: 255 }).notNull(),
+  slug: varchar("slug", { length: 255 }).notNull().unique(), // URL-friendly slug
+  excerpt: text("excerpt"), // Short summary for listings
+  content: text("content").notNull(), // Full HTML content (from rich text editor)
+  
+  // Featured Image
+  featuredImageKey: varchar("featuredImageKey", { length: 500 }),
+  featuredImageUrl: varchar("featuredImageUrl", { length: 1000 }),
+  
+  // Metadata
+  category: varchar("category", { length: 100 }), // e.g., 'news', 'project-showcase', 'tips'
+  tags: text("tags"), // JSON array of tags
+  
+  // Publishing
+  isPublished: int("isPublished").default(0).notNull(), // 1 = published, 0 = draft
+  publishedAt: timestamp("publishedAt"),
+  
+  // Display
+  displayOrder: int("displayOrder").default(0).notNull(),
+  isFeatured: int("isFeatured").default(0).notNull(),
+  
+  // Metadata
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type BlogPost = typeof blogPosts.$inferSelect;
+export type InsertBlogPost = typeof blogPosts.$inferInsert;
+
 /**
  * Testimonials / Customer Reviews
  */
@@ -443,33 +476,6 @@ export type BusinessInfo = typeof businessInfo.$inferSelect;
 export type InsertBusinessInfo = typeof businessInfo.$inferInsert;
 
 /**
- * Sprayers (painters/technicians who work on vehicles)
- */
-export const sprayers = mysqlTable("sprayers", {
-  id: int("id").autoincrement().primaryKey(),
-  
-  // Sprayer Info
-  name: varchar("name", { length: 255 }).notNull(),
-  title: varchar("title", { length: 255 }), // e.g., "Master Painter", "Lead Technician"
-  bio: text("bio"), // Short bio about the sprayer
-  certifications: text("certifications"), // Professional certifications, comma-separated or line-separated
-  
-  // Logo/Badge Image
-  logoKey: varchar("logoKey", { length: 500 }), // S3 key for sprayer logo/badge
-  logoUrl: varchar("logoUrl", { length: 1000 }), // Public URL for logo
-  
-  // Display Settings
-  displayOrder: int("displayOrder").default(0).notNull(),
-  isActive: int("isActive").default(1).notNull(), // 1 = active, 0 = inactive
-  
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-});
-
-export type Sprayer = typeof sprayers.$inferSelect;
-export type InsertSprayer = typeof sprayers.$inferInsert;
-
-/**
  * Gallery Items (before/after project showcase)
  */
 export const galleryItems = mysqlTable("gallery_items", {
@@ -479,11 +485,6 @@ export const galleryItems = mysqlTable("gallery_items", {
   title: varchar("title", { length: 255 }).notNull(), // e.g., "1967 Mustang Candy Apple Red"
   description: text("description"),
   category: varchar("category", { length: 100 }).notNull(), // 'custom-paint', 'restoration', 'collision-repair'
-  
-  // NEW: Enhanced Metadata
-  vehicleType: varchar("vehicleType", { length: 255 }), // Free text: e.g., "1967 Ford Mustang Fastback"
-  servicesProvided: text("servicesProvided"), // Free text: e.g., "Custom Candy Apple Red Paint, Chrome Delete, Engine Bay Detail"
-  sprayerId: int("sprayerId"), // Foreign key to sprayers table
   
   // Images
   beforeImageKey: varchar("beforeImageKey", { length: 500 }).notNull(),
@@ -502,28 +503,3 @@ export const galleryItems = mysqlTable("gallery_items", {
 
 export type GalleryItem = typeof galleryItems.$inferSelect;
 export type InsertGalleryItem = typeof galleryItems.$inferInsert;
-
-/**
- * Contact Form Submissions
- */
-export const contactSubmissions = mysqlTable("contact_submissions", {
-  id: int("id").autoincrement().primaryKey(),
-  
-  // Contact Information
-  name: varchar("name", { length: 255 }).notNull(),
-  email: varchar("email", { length: 320 }).notNull(),
-  phone: varchar("phone", { length: 50 }),
-  
-  // Message Details
-  subject: varchar("subject", { length: 500 }).notNull(),
-  message: text("message").notNull(),
-  
-  // Status
-  status: mysqlEnum("status", ["new", "read", "replied"]).default("new").notNull(),
-  
-  // Timestamps
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-});
-export type ContactSubmission = typeof contactSubmissions.$inferSelect;
-export type InsertContactSubmission = typeof contactSubmissions.$inferInsert;
