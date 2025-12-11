@@ -1,4 +1,3 @@
-import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle2, Star, Wrench, ShieldCheck, Paintbrush, Loader2 } from "lucide-react";
 import { Link } from "wouter";
@@ -6,14 +5,24 @@ import { motion } from "framer-motion";
 import BeforeAfterSlider from "@/components/BeforeAfterSlider";
 import ProcessTimeline from "@/components/ProcessTimeline";
 import { trpc } from "@/lib/trpc";
+import { SEOHead } from "@/components/SEOHead";
+import { useAuth } from "@/_core/hooks/useAuth";
 
 export default function Home() {
+  // SEO Head for homepage
+  const seoConfig = {
+    title: "Professional Automotive Refinishing & Custom Paint",
+    description: "Expert automotive refinishing, custom paint, and panel repairs in Adelaide. Professional quality with fast turnaround times.",
+    image: "/og-image.jpg",
+    url: "/",
+  };
+
   // Fetch testimonials from CMS
   const { data: testimonials = [] } = trpc.cms.testimonials.getAll.useQuery();
 
-  // The userAuth hooks provides authentication state
+  // The useAuth hook provides authentication state
   // To implement login/logout functionality, simply call logout() or redirect to getLoginUrl()
-  let { user, loading, error, isAuthenticated, logout } = useAuth();
+  const { user, loading, error, isAuthenticated, logout } = useAuth();
 
   const fadeIn = {
     initial: { opacity: 0, y: 20 },
@@ -31,6 +40,7 @@ export default function Home() {
 
   return (
     <div className="flex flex-col">
+      <SEOHead config={seoConfig} includeLocalBusiness={true} includeOrganization={true} />
       {/* Hero Section */}
       <section className="relative h-screen min-h-[800px] flex items-center overflow-hidden">
         {/* Background Image with Overlay */}
