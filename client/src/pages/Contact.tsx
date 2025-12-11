@@ -1,10 +1,19 @@
-import { MapPin, Phone, Mail, Clock, Loader2 } from "lucide-react";
+import { MapPin, Phone, Mail, Clock } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { MapView } from "@/components/Map";
 import QuoteWizard from "@/components/QuoteWizard";
 import ContactForm from "@/components/ContactForm";
 import { trpc } from "@/lib/trpc";
+import { SEOHead } from "@/components/SEOHead";
 
 export default function Contact() {
+  const seoConfig = {
+    title: "Contact Us - Caspers Paintworks",
+    description: "Get in touch with our professional automotive refinishing team. Request a quote or contact us for more information about our services.",
+    image: "/og-image.jpg",
+    url: "/contact",
+  };
+
   // Fetch business info from CMS
   const { data: businessInfo, isLoading } = trpc.cms.businessInfo.get.useQuery();
 
@@ -23,6 +32,7 @@ export default function Contact() {
 
   return (
     <div className="pt-24 pb-20">
+      <SEOHead config={seoConfig} includeLocalBusiness={true} />
       <div className="container">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h1 className="font-heading font-bold text-5xl md:text-6xl uppercase mb-6">

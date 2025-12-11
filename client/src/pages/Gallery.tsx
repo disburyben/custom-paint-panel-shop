@@ -3,8 +3,16 @@ import { motion } from "framer-motion";
 import { X, User, Loader2 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { SEOHead } from "@/components/SEOHead";
 
 export default function Gallery() {
+  const seoConfig = {
+    title: "Gallery - Before & After Project Showcase",
+    description: "View our professional automotive refinishing and custom paint projects. Before and after gallery showcasing quality workmanship.",
+    image: "/og-image.jpg",
+    url: "/gallery",
+  };
+
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [selectedTeamMember, setSelectedTeamMember] = useState<number | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -27,6 +35,7 @@ export default function Gallery() {
 
   return (
     <div className="pt-24 pb-20">
+      <SEOHead config={seoConfig} includeLocalBusiness={true} />
       <div className="container">
         {/* Gallery Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">

@@ -1,7 +1,16 @@
-import { CheckCircle2, Loader2 } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
+import { SEOHead } from "@/components/SEOHead";
 
 export default function About() {
+  const seoConfig = {
+    title: "About Caspers Paintworks",
+    description: "Learn about our professional automotive refinishing team. Expert craftsmanship in custom paint, restoration, and panel repairs since serving Adelaide.",
+    image: "/og-image.jpg",
+    url: "/about",
+  };
+
   // Fetch business info from CMS
   const { data: businessInfo, isLoading } = trpc.cms.businessInfo.get.useQuery();
 
@@ -15,6 +24,7 @@ export default function About() {
 
   return (
     <div className="pt-24 pb-20">
+      <SEOHead config={seoConfig} includeLocalBusiness={true} />
       <div className="container">
         {/* Intro */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-24">

@@ -2,12 +2,21 @@ import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { Loader2 } from "lucide-react";
+import { SEOHead } from "@/components/SEOHead";
 
 export default function Services() {
+  const seoConfig = {
+    title: "Professional Automotive Services",
+    description: "Expert automotive refinishing, custom paint, panel repairs, and restoration services. Professional quality workmanship in Adelaide.",
+    image: "/og-image.jpg",
+    url: "/services",
+  };
+
   const { data: services = [], isLoading } = trpc.cms.services.getAll.useQuery();
 
   return (
     <div className="pt-24 pb-20">
+      <SEOHead config={seoConfig} includeLocalBusiness={true} />
       <div className="container">
         <div className="text-center max-w-3xl mx-auto mb-20">
           <h1 className="font-heading font-bold text-5xl md:text-6xl uppercase mb-6">
