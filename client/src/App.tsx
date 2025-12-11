@@ -15,6 +15,13 @@ import Contact from "./pages/Contact";
 import Admin from "./pages/Admin";
 import AdminLogin from "./pages/AdminLogin";
 import AdminTeam from "./pages/AdminTeam";
+import CMSDashboard from "./pages/admin/CMSDashboard";
+import BlogManager from "./pages/admin/cms/BlogManager";
+import TestimonialsManager from "./pages/admin/cms/TestimonialsManager";
+import ServicesManager from "./pages/admin/cms/ServicesManager";
+import GalleryManager from "./pages/admin/cms/GalleryManager";
+import BusinessInfoManager from "./pages/admin/cms/BusinessInfoManager";
+import Analytics from "./pages/admin/cms/Analytics";
 function Router() {
   // make sure to consider if you need authentication for certain routes
   return (
@@ -28,6 +35,13 @@ function Router() {
         <Route path="/contact" component={Contact} />
         <Route path="/admin/login" component={AdminLogin} />
         <Route path="/admin/team" component={AdminTeam} />
+        <Route path="/admin/cms" component={CMSDashboard} />
+        <Route path="/admin/cms/blog" component={BlogManager} />
+        <Route path="/admin/cms/testimonials" component={TestimonialsManager} />
+        <Route path="/admin/cms/services" component={ServicesManager} />
+        <Route path="/admin/cms/gallery" component={GalleryManager} />
+        <Route path="/admin/cms/business-info" component={BusinessInfoManager} />
+        <Route path="/admin/cms/analytics" component={Analytics} />
         <Route path="/admin" component={Admin} />
         <Route component={NotFound} />
       </Switch>

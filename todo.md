@@ -103,3 +103,58 @@
 ## Shop Page (Completed)
 - [x] Create Shop page with "Coming Soon" message
 - [x] Add Shop to navigation menu
+
+## Image Upload & Team Portfolios (In Progress)
+- [ ] Guide user through admin team management interface
+- [ ] Upload team member headshots
+- [ ] Add team member bios and specialties
+- [ ] Upload portfolio images for each team member
+- [ ] Organize gallery images by category
+- [ ] Replace placeholder images with real project photos
+
+## CMS (Content Management System) - Phase 1-3 Complete
+### Database & Backend (Completed)
+- [x] Create database schema for CMS tables (blog_posts, testimonials, services, business_info, gallery_items)
+- [x] Push database migrations
+- [x] Create database helper functions (cmsDb.ts)
+- [x] Create tRPC CMS router with CRUD procedures
+- [x] Register CMS router in main app router
+- [x] Write and pass vitest tests for CMS functions (14/14 tests passing)
+
+### Admin UI Pages (Completed)
+- [x] Create CMS Dashboard Hub page
+- [x] Create Blog Manager page
+- [x] Create Testimonials Manager page
+- [x] Create Services Manager page
+- [x] Create Gallery Manager page
+- [x] Create Business Info Manager page
+- [x] Create Analytics placeholder page
+- [x] Add all CMS routes to App.tsx
+
+### Documentation (Completed)
+- [x] Create comprehensive CMS User Guide for client
+- [x] Document all CMS features and usage
+
+### Frontend Integration (Phase 4 - Next)
+- [ ] Update Home page to fetch and display featured blog posts
+- [ ] Update Services page to fetch services from CMS
+- [ ] Update Gallery page to fetch gallery items from CMS
+- [ ] Update Testimonials section to fetch from CMS
+- [ ] Update About page to display business info from CMS
+- [ ] Update Contact page with dynamic business info
+- [ ] Update footer with dynamic business info and social links
+- [ ] Add Blog listing page
+- [ ] Add individual blog post detail page
+
+### CMS Enhancements (Future)
+- [ ] Add rich text editor for blog posts (TipTap or similar)
+- [ ] Add image upload functionality with S3 integration
+- [ ] Add media library for organizing images
+- [ ] Implement analytics dashboard
+- [ ] Add email notification for new testimonials
+- [ ] Add SEO optimization fields
+- [ ] Add scheduled publishing for blog posts
+- [ ] Add blog post comments/discussion
+- [ ] Add testimonial moderation workflow
+- [ ] Add service image uploads
+- [ ] Add bulk import/export for content

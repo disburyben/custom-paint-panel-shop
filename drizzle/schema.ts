@@ -329,3 +329,177 @@ export const giftCertificates = mysqlTable("gift_certificates", {
 
 export type GiftCertificate = typeof giftCertificates.$inferSelect;
 export type InsertGiftCertificate = typeof giftCertificates.$inferInsert;
+
+/**
+ * CMS TABLES FOR CONTENT MANAGEMENT
+ */
+
+/**
+ * Blog Posts
+ */
+export const blogPosts = mysqlTable("blog_posts", {
+  id: int("id").autoincrement().primaryKey(),
+  
+  // Content
+  title: varchar("title", { length: 255 }).notNull(),
+  slug: varchar("slug", { length: 255 }).notNull().unique(), // URL-friendly slug
+  excerpt: text("excerpt"), // Short summary for listings
+  content: text("content").notNull(), // Full HTML content (from rich text editor)
+  
+  // Featured Image
+  featuredImageKey: varchar("featuredImageKey", { length: 500 }),
+  featuredImageUrl: varchar("featuredImageUrl", { length: 1000 }),
+  
+  // Metadata
+  category: varchar("category", { length: 100 }), // e.g., 'news', 'project-showcase', 'tips'
+  tags: text("tags"), // JSON array of tags
+  
+  // Publishing
+  isPublished: int("isPublished").default(0).notNull(), // 1 = published, 0 = draft
+  publishedAt: timestamp("publishedAt"),
+  
+  // Display
+  displayOrder: int("displayOrder").default(0).notNull(),
+  isFeatured: int("isFeatured").default(0).notNull(),
+  
+  // Metadata
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type BlogPost = typeof blogPosts.$inferSelect;
+export type InsertBlogPost = typeof blogPosts.$inferInsert;
+
+/**
+ * Testimonials / Customer Reviews
+ */
+export const testimonials = mysqlTable("testimonials", {
+  id: int("id").autoincrement().primaryKey(),
+  
+  // Customer Info
+  customerName: varchar("customerName", { length: 255 }).notNull(),
+  customerTitle: varchar("customerTitle", { length: 255 }), // e.g., "1967 Mustang Owner"
+  customerImage: varchar("customerImage", { length: 1000 }), // Optional customer photo
+  
+  // Review Content
+  quote: text("quote").notNull(), // The testimonial text
+  rating: int("rating").default(5).notNull(), // 1-5 star rating
+  
+  // Metadata
+  isApproved: int("isApproved").default(0).notNull(), // 1 = approved, 0 = pending
+  displayOrder: int("displayOrder").default(0).notNull(),
+  isFeatured: int("isFeatured").default(0).notNull(),
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Testimonial = typeof testimonials.$inferSelect;
+export type InsertTestimonial = typeof testimonials.$inferInsert;
+
+/**
+ * Services (editable via CMS)
+ */
+export const services = mysqlTable("services", {
+  id: int("id").autoincrement().primaryKey(),
+  
+  // Service Details
+  name: varchar("name", { length: 255 }).notNull(), // e.g., "Custom Paint"
+  slug: varchar("slug", { length: 255 }).notNull().unique(),
+  description: text("description").notNull(), // Full service description
+  shortDescription: varchar("shortDescription", { length: 500 }), // Brief description for cards
+  
+  // Pricing
+  startingPrice: int("startingPrice"), // Price in cents
+  priceDescription: varchar("priceDescription", { length: 255 }), // e.g., "Starting at $500"
+  
+  // Service Details
+  features: text("features"), // JSON array of features/benefits
+  turnaroundTime: varchar("turnaroundTime", { length: 255 }), // e.g., "2-4 weeks"
+  
+  // Images
+  iconKey: varchar("iconKey", { length: 500 }), // S3 key for service icon
+  iconUrl: varchar("iconUrl", { length: 1000 }), // Public URL
+  imageKey: varchar("imageKey", { length: 500 }), // S3 key for service image
+  imageUrl: varchar("imageUrl", { length: 1000 }), // Public URL
+  
+  // Display
+  displayOrder: int("displayOrder").default(0).notNull(),
+  isActive: int("isActive").default(1).notNull(),
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Service = typeof services.$inferSelect;
+export type InsertService = typeof services.$inferInsert;
+
+/**
+ * Business Information (contact, hours, social media, etc.)
+ */
+export const businessInfo = mysqlTable("business_info", {
+  id: int("id").autoincrement().primaryKey(),
+  
+  // Contact Information
+  businessName: varchar("businessName", { length: 255 }).notNull(),
+  phone: varchar("phone", { length: 50 }).notNull(),
+  email: varchar("email", { length: 320 }).notNull(),
+  address: text("address").notNull(),
+  
+  // Business Hours (stored as JSON)
+  businessHours: text("businessHours").notNull(), // JSON object with day: {open, close}
+  
+  // Social Media
+  instagram: varchar("instagram", { length: 255 }),
+  facebook: varchar("facebook", { length: 255 }),
+  twitter: varchar("twitter", { length: 255 }),
+  youtube: varchar("youtube", { length: 255 }),
+  
+  // About
+  aboutText: text("aboutText"), // Company description
+  mission: text("mission"), // Company mission
+  
+  // Statistics
+  yearsInBusiness: int("yearsInBusiness"),
+  projectsCompleted: int("projectsCompleted"),
+  satisfactionRate: int("satisfactionRate"), // 0-100
+  
+  // Logo & Images
+  logoUrl: varchar("logoUrl", { length: 1000 }),
+  heroImageUrl: varchar("heroImageUrl", { length: 1000 }),
+  
+  // Metadata (usually only one record)
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type BusinessInfo = typeof businessInfo.$inferSelect;
+export type InsertBusinessInfo = typeof businessInfo.$inferInsert;
+
+/**
+ * Gallery Items (before/after project showcase)
+ */
+export const galleryItems = mysqlTable("gallery_items", {
+  id: int("id").autoincrement().primaryKey(),
+  
+  // Project Info
+  title: varchar("title", { length: 255 }).notNull(), // e.g., "1967 Mustang Candy Apple Red"
+  description: text("description"),
+  category: varchar("category", { length: 100 }).notNull(), // 'custom-paint', 'restoration', 'collision-repair'
+  
+  // Images
+  beforeImageKey: varchar("beforeImageKey", { length: 500 }).notNull(),
+  beforeImageUrl: varchar("beforeImageUrl", { length: 1000 }).notNull(),
+  afterImageKey: varchar("afterImageKey", { length: 500 }).notNull(),
+  afterImageUrl: varchar("afterImageUrl", { length: 1000 }).notNull(),
+  
+  // Display
+  displayOrder: int("displayOrder").default(0).notNull(),
+  isFeatured: int("isFeatured").default(0).notNull(),
+  isActive: int("isActive").default(1).notNull(),
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type GalleryItem = typeof galleryItems.$inferSelect;
+export type InsertGalleryItem = typeof galleryItems.$inferInsert;
