@@ -1,0 +1,1 @@
+ALTER TABLE `sprayers` ADD `certifications` text;

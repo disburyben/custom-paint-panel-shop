@@ -277,3 +277,13 @@
 - [x] Test gallery item creation with sprayer tagging
 - [x] Test gallery filtering by sprayer and category
 - [x] Test metadata updates and toggle operations
+
+
+## Sprayer Certifications Feature (In Progress)
+- [x] Add certifications field to sprayers table schema
+- [x] Push database migration for certifications (migration 0008)
+- [x] Update sprayerRouter to handle certifications field in create/update procedures
+- [x] Update CMSSprayers page with certifications textarea in both create and edit dialogs
+- [x] Display certifications in public gallery with BadgeCheck icons
+- [x] Test certifications CRUD operations (17 tests passed)
+- [x] Update existing vitest tests for certifications

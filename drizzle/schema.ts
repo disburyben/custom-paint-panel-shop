@@ -452,6 +452,7 @@ export const sprayers = mysqlTable("sprayers", {
   name: varchar("name", { length: 255 }).notNull(),
   title: varchar("title", { length: 255 }), // e.g., "Master Painter", "Lead Technician"
   bio: text("bio"), // Short bio about the sprayer
+  certifications: text("certifications"), // Professional certifications, comma-separated or line-separated
   
   // Logo/Badge Image
   logoKey: varchar("logoKey", { length: 500 }), // S3 key for sprayer logo/badge

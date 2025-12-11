@@ -24,6 +24,7 @@ export default function CMSSprayers() {
   const [name, setName] = useState("");
   const [title, setTitle] = useState("");
   const [bio, setBio] = useState("");
+  const [certifications, setCertifications] = useState("");
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string>("");
 
@@ -83,6 +84,7 @@ export default function CMSSprayers() {
     setName("");
     setTitle("");
     setBio("");
+    setCertifications("");
     setLogoFile(null);
     setLogoPreview("");
     setEditingSprayer(null);
@@ -128,6 +130,7 @@ export default function CMSSprayers() {
             name,
             title: title || undefined,
             bio: bio || undefined,
+            certifications: certifications || undefined,
             logoKey,
             logoUrl,
           });
@@ -139,6 +142,7 @@ export default function CMSSprayers() {
           name,
           title: title || undefined,
           bio: bio || undefined,
+          certifications: certifications || undefined,
         });
       }
     } catch (error) {
@@ -151,6 +155,7 @@ export default function CMSSprayers() {
     setName(sprayer.name);
     setTitle(sprayer.title || "");
     setBio(sprayer.bio || "");
+    setCertifications(sprayer.certifications || "");
     setLogoPreview(sprayer.logoUrl || "");
     setIsEditDialogOpen(true);
   };
@@ -181,6 +186,7 @@ export default function CMSSprayers() {
             name,
             title: title || undefined,
             bio: bio || undefined,
+            certifications: certifications || undefined,
             logoKey,
             logoUrl,
           });
@@ -193,6 +199,7 @@ export default function CMSSprayers() {
           name,
           title: title || undefined,
           bio: bio || undefined,
+          certifications: certifications || undefined,
         });
       }
     } catch (error) {
@@ -266,6 +273,19 @@ export default function CMSSprayers() {
                   placeholder="Short bio about the sprayer..."
                   rows={3}
                 />
+              </div>
+              <div>
+                <Label htmlFor="certifications">Certifications</Label>
+                <Textarea
+                  id="certifications"
+                  value={certifications}
+                  onChange={(e) => setCertifications(e.target.value)}
+                  placeholder="List certifications (one per line):\nI-CAR Platinum\nASE Master Technician\nPPG Certified Painter"
+                  rows={4}
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Enter each certification on a new line
+                </p>
               </div>
               <div>
                 <Label htmlFor="logo">Logo/Badge</Label>
@@ -409,6 +429,19 @@ export default function CMSSprayers() {
                 placeholder="Short bio about the sprayer..."
                 rows={3}
               />
+            </div>
+            <div>
+              <Label htmlFor="edit-certifications">Certifications</Label>
+              <Textarea
+                id="edit-certifications"
+                value={certifications}
+                onChange={(e) => setCertifications(e.target.value)}
+                placeholder="List certifications (one per line):\nI-CAR Platinum\nASE Master Technician\nPPG Certified Painter"
+                rows={4}
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                Enter each certification on a new line
+              </p>
             </div>
             <div>
               <Label htmlFor="edit-logo">Logo/Badge</Label>

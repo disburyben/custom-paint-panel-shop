@@ -47,6 +47,7 @@ describe.sequential("Sprayer Management", () => {
         name: "Test Sprayer",
         title: "Master Painter",
         bio: "Expert in custom automotive finishes",
+        certifications: "I-CAR Platinum\nASE Master Technician\nPPG Certified Painter",
         displayOrder: 1,
         isActive: 1,
       };
@@ -57,6 +58,7 @@ describe.sequential("Sprayer Management", () => {
       expect(result.name).toBe("Test Sprayer");
       expect(result.title).toBe("Master Painter");
       expect(result.bio).toBe("Expert in custom automotive finishes");
+      expect(result.certifications).toBe("I-CAR Platinum\nASE Master Technician\nPPG Certified Painter");
       expect(result.isActive).toBe(1);
 
       createdSprayerId = result.id;
@@ -106,6 +108,7 @@ describe.sequential("Sprayer Management", () => {
         id: createdSprayerId,
         name: "Updated Test Sprayer",
         title: "Lead Technician",
+        certifications: "I-CAR Platinum\nASE Master Technician\nPPG Certified Painter\nAxalta Certified",
       };
 
       const result = await adminCaller.sprayer.update(input);
@@ -114,6 +117,7 @@ describe.sequential("Sprayer Management", () => {
       expect(result.name).toBe("Updated Test Sprayer");
       expect(result.title).toBe("Lead Technician");
       expect(result.bio).toBe("Expert in custom automotive finishes"); // Should preserve bio
+      expect(result.certifications).toBe("I-CAR Platinum\nASE Master Technician\nPPG Certified Painter\nAxalta Certified");
     });
 
     it("should toggle sprayer active status", async () => {

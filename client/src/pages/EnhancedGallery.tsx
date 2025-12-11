@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { X, Loader2, Award } from "lucide-react";
+import { X, Loader2, Award, BadgeCheck } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { SEOHead } from "@/components/SEOHead";
 import { Badge } from "@/components/ui/badge";
@@ -234,7 +234,7 @@ export default function EnhancedGallery() {
                               <Award className="w-5 h-5 text-primary" />
                             </div>
                           )}
-                          <div>
+                          <div className="flex-1">
                             <p className="text-xs uppercase tracking-wider text-muted-foreground">
                               Crafted by
                             </p>
@@ -245,6 +245,22 @@ export default function EnhancedGallery() {
                               <p className="text-xs text-muted-foreground">
                                 {item.sprayer.title}
                               </p>
+                            )}
+                            {item.sprayer.certifications && (
+                              <div className="mt-2 space-y-1">
+                                {item.sprayer.certifications
+                                  .split("\n")
+                                  .filter((cert: string) => cert.trim())
+                                  .map((cert: string, idx: number) => (
+                                    <div
+                                      key={idx}
+                                      className="flex items-center gap-1.5 text-xs text-muted-foreground"
+                                    >
+                                      <BadgeCheck className="w-3 h-3 text-primary flex-shrink-0" />
+                                      <span className="line-clamp-1">{cert.trim()}</span>
+                                    </div>
+                                  ))}
+                              </div>
                             )}
                           </div>
                         </div>
