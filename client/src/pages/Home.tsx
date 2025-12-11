@@ -187,7 +187,7 @@ export default function Home() {
         <div className="container relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div className="relative">
-              <div className="absolute -bottom-6 -right-6 bg-background border border-border p-4 shadow-xl z-20 w-[300px]">
+              <div className="absolute -bottom-6 -right-6 bg-background border border-border p-4 shadow-xl z-20 w-[300px]" style={{width: '720px', height: '250px'}}>
                 <BeforeAfterSlider 
                   beforeImage="/images/engine-bay-prep-1.jpg"
                   afterImage="/images/engine-bay-paint-1.jpg"
