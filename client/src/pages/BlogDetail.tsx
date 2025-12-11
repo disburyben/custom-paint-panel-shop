@@ -101,8 +101,7 @@ export default function BlogDetail() {
               .filter((p: any) => p.slug !== post.slug && p.isFeatured !== 1)
               .slice(0, 3)
               .map((relatedPost: any) => (
-                <Link key={relatedPost.id} href={`/blog/${relatedPost.slug}`}>
-                  <a className="group">
+                <Link key={relatedPost.id} href={`/blog/${relatedPost.slug}`} className="group block">
                     <div className="bg-card border border-border p-6 rounded-lg hover:border-primary transition-colors h-full flex flex-col">
                       <div className="flex items-center justify-between mb-3">
                         <span className="text-primary font-semibold text-xs uppercase tracking-wider">
@@ -119,7 +118,6 @@ export default function BlogDetail() {
                         {relatedPost.excerpt}
                       </p>
                     </div>
-                  </a>
                 </Link>
               ))}
           </div>

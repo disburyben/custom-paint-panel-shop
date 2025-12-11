@@ -53,8 +53,7 @@ export default function Blog() {
         {/* Featured Post */}
         {featuredPost && (
           <div className="mb-20">
-            <Link href={`/blog/${featuredPost.slug}`}>
-              <a className="group">
+            <Link href={`/blog/${featuredPost.slug}`} className="group block">
                 <Card className="overflow-hidden border-2 border-primary/30 hover:border-primary transition-colors">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-8 md:p-12">
                     <div className="flex flex-col justify-center">
@@ -86,7 +85,6 @@ export default function Blog() {
                     </div>
                   </div>
                 </Card>
-              </a>
             </Link>
           </div>
         )}
@@ -146,8 +144,7 @@ export default function Blog() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredPosts.map((post: any) => (
-              <Link key={post.id} href={`/blog/${post.slug}`}>
-                <a className="group h-full">
+              <Link key={post.id} href={`/blog/${post.slug}`} className="group h-full block">
                   <Card className="p-6 h-full flex flex-col border-border hover:border-primary transition-colors">
                     {/* Category & Date */}
                     <div className="flex items-center justify-between mb-4">
@@ -173,9 +170,7 @@ export default function Blog() {
                     <div className="flex items-center gap-2 text-primary font-semibold text-sm group-hover:gap-3 transition-all">
                       Read More
                       <ArrowRight className="w-4 h-4" />
-                    </div>
-                  </Card>
-                </a>
+                    </div>                  </Card>
               </Link>
             ))}
           </div>

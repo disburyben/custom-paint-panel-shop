@@ -314,8 +314,7 @@ export default function Home() {
                   year: "numeric"
                 });
                 return (
-                  <Link key={post.id} href={`/blog/${post.slug}`}>
-                    <a className="group">
+                  <Link key={post.id} href={`/blog/${post.slug}`} className="group block">
                       <div className="bg-background border border-border p-6 h-full flex flex-col hover:border-primary transition-colors">
                         <div className="flex items-center justify-between mb-4">
                           <span className="text-primary font-semibold text-xs uppercase tracking-wider">
@@ -334,7 +333,6 @@ export default function Home() {
                           <ArrowRight className="w-4 h-4" />
                         </div>
                       </div>
-                    </a>
                   </Link>
                 );
               })}
