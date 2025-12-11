@@ -3,13 +3,6 @@ import { z } from "zod";
 import { nanoid } from "nanoid";
 import { storagePut } from "./storage";
 import {
-  createBlogPost,
-  updateBlogPost,
-  deleteBlogPost,
-  getBlogPostById,
-  getBlogPostBySlug,
-  getAllBlogPosts,
-  getFeaturedBlogPosts,
   createTestimonial,
   updateTestimonial,
   deleteTestimonial,
@@ -46,112 +39,6 @@ function generateSlug(text: string): string {
 }
 
 export const cmsRouter = router({
-  /**
-   * BLOG POSTS
-   */
-  blog: router({
-    // Public: Get all published blog posts
-    getAll: publicProcedure.query(async () => {
-      return await getAllBlogPosts(true);
-    }),
-
-    // Public: Get featured blog posts
-    getFeatured: publicProcedure
-      .input(z.object({ limit: z.number().default(3) }))
-      .query(async ({ input }) => {
-        return await getFeaturedBlogPosts(input.limit);
-      }),
-
-    // Public: Get blog post by slug
-    getBySlug: publicProcedure
-      .input(z.object({ slug: z.string() }))
-      .query(async ({ input }) => {
-        return await getBlogPostBySlug(input.slug);
-      }),
-
-    // Admin: Get all blog posts (including drafts)
-    getAllAdmin: adminProcedure.query(async () => {
-      return await getAllBlogPosts(false);
-    }),
-
-    // Admin: Get blog post by ID
-    getById: adminProcedure
-      .input(z.object({ id: z.number() }))
-      .query(async ({ input }) => {
-        return await getBlogPostById(input.id);
-      }),
-
-    // Admin: Create blog post
-    create: adminProcedure
-      .input(
-        z.object({
-          title: z.string().min(1),
-          excerpt: z.string().optional(),
-          content: z.string().min(1),
-          category: z.string().optional(),
-          tags: z.array(z.string()).optional(),
-          isFeatured: z.boolean().default(false),
-          isPublished: z.boolean().default(false),
-        })
-      )
-      .mutation(async ({ input }) => {
-        const slug = generateSlug(input.title);
-        return await createBlogPost({
-          title: input.title,
-          slug,
-          excerpt: input.excerpt,
-          content: input.content,
-          category: input.category,
-          tags: input.tags ? JSON.stringify(input.tags) : null,
-          isFeatured: input.isFeatured ? 1 : 0,
-          isPublished: input.isPublished ? 1 : 0,
-          publishedAt: input.isPublished ? new Date() : null,
-        });
-      }),
-
-    // Admin: Update blog post
-    update: adminProcedure
-      .input(
-        z.object({
-          id: z.number(),
-          title: z.string().optional(),
-          excerpt: z.string().optional(),
-          content: z.string().optional(),
-          category: z.string().optional(),
-          tags: z.array(z.string()).optional(),
-          isFeatured: z.boolean().optional(),
-          isPublished: z.boolean().optional(),
-        })
-      )
-      .mutation(async ({ input }) => {
-        const { id, ...data } = input;
-        const updateData: any = {};
-
-        if (data.title) {
-          updateData.title = data.title;
-          updateData.slug = generateSlug(data.title);
-        }
-        if (data.excerpt !== undefined) updateData.excerpt = data.excerpt;
-        if (data.content) updateData.content = data.content;
-        if (data.category !== undefined) updateData.category = data.category;
-        if (data.tags) updateData.tags = JSON.stringify(data.tags);
-        if (data.isFeatured !== undefined) updateData.isFeatured = data.isFeatured ? 1 : 0;
-        if (data.isPublished !== undefined) {
-          updateData.isPublished = data.isPublished ? 1 : 0;
-          if (data.isPublished) updateData.publishedAt = new Date();
-        }
-
-        return await updateBlogPost(id, updateData);
-      }),
-
-    // Admin: Delete blog post
-    delete: adminProcedure
-      .input(z.object({ id: z.number() }))
-      .mutation(async ({ input }) => {
-        return await deleteBlogPost(input.id);
-      }),
-  }),
-
   /**
    * TESTIMONIALS
    */

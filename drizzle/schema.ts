@@ -337,39 +337,6 @@ export type InsertGiftCertificate = typeof giftCertificates.$inferInsert;
 /**
  * Blog Posts
  */
-export const blogPosts = mysqlTable("blog_posts", {
-  id: int("id").autoincrement().primaryKey(),
-  
-  // Content
-  title: varchar("title", { length: 255 }).notNull(),
-  slug: varchar("slug", { length: 255 }).notNull().unique(), // URL-friendly slug
-  excerpt: text("excerpt"), // Short summary for listings
-  content: text("content").notNull(), // Full HTML content (from rich text editor)
-  
-  // Featured Image
-  featuredImageKey: varchar("featuredImageKey", { length: 500 }),
-  featuredImageUrl: varchar("featuredImageUrl", { length: 1000 }),
-  
-  // Metadata
-  category: varchar("category", { length: 100 }), // e.g., 'news', 'project-showcase', 'tips'
-  tags: text("tags"), // JSON array of tags
-  
-  // Publishing
-  isPublished: int("isPublished").default(0).notNull(), // 1 = published, 0 = draft
-  publishedAt: timestamp("publishedAt"),
-  
-  // Display
-  displayOrder: int("displayOrder").default(0).notNull(),
-  isFeatured: int("isFeatured").default(0).notNull(),
-  
-  // Metadata
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-});
-
-export type BlogPost = typeof blogPosts.$inferSelect;
-export type InsertBlogPost = typeof blogPosts.$inferInsert;
-
 /**
  * Testimonials / Customer Reviews
  */

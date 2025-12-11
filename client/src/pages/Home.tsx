@@ -8,9 +8,8 @@ import ProcessTimeline from "@/components/ProcessTimeline";
 import { trpc } from "@/lib/trpc";
 
 export default function Home() {
-  // Fetch testimonials and blog posts from CMS
+  // Fetch testimonials from CMS
   const { data: testimonials = [] } = trpc.cms.testimonials.getAll.useQuery();
-  const { data: blogPosts = [] } = trpc.cms.blog.getAll.useQuery();
 
   // The userAuth hooks provides authentication state
   // To implement login/logout functionality, simply call logout() or redirect to getLoginUrl()
@@ -286,60 +285,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Latest Blog Posts */}
-      {blogPosts.length > 0 && (
-        <section className="py-24 bg-card relative overflow-hidden">
-          <div className="container">
-            <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
-              <div>
-                <h2 className="font-heading font-bold text-4xl md:text-5xl uppercase mb-4">
-                  Latest <span className="text-primary">Insights</span>
-                </h2>
-                <p className="text-muted-foreground max-w-md">
-                  Tips, trends, and stories from the automotive refinishing world.
-                </p>
-              </div>
-              <Link href="/blog">
-                <Button variant="link" className="text-primary p-0 h-auto font-heading uppercase tracking-widest hover:text-white group">
-                  View All Articles <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </Link>
-            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {blogPosts.slice(0, 3).map((post: any) => {
-                const publishDate = new Date(post.createdAt).toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                  year: "numeric"
-                });
-                return (
-                  <Link key={post.id} href={`/blog/${post.slug}`} className="group block">
-                      <div className="bg-background border border-border p-6 h-full flex flex-col hover:border-primary transition-colors">
-                        <div className="flex items-center justify-between mb-4">
-                          <span className="text-primary font-semibold text-xs uppercase tracking-wider">
-                            {post.category}
-                          </span>
-                          <span className="text-muted-foreground text-xs">{publishDate}</span>
-                        </div>
-                        <h3 className="font-heading font-bold text-lg uppercase mb-3 group-hover:text-primary transition-colors line-clamp-2">
-                          {post.title}
-                        </h3>
-                        <p className="text-muted-foreground text-sm flex-grow line-clamp-3 mb-4">
-                          {post.excerpt}
-                        </p>
-                        <div className="flex items-center gap-2 text-primary font-semibold text-sm group-hover:gap-3 transition-all">
-                          Read More
-                          <ArrowRight className="w-4 h-4" />
-                        </div>
-                      </div>
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-      )}
 
       {/* CTA Section */}
       <section className="py-32 relative overflow-hidden flex items-center justify-center">
