@@ -187,8 +187,6 @@ export default function Home() {
         <div className="container relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div className="relative">
-              <div className="absolute -inset-4 border border-primary/30 translate-x-4 translate-y-4 z-0" />
-              <img src="/images/about-workshop.jpg" alt="Our Workshop" className="relative z-10 w-full shadow-2xl grayscale hover:grayscale-0 transition-all duration-700" />
               <div className="absolute -bottom-6 -right-6 bg-background border border-border p-4 shadow-xl z-20 w-[300px]">
                 <BeforeAfterSlider 
                   beforeImage="/images/engine-bay-prep-1.jpg"
