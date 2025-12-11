@@ -249,3 +249,31 @@
 - [ ] Integrate OptimizedImage into Home page hero
 - [ ] Integrate OptimizedImage into Gallery page
 - [ ] Integrate OptimizedImage into Services page
+
+
+## Gallery Enhancement with Sprayer Tagging (In Progress)
+- [x] Create sprayers database table with name and logo fields
+- [x] Update gallery_items table with vehicle_type, services_provided, and sprayer_id fields
+- [x] Push database migration successfully
+- [x] Build backend API for sprayer CRUD operations (sprayerRouter.ts)
+- [x] Build backend API for direct S3 image upload (uploadLogo, uploadImage)
+- [x] Build backend API for gallery item management with metadata (galleryRouter.ts)
+- [x] Register sprayer and gallery routers in main app router
+- [x] Fix database connection pattern (getDb) in all new files
+- [x] Create admin sprayer management page (CMSSprayers.tsx)
+- [x] Add sprayers module to CMS Dashboard
+- [x] Enhance admin gallery manager with upload and metadata editing (EnhancedGalleryManager.tsx)
+- [x] Add sprayer dropdown to gallery form
+- [x] Add vehicle type and services fields to gallery form
+- [x] Implement direct S3 image upload in gallery manager
+- [x] Update public gallery page with sprayer info and metadata display (EnhancedGallery.tsx)
+- [x] Add visual badges for vehicle type and services
+- [x] Display sprayer name and logo below images
+- [x] Add sprayer filter buttons on public gallery
+- [x] Enhance gallery card design with metadata sections
+- [x] Test image upload and metadata functionality
+- [x] Write vitest tests for new functionality (17 tests, all passing)
+- [x] Test sprayer CRUD operations
+- [x] Test gallery item creation with sprayer tagging
+- [x] Test gallery filtering by sprayer and category
+- [x] Test metadata updates and toggle operations

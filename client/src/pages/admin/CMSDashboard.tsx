@@ -8,6 +8,7 @@ import {
   Settings,
   Image,
   BarChart3,
+  Users,
 } from "lucide-react";
 
 export default function CMSDashboard() {
@@ -39,6 +40,13 @@ export default function CMSDashboard() {
       icon: Image,
       href: "/admin/cms/gallery",
       color: "bg-purple-500/10 text-purple-600",
+    },
+    {
+      title: "Sprayers",
+      description: "Manage painters/technicians and their logos",
+      icon: Users,
+      href: "/admin/cms/sprayers",
+      color: "bg-yellow-500/10 text-yellow-600",
     },
     {
       title: "Business Info",

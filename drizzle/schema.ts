@@ -443,6 +443,32 @@ export type BusinessInfo = typeof businessInfo.$inferSelect;
 export type InsertBusinessInfo = typeof businessInfo.$inferInsert;
 
 /**
+ * Sprayers (painters/technicians who work on vehicles)
+ */
+export const sprayers = mysqlTable("sprayers", {
+  id: int("id").autoincrement().primaryKey(),
+  
+  // Sprayer Info
+  name: varchar("name", { length: 255 }).notNull(),
+  title: varchar("title", { length: 255 }), // e.g., "Master Painter", "Lead Technician"
+  bio: text("bio"), // Short bio about the sprayer
+  
+  // Logo/Badge Image
+  logoKey: varchar("logoKey", { length: 500 }), // S3 key for sprayer logo/badge
+  logoUrl: varchar("logoUrl", { length: 1000 }), // Public URL for logo
+  
+  // Display Settings
+  displayOrder: int("displayOrder").default(0).notNull(),
+  isActive: int("isActive").default(1).notNull(), // 1 = active, 0 = inactive
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Sprayer = typeof sprayers.$inferSelect;
+export type InsertSprayer = typeof sprayers.$inferInsert;
+
+/**
  * Gallery Items (before/after project showcase)
  */
 export const galleryItems = mysqlTable("gallery_items", {
@@ -452,6 +478,11 @@ export const galleryItems = mysqlTable("gallery_items", {
   title: varchar("title", { length: 255 }).notNull(), // e.g., "1967 Mustang Candy Apple Red"
   description: text("description"),
   category: varchar("category", { length: 100 }).notNull(), // 'custom-paint', 'restoration', 'collision-repair'
+  
+  // NEW: Enhanced Metadata
+  vehicleType: varchar("vehicleType", { length: 255 }), // Free text: e.g., "1967 Ford Mustang Fastback"
+  servicesProvided: text("servicesProvided"), // Free text: e.g., "Custom Candy Apple Red Paint, Chrome Delete, Engine Bay Detail"
+  sprayerId: int("sprayerId"), // Foreign key to sprayers table
   
   // Images
   beforeImageKey: varchar("beforeImageKey", { length: 500 }).notNull(),

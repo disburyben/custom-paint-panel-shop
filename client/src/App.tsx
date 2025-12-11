@@ -10,7 +10,7 @@ import { initGA4 } from "@/lib/ga";
 import RollerDoorLoader from "./components/RollerDoorLoader";
 import Home from "./pages/Home";
 import Services from "./pages/Services";
-import Gallery from "./pages/Gallery";
+import EnhancedGallery from "./pages/EnhancedGallery";
 import Shop from "./pages/Shop";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
@@ -20,9 +20,10 @@ import AdminTeam from "./pages/AdminTeam";
 import CMSDashboard from "./pages/admin/CMSDashboard";
 import TestimonialsManager from "./pages/admin/cms/TestimonialsManager";
 import ServicesManager from "./pages/admin/cms/ServicesManager";
-import GalleryManager from "./pages/admin/cms/GalleryManager";
+import EnhancedGalleryManager from "./pages/admin/cms/EnhancedGalleryManager";
 import BusinessInfoManager from "./pages/admin/cms/BusinessInfoManager";
 import Analytics from "./pages/admin/cms/Analytics";
+import CMSSprayers from "./pages/admin/CMSSprayers";
 function Router() {
   // make sure to consider if you need authentication for certain routes
   return (
@@ -30,7 +31,7 @@ function Router() {
       <Switch>
         <Route path="/" component={Home} />
         <Route path="/services" component={Services} />
-        <Route path="/gallery" component={Gallery} />
+        <Route path="/gallery" component={EnhancedGallery} />
         <Route path="/shop" component={Shop} />
         <Route path="/about" component={About} />
         <Route path="/contact" component={Contact} />
@@ -39,7 +40,8 @@ function Router() {
         <Route path="/admin/cms" component={CMSDashboard} />
         <Route path="/admin/cms/testimonials" component={TestimonialsManager} />
         <Route path="/admin/cms/services" component={ServicesManager} />
-        <Route path="/admin/cms/gallery" component={GalleryManager} />
+        <Route path="/admin/cms/gallery" component={EnhancedGalleryManager} />
+        <Route path="/admin/cms/sprayers" component={CMSSprayers} />
         <Route path="/admin/cms/business-info" component={BusinessInfoManager} />
         <Route path="/admin/cms/analytics" component={Analytics} />
         <Route path="/admin" component={Admin} />

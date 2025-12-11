@@ -50,6 +50,13 @@
       "when": 1765469582386,
       "tag": "0006_clammy_the_twelve",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "5",
+      "when": 1765474399147,
+      "tag": "0007_chilly_dragon_man",
+      "breakpoints": true
     }
   ]
 }

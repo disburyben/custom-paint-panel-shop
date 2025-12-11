@@ -7,6 +7,8 @@ import { adminAuthRouter } from "./adminAuth";
 import { teamRouter } from "./teamRouter";
 import { cmsRouter } from "./cmsRouter";
 import { contactRouter } from "./contactRouter";
+import { sprayerRouter } from "./routers/sprayerRouter";
+import { galleryRouter } from "./routers/galleryRouter";
 import { z } from "zod";
 import { createQuoteSubmission, addQuoteFile, getAllQuoteSubmissions, getQuoteSubmissionById, getQuoteFiles, updateQuoteStatus } from "./db";
 import { storagePut } from "./storage";
@@ -21,6 +23,8 @@ export const appRouter = router({
   team: teamRouter,
   cms: cmsRouter,
   contact: contactRouter,
+  sprayer: sprayerRouter,
+  gallery: galleryRouter,
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
     logout: publicProcedure.mutation(({ ctx }) => {
