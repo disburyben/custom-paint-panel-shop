@@ -39,9 +39,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             : "bg-transparent py-6"
         )}
       >
-        <div className="container flex items-center justify-between">
+        <div className="container flex items-center justify-between gap-8">
           <Link href="/">
-            <div className="flex items-center gap-2 cursor-pointer group">
+            <div className="flex items-center gap-2 cursor-pointer group shrink-0">
               <div className="w-10 h-10 bg-primary skew-x-[-10deg] flex items-center justify-center border border-primary-foreground/20 group-hover:shadow-[0_0_15px_var(--primary)] transition-shadow duration-300">
                 <span className="font-heading font-bold text-2xl text-primary-foreground skew-x-[10deg]">
                   CP
@@ -52,7 +52,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </Link>
 
           {/* Desktop Nav */}
-          <nav className="hidden md:flex items-center gap-8">
+          <nav className="hidden md:flex items-center gap-8 flex-1 justify-end">
             {navLinks.map((link) => (
               <Link key={link.href} href={link.href}>
                 <span
