@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
@@ -5,6 +6,7 @@ import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Layout from "./components/Layout";
+import { initGA4 } from "@/lib/ga";
 import RollerDoorLoader from "./components/RollerDoorLoader";
 import Home from "./pages/Home";
 import Services from "./pages/Services";
@@ -48,6 +50,11 @@ function Router() {
 }
 
 function App() {
+  // Initialize GA4 on app load
+  useEffect(() => {
+    initGA4();
+  }, []);
+
   return (
     <ErrorBoundary>
       <ThemeProvider defaultTheme="dark">

@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Loader2, Check, AlertCircle } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
+import { trackContactFormSubmission } from "@/lib/ga";
 
 export default function ContactForm() {
   const [formData, setFormData] = useState({
@@ -19,6 +20,9 @@ export default function ContactForm() {
 
   const submitContact = trpc.contact.submit.useMutation({
     onSuccess: () => {
+      // Track contact form submission
+      trackContactFormSubmission(formData.email, formData.subject);
+      
       toast.success("Thank you! Your message has been sent successfully.");
       setFormData({
         name: "",
