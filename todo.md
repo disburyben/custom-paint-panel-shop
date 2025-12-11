@@ -157,6 +157,16 @@
 - [x] Push database migration
 - [x] Verify TypeScript compilation
 
+## Contact Form Integration (Completed)
+- [x] Create contact_submissions database table
+- [x] Create contactDb.ts with CRUD functions
+- [x] Create contactRouter.ts with tRPC procedures
+- [x] Add email service functions for contact confirmations
+- [x] Create ContactForm component
+- [x] Integrate contact form into Contact page
+- [x] Write and pass vitest tests (4/4 passing)
+- [x] Register contact router in main app router
+
 ### CMS Enhancements (Future)
 - [ ] Add rich text editor for services (TipTap or similar)
 - [ ] Add image upload functionality with S3 integration
@@ -167,3 +177,11 @@
 - [ ] Add testimonial moderation workflow
 - [ ] Add service image uploads
 - [ ] Add bulk import/export for content
+
+## Contact Submissions Admin Panel (Future)
+- [ ] Create admin page to view contact submissions
+- [ ] Add filtering and search for submissions
+- [ ] Add mark as read/replied functionality
+- [ ] Add email reply functionality
+- [ ] Add submission deletion
+- [ ] Add submission export to CSV

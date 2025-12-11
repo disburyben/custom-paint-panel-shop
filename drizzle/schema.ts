@@ -470,3 +470,28 @@ export const galleryItems = mysqlTable("gallery_items", {
 
 export type GalleryItem = typeof galleryItems.$inferSelect;
 export type InsertGalleryItem = typeof galleryItems.$inferInsert;
+
+/**
+ * Contact Form Submissions
+ */
+export const contactSubmissions = mysqlTable("contact_submissions", {
+  id: int("id").autoincrement().primaryKey(),
+  
+  // Contact Information
+  name: varchar("name", { length: 255 }).notNull(),
+  email: varchar("email", { length: 320 }).notNull(),
+  phone: varchar("phone", { length: 50 }),
+  
+  // Message Details
+  subject: varchar("subject", { length: 500 }).notNull(),
+  message: text("message").notNull(),
+  
+  // Status
+  status: mysqlEnum("status", ["new", "read", "replied"]).default("new").notNull(),
+  
+  // Timestamps
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+export type ContactSubmission = typeof contactSubmissions.$inferSelect;
+export type InsertContactSubmission = typeof contactSubmissions.$inferInsert;

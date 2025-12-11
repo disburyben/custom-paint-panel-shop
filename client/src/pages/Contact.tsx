@@ -1,6 +1,7 @@
 import { MapPin, Phone, Mail, Clock, Loader2 } from "lucide-react";
 import { MapView } from "@/components/Map";
 import QuoteWizard from "@/components/QuoteWizard";
+import ContactForm from "@/components/ContactForm";
 import { trpc } from "@/lib/trpc";
 
 export default function Contact() {
@@ -112,6 +113,19 @@ export default function Contact() {
             </div>
             <QuoteWizard />
           </div>
+        </div>
+
+        {/* Contact Form Section */}
+        <div className="mt-20 max-w-2xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="font-heading font-bold text-4xl md:text-5xl uppercase mb-4">
+              Send Us a <span className="text-primary">Message</span>
+            </h2>
+            <p className="text-muted-foreground text-lg">
+              Have a question or want to discuss your project? Fill out the form below and we'll get back to you shortly.
+            </p>
+          </div>
+          <ContactForm />
         </div>
       </div>
     </div>
