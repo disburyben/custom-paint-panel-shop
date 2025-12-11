@@ -1,8 +1,25 @@
-import { MapPin, Phone, Mail, Clock } from "lucide-react";
+import { MapPin, Phone, Mail, Clock, Loader2 } from "lucide-react";
 import { MapView } from "@/components/Map";
 import QuoteWizard from "@/components/QuoteWizard";
+import { trpc } from "@/lib/trpc";
 
 export default function Contact() {
+  // Fetch business info from CMS
+  const { data: businessInfo, isLoading } = trpc.cms.businessInfo.get.useQuery();
+
+  // Parse business hours
+  const businessHours = businessInfo?.businessHours 
+    ? JSON.parse(businessInfo.businessHours) 
+    : null;
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
   return (
     <div className="pt-24 pb-20">
       <div className="container">
@@ -21,36 +38,52 @@ export default function Contact() {
             <div className="bg-card border border-border p-8">
               <h3 className="font-heading font-bold text-2xl uppercase mb-6 text-primary">Contact Info</h3>
               <div className="space-y-6">
-                <div className="flex items-start gap-4">
-                  <MapPin className="w-6 h-6 text-primary shrink-0 mt-1" />
-                  <div>
-                    <h4 className="font-bold uppercase mb-1">Visit Us</h4>
-                    <p className="text-muted-foreground">Para Hills<br />Adelaide, South Australia</p>
+                {businessInfo?.address && (
+                  <div className="flex items-start gap-4">
+                    <MapPin className="w-6 h-6 text-primary shrink-0 mt-1" />
+                    <div>
+                      <h4 className="font-bold uppercase mb-1">Visit Us</h4>
+                      <p className="text-muted-foreground whitespace-pre-line">{businessInfo.address}</p>
+                    </div>
                   </div>
-                </div>
-                <div className="flex items-start gap-4">
-                  <Phone className="w-6 h-6 text-primary shrink-0 mt-1" />
-                  <div>
-                    <h4 className="font-bold uppercase mb-1">Call Us</h4>
-                    <p className="text-muted-foreground">(555) 123-4567</p>
+                )}
+                {businessInfo?.phone && (
+                  <div className="flex items-start gap-4">
+                    <Phone className="w-6 h-6 text-primary shrink-0 mt-1" />
+                    <div>
+                      <h4 className="font-bold uppercase mb-1">Call Us</h4>
+                      <a href={`tel:${businessInfo.phone}`} className="text-muted-foreground hover:text-primary transition-colors">
+                        {businessInfo.phone}
+                      </a>
+                    </div>
                   </div>
-                </div>
-                <div className="flex items-start gap-4">
-                  <Mail className="w-6 h-6 text-primary shrink-0 mt-1" />
-                  <div>
-                    <h4 className="font-bold uppercase mb-1">Email Us</h4>
-                    <p className="text-muted-foreground">enquiries@casperspaintworks.com</p>
+                )}
+                {businessInfo?.email && (
+                  <div className="flex items-start gap-4">
+                    <Mail className="w-6 h-6 text-primary shrink-0 mt-1" />
+                    <div>
+                      <h4 className="font-bold uppercase mb-1">Email Us</h4>
+                      <a href={`mailto:${businessInfo.email}`} className="text-muted-foreground hover:text-primary transition-colors">
+                        {businessInfo.email}
+                      </a>
+                    </div>
                   </div>
-                </div>
-                <div className="flex items-start gap-4">
-                  <Clock className="w-6 h-6 text-primary shrink-0 mt-1" />
-                  <div>
-                    <h4 className="font-bold uppercase mb-1">Hours</h4>
-                    <p className="text-muted-foreground">Mon - Fri: 8:00 AM - 6:00 PM</p>
-                    <p className="text-muted-foreground">Sat: 9:00 AM - 2:00 PM</p>
-                    <p className="text-muted-foreground">Sun: Closed</p>
+                )}
+                {businessHours && (
+                  <div className="flex items-start gap-4">
+                    <Clock className="w-6 h-6 text-primary shrink-0 mt-1" />
+                    <div>
+                      <h4 className="font-bold uppercase mb-1">Hours</h4>
+                      <div className="text-muted-foreground space-y-1">
+                        {Object.entries(businessHours).map(([day, hours]: [string, any]) => (
+                          <p key={day}>
+                            {day}: {hours.open} - {hours.close}
+                          </p>
+                        ))}
+                      </div>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             </div>
 
@@ -62,7 +95,7 @@ export default function Contact() {
                   new google.maps.Marker({
                     position: { lat: -34.8333, lng: 138.6500 }, // Para Hills, SA
                     map: map,
-                    title: "Caspers Paintworks"
+                    title: businessInfo?.businessName || "Caspers Paintworks"
                   });
                   map.setCenter({ lat: -34.8333, lng: 138.6500 });
                   map.setZoom(14);

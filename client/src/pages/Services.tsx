@@ -1,46 +1,10 @@
 import { Button } from "@/components/ui/button";
-import { Paintbrush, Wrench, ShieldCheck, Car, SprayCan, Hammer } from "lucide-react";
 import { Link } from "wouter";
+import { trpc } from "@/lib/trpc";
+import { Loader2 } from "lucide-react";
 
 export default function Services() {
-  const services = [
-    {
-      icon: <Paintbrush className="w-12 h-12 text-primary" />,
-      title: "Custom Paint",
-      description: "High-end custom finishes including candy, pearl, flake, and matte options. We use premium materials for show-quality results.",
-      features: ["Color Matching", "Custom Graphics", "Matte Finishes", "Candy & Pearls"]
-    },
-    {
-      icon: <Wrench className="w-12 h-12 text-primary" />,
-      title: "Restoration",
-      description: "Complete frame-off restorations for classic cars and muscle cars. We handle everything from rust repair to final assembly.",
-      features: ["Rust Repair", "Metal Fabrication", "Frame Straightening", "Parts Sourcing"]
-    },
-    {
-      icon: <ShieldCheck className="w-12 h-12 text-primary" />,
-      title: "Collision Repair",
-      description: "Accident damage repair for all makes and models. We work with all insurance companies to get you back on the road safely.",
-      features: ["Dent Removal", "Bumper Repair", "Structural Repair", "Insurance Claims"]
-    },
-    {
-      icon: <Car className="w-12 h-12 text-primary" />,
-      title: "Detailing & Protection",
-      description: "Protect your investment with ceramic coatings and paint protection film (PPF). Keep your paint looking new for years.",
-      features: ["Ceramic Coating", "Paint Correction", "PPF Installation", "Interior Detailing"]
-    },
-    {
-      icon: <SprayCan className="w-12 h-12 text-primary" />,
-      title: "Resprays",
-      description: "Full vehicle color changes or closed-door resprays to refresh your vehicle's appearance.",
-      features: ["OEM Colors", "Color Changes", "Closed Door", "Engine Bay"]
-    },
-    {
-      icon: <Hammer className="w-12 h-12 text-primary" />,
-      title: "Panel Beating",
-      description: "Expert metal shaping and panel beating to restore body lines and gaps to factory (or better) standards.",
-      features: ["Dent Pulling", "File Finishing", "Gap Alignment", "Lead Loading"]
-    }
-  ];
+  const { data: services = [], isLoading } = trpc.cms.services.getAll.useQuery();
 
   return (
     <div className="pt-24 pb-20">
@@ -55,29 +19,63 @@ export default function Services() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {services.map((service, index) => (
-            <div key={index} className="bg-card border border-border p-8 hover:border-primary/50 transition-all duration-300 group hover:-translate-y-2">
-              <div className="mb-6 p-4 bg-background border border-border w-fit group-hover:shadow-[0_0_20px_var(--primary)] transition-shadow duration-300">
-                {service.icon}
-              </div>
-              <h3 className="font-heading font-bold text-2xl uppercase mb-4 group-hover:text-primary transition-colors">
-                {service.title}
-              </h3>
-              <p className="text-muted-foreground text-sm mb-8 leading-relaxed">
-                {service.description}
-              </p>
-              <ul className="space-y-2">
-                {service.features.map((feature, idx) => (
-                  <li key={idx} className="flex items-center text-sm font-medium">
-                    <div className="w-1.5 h-1.5 bg-primary mr-3" />
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
+        {isLoading ? (
+          <div className="flex justify-center items-center py-20">
+            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+          </div>
+        ) : services.length === 0 ? (
+          <div className="text-center py-20">
+            <p className="text-muted-foreground">No services available at the moment.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {services.map((service: any) => {
+              const features = service.features ? JSON.parse(service.features) : [];
+              return (
+                <div key={service.id} className="bg-card border border-border p-8 hover:border-primary/50 transition-all duration-300 group hover:-translate-y-2">
+                  {service.imageUrl && (
+                    <div className="mb-6 p-4 bg-background border border-border w-fit group-hover:shadow-[0_0_20px_var(--primary)] transition-shadow duration-300">
+                      <img 
+                        src={service.imageUrl} 
+                        alt={service.name}
+                        className="w-12 h-12 object-contain"
+                      />
+                    </div>
+                  )}
+                  <h3 className="font-heading font-bold text-2xl uppercase mb-4 group-hover:text-primary transition-colors">
+                    {service.name}
+                  </h3>
+                  <p className="text-muted-foreground text-sm mb-8 leading-relaxed">
+                    {service.shortDescription || service.description}
+                  </p>
+                  
+                  {features.length > 0 && (
+                    <ul className="space-y-2 mb-6">
+                      {features.map((feature: string, idx: number) => (
+                        <li key={idx} className="flex items-center text-sm font-medium">
+                          <div className="w-1.5 h-1.5 bg-primary mr-3" />
+                          {feature}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+
+                  {service.priceDescription && (
+                    <p className="text-primary font-semibold text-sm">
+                      {service.priceDescription}
+                    </p>
+                  )}
+
+                  {service.turnaroundTime && (
+                    <p className="text-muted-foreground text-xs mt-2">
+                      Turnaround: {service.turnaroundTime}
+                    </p>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
 
         <div className="mt-20 text-center bg-card border border-border p-12 relative overflow-hidden">
           <div className="absolute inset-0 bg-primary/5 skew-x-[-20deg] translate-x-1/2" />

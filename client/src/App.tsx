@@ -22,6 +22,8 @@ import ServicesManager from "./pages/admin/cms/ServicesManager";
 import GalleryManager from "./pages/admin/cms/GalleryManager";
 import BusinessInfoManager from "./pages/admin/cms/BusinessInfoManager";
 import Analytics from "./pages/admin/cms/Analytics";
+import Blog from "./pages/Blog";
+import BlogDetail from "./pages/BlogDetail";
 function Router() {
   // make sure to consider if you need authentication for certain routes
   return (
@@ -43,6 +45,8 @@ function Router() {
         <Route path="/admin/cms/business-info" component={BusinessInfoManager} />
         <Route path="/admin/cms/analytics" component={Analytics} />
         <Route path="/admin" component={Admin} />
+        <Route path="/blog/:slug" component={BlogDetail} />
+        <Route path="/blog" component={Blog} />
         <Route component={NotFound} />
       </Switch>
     </Layout>

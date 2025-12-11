@@ -3,9 +3,11 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Phone, Instagram, Facebook, Mail } from "lucide-react";
 import { useState, useEffect } from "react";
+import { trpc } from "@/lib/trpc";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
+  const { data: businessInfo } = trpc.cms.businessInfo.get.useQuery();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -125,12 +127,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 Taking all Automotive Paintwork Enquiries! Premium automotive restoration and custom paint services in Adelaide.
               </p>
               <div className="flex gap-4">
-                <a href="https://www.instagram.com/casperspaintworks" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-none border border-border flex items-center justify-center hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300 group">
-                  <Instagram className="w-5 h-5" />
-                </a>
-                <a href="#" className="w-10 h-10 rounded-none border border-border flex items-center justify-center hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300 group">
-                  <Facebook className="w-5 h-5" />
-                </a>
+                {businessInfo?.instagram && (
+                  <a href={businessInfo.instagram} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-none border border-border flex items-center justify-center hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300 group">
+                    <Instagram className="w-5 h-5" />
+                  </a>
+                )}
+                {businessInfo?.facebook && (
+                  <a href={businessInfo.facebook} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-none border border-border flex items-center justify-center hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300 group">
+                    <Facebook className="w-5 h-5" />
+                  </a>
+                )}
               </div>
             </div>
 
@@ -148,36 +154,53 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <div className="col-span-1">
               <h4 className="font-heading font-bold text-lg uppercase mb-6 text-primary">Contact</h4>
               <ul className="space-y-4 text-sm text-muted-foreground">
-                <li className="flex items-start gap-3">
-                  <Phone className="w-5 h-5 text-primary shrink-0" />
-                  <span>0466 254 055</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Mail className="w-5 h-5 text-primary shrink-0" />
-                  <span>admin@casperspaintworks.com.au</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <div className="w-5 h-5 text-primary shrink-0 font-heading font-bold">AD</div>
-                  <span>33 Ayfield Road,<br />Para Hills West, SA</span>
-                </li>
+                {businessInfo?.phone && (
+                  <li className="flex items-start gap-3">
+                    <Phone className="w-5 h-5 text-primary shrink-0" />
+                    <a href={`tel:${businessInfo.phone}`} className="hover:text-foreground transition-colors">{businessInfo.phone}</a>
+                  </li>
+                )}
+                {businessInfo?.email && (
+                  <li className="flex items-start gap-3">
+                    <Mail className="w-5 h-5 text-primary shrink-0" />
+                    <a href={`mailto:${businessInfo.email}`} className="hover:text-foreground transition-colors">{businessInfo.email}</a>
+                  </li>
+                )}
+                {businessInfo?.address && (
+                  <li className="flex items-start gap-3">
+                    <div className="w-5 h-5 text-primary shrink-0 font-heading font-bold">AD</div>
+                    <span>{businessInfo.address}</span>
+                  </li>
+                )}
               </ul>
             </div>
 
             <div className="col-span-1">
               <h4 className="font-heading font-bold text-lg uppercase mb-6 text-primary">Hours</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li className="flex justify-between border-b border-border/50 pb-2">
-                  <span>Mon - Fri</span>
-                  <span className="text-foreground font-medium">8:30 AM - 4:30 PM</span>
-                </li>
-                <li className="flex justify-between border-b border-border/50 pb-2">
-                  <span>Saturday</span>
-                  <span className="text-destructive">Closed</span>
-                </li>
-                <li className="flex justify-between pb-2">
-                  <span>Sunday</span>
-                  <span className="text-destructive">Closed</span>
-                </li>
+                {businessInfo?.businessHours ? (
+                  Object.entries(JSON.parse(businessInfo.businessHours)).map(([day, hours]: [string, any]) => (
+                    <li key={day} className="flex justify-between border-b border-border/50 pb-2">
+                      <span>{day}</span>
+                      <span className="text-foreground font-medium">{hours.open} - {hours.close}</span>
+                    </li>
+                  ))
+                ) : (
+                  <>
+                    <li className="flex justify-between border-b border-border/50 pb-2">
+                      <span>Mon - Fri</span>
+                      <span className="text-foreground font-medium">8:30 AM - 4:30 PM</span>
+                    </li>
+                    <li className="flex justify-between border-b border-border/50 pb-2">
+                      <span>Saturday</span>
+                      <span className="text-destructive">Closed</span>
+                    </li>
+                    <li className="flex justify-between pb-2">
+                      <span>Sunday</span>
+                      <span className="text-destructive">Closed</span>
+                    </li>
+                  </>
+                )}
               </ul>
             </div>
           </div>
