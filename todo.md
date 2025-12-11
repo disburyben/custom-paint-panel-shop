@@ -99,3 +99,7 @@
 - [ ] Product display with images and descriptions
 - [ ] Direct checkout via Stripe (no cart needed)
 - [ ] Order tracking via Stripe Dashboard
+
+## Shop Page (Completed)
+- [x] Create Shop page with "Coming Soon" message
+- [x] Add Shop to navigation menu
