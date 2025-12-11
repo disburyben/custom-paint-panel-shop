@@ -138,3 +138,194 @@ export const portfolioItems = mysqlTable("portfolio_items", {
 
 export type PortfolioItem = typeof portfolioItems.$inferSelect;
 export type InsertPortfolioItem = typeof portfolioItems.$inferInsert;
+/**
+ * E-COMMERCE TABLES
+ */
+
+/**
+ * Products - Merchandise and Gift Certificates
+ */
+export const products = mysqlTable("products", {
+  id: int("id").autoincrement().primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  slug: varchar("slug", { length: 255 }).notNull().unique(),
+  description: text("description"),
+  type: mysqlEnum("type", ["merchandise", "gift_certificate"]).notNull(),
+  
+  // Pricing
+  basePrice: int("basePrice").notNull(), // Price in cents
+  compareAtPrice: int("compareAtPrice"), // Original price for sale items
+  
+  // Inventory
+  trackInventory: int("trackInventory").default(1).notNull(), // Boolean: 1 = track, 0 = don't track
+  inventoryQuantity: int("inventoryQuantity").default(0),
+  allowBackorder: int("allowBackorder").default(0).notNull(),
+  
+  // Product Details
+  category: varchar("category", { length: 100 }), // 'apparel', 'accessories', 'gift_certificate'
+  images: text("images"), // JSON array of image URLs
+  
+  // Variants Support
+  hasVariants: int("hasVariants").default(0).notNull(), // Boolean: 1 = has variants, 0 = simple product
+  
+  // SEO & Display
+  featured: int("featured").default(0).notNull(),
+  displayOrder: int("displayOrder").default(0),
+  isActive: int("isActive").default(1).notNull(),
+  
+  // Metadata
+  stripeProductId: varchar("stripeProductId", { length: 255 }), // Stripe Product ID
+  stripePriceId: varchar("stripePriceId", { length: 255 }), // Stripe Price ID for simple products
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Product = typeof products.$inferSelect;
+export type InsertProduct = typeof products.$inferInsert;
+
+/**
+ * Product Variants - For products with size/color options
+ */
+export const productVariants = mysqlTable("product_variants", {
+  id: int("id").autoincrement().primaryKey(),
+  productId: int("productId").notNull(),
+  
+  // Variant Options
+  name: varchar("name", { length: 255 }).notNull(), // e.g., "Large / Black"
+  sku: varchar("sku", { length: 100 }).unique(),
+  size: varchar("size", { length: 50 }), // S, M, L, XL, 2XL
+  color: varchar("color", { length: 50 }), // Black, White, Grey, Orange
+  
+  // Pricing & Inventory
+  price: int("price").notNull(), // Price in cents (can differ from base product)
+  inventoryQuantity: int("inventoryQuantity").default(0),
+  
+  // Stripe Integration
+  stripePriceId: varchar("stripePriceId", { length: 255 }), // Stripe Price ID for this variant
+  
+  isActive: int("isActive").default(1).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type ProductVariant = typeof productVariants.$inferSelect;
+export type InsertProductVariant = typeof productVariants.$inferInsert;
+
+/**
+ * Shopping Cart
+ */
+export const cartItems = mysqlTable("cart_items", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId"), // NULL for guest carts
+  sessionId: varchar("sessionId", { length: 255 }), // For guest users
+  
+  productId: int("productId").notNull(),
+  variantId: int("variantId"), // NULL if simple product
+  
+  quantity: int("quantity").default(1).notNull(),
+  price: int("price").notNull(), // Price at time of adding to cart (cents)
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type CartItem = typeof cartItems.$inferSelect;
+export type InsertCartItem = typeof cartItems.$inferInsert;
+
+/**
+ * Orders
+ */
+export const orders = mysqlTable("orders", {
+  id: int("id").autoincrement().primaryKey(),
+  orderNumber: varchar("orderNumber", { length: 50 }).notNull().unique(), // e.g., "ORD-20231215-001"
+  
+  // Customer Info
+  userId: int("userId"), // NULL for guest checkout
+  customerEmail: varchar("customerEmail", { length: 320 }).notNull(),
+  customerName: varchar("customerName", { length: 255 }).notNull(),
+  customerPhone: varchar("customerPhone", { length: 50 }),
+  
+  // Shipping Address
+  shippingAddress: text("shippingAddress").notNull(), // JSON object
+  
+  // Order Totals (all in cents)
+  subtotal: int("subtotal").notNull(),
+  shippingCost: int("shippingCost").default(0).notNull(),
+  tax: int("tax").default(0).notNull(),
+  discount: int("discount").default(0),
+  total: int("total").notNull(),
+  
+  // Payment
+  stripePaymentIntentId: varchar("stripePaymentIntentId", { length: 255 }),
+  stripeCheckoutSessionId: varchar("stripeCheckoutSessionId", { length: 255 }),
+  paymentStatus: mysqlEnum("paymentStatus", ["pending", "paid", "failed", "refunded"]).default("pending").notNull(),
+  
+  // Fulfillment
+  status: mysqlEnum("status", ["pending", "processing", "shipped", "delivered", "cancelled"]).default("pending").notNull(),
+  trackingNumber: varchar("trackingNumber", { length: 255 }),
+  shippingCarrier: varchar("shippingCarrier", { length: 100 }),
+  
+  // Metadata
+  notes: text("notes"), // Internal admin notes
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  shippedAt: timestamp("shippedAt"),
+  deliveredAt: timestamp("deliveredAt"),
+});
+
+export type Order = typeof orders.$inferSelect;
+export type InsertOrder = typeof orders.$inferInsert;
+
+/**
+ * Order Items
+ */
+export const orderItems = mysqlTable("order_items", {
+  id: int("id").autoincrement().primaryKey(),
+  orderId: int("orderId").notNull(),
+  
+  productId: int("productId").notNull(),
+  variantId: int("variantId"), // NULL if simple product
+  
+  // Snapshot of product at time of purchase
+  productName: varchar("productName", { length: 255 }).notNull(),
+  variantName: varchar("variantName", { length: 255 }), // e.g., "Large / Black"
+  productImage: varchar("productImage", { length: 500 }),
+  
+  quantity: int("quantity").notNull(),
+  price: int("price").notNull(), // Price per item in cents
+  total: int("total").notNull(), // quantity * price
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type OrderItem = typeof orderItems.$inferSelect;
+export type InsertOrderItem = typeof orderItems.$inferInsert;
+
+/**
+ * Gift Certificate Codes
+ */
+export const giftCertificates = mysqlTable("gift_certificates", {
+  id: int("id").autoincrement().primaryKey(),
+  code: varchar("code", { length: 50 }).notNull().unique(), // e.g., "GIFT-ABC123"
+  
+  orderId: int("orderId"), // Order that purchased this certificate
+  orderItemId: int("orderItemId"),
+  
+  amount: int("amount").notNull(), // Value in cents
+  balance: int("balance").notNull(), // Remaining balance in cents
+  
+  recipientEmail: varchar("recipientEmail", { length: 320 }),
+  recipientName: varchar("recipientName", { length: 255 }),
+  message: text("message"),
+  
+  status: mysqlEnum("status", ["active", "redeemed", "expired", "cancelled"]).default("active").notNull(),
+  
+  expiresAt: timestamp("expiresAt"), // NULL = no expiration
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  redeemedAt: timestamp("redeemedAt"),
+});
+
+export type GiftCertificate = typeof giftCertificates.$inferSelect;
+export type InsertGiftCertificate = typeof giftCertificates.$inferInsert;

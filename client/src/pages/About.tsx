@@ -37,18 +37,14 @@ export default function About() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-24 border-y border-border py-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-24 border-y border-border py-12">
           <div className="text-center">
-            <div className="font-heading font-bold text-5xl text-primary mb-2">15+</div>
+            <div className="font-heading font-bold text-5xl text-primary mb-2">10+</div>
             <div className="text-sm uppercase tracking-widest text-muted-foreground">Years Experience</div>
           </div>
           <div className="text-center">
-            <div className="font-heading font-bold text-5xl text-primary mb-2">500+</div>
+            <div className="font-heading font-bold text-5xl text-primary mb-2">200+</div>
             <div className="text-sm uppercase tracking-widest text-muted-foreground">Projects Completed</div>
-          </div>
-          <div className="text-center">
-            <div className="font-heading font-bold text-5xl text-primary mb-2">50+</div>
-            <div className="text-sm uppercase tracking-widest text-muted-foreground">Awards Won</div>
           </div>
           <div className="text-center">
             <div className="font-heading font-bold text-5xl text-primary mb-2">100%</div>

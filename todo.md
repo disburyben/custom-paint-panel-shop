@@ -86,3 +86,16 @@
 - [x] Fix Google Maps initialization to check for container existence
 - [x] Added try-catch error handling and DOM ready delay
 - [x] Test homepage to ensure no errors
+
+## E-Commerce System (In Progress)
+- [x] Stripe payment integration setup
+- [x] Database schema for products (merchandise + gift certificates)
+- [x] Database schema for orders and order items
+- [x] Database schema for shopping cart
+- [x] Database schema for gift certificates
+- [x] Database helper functions for all e-commerce operations
+- [ ] Shop page with Stripe Payment Links for merchandise
+- [ ] Gift certificate purchase page with Stripe Payment Links
+- [ ] Product display with images and descriptions
+- [ ] Direct checkout via Stripe (no cart needed)
+- [ ] Order tracking via Stripe Dashboard
