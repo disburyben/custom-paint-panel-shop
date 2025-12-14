@@ -193,3 +193,24 @@
 - [x] Simplify training booklet with shorter, easier instructions
 - [x] Remove technical jargon and use plain language
 - [x] Create new simplified PDF booklet (much easier to read!)
+
+
+## Styled Training Booklet with Screenshots (Complete)
+- [x] Design professional booklet layout with visual elements
+- [x] Add black and white styling with professional typography
+- [x] Create HTML version with CSS styling for better PDF output
+- [x] Capture screenshots of CMS Dashboard, Gallery Manager, and Public Gallery
+- [x] Convert screenshots from webp to jpg format
+- [x] Embed screenshots into booklet at relevant sections
+- [x] Convert final booklet with screenshots to PDF successfully
+
+
+## GitHub Repository & Dashboard Fix (In Progress)
+- [x] Check current dev server status and URL (https://3000-iyr8h0m9n783iu6yk71gs-d394a087.manus-asia.computer)
+- [ ] Create GitHub repository for project
+- [ ] Push all project code to GitHub
+- [ ] Provide repository URL to user
+- [ ] Review CMS dashboard layout requirements
+- [ ] Update CMS dashboard UI to match user expectations
+- [ ] Capture new screenshots of updated dashboard
+- [ ] Update training booklet with correct screenshots
