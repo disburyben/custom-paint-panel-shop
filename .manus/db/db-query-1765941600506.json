@@ -1,0 +1,136 @@
+{
+  "query": "SELECT id, title, afterImageUrl, vehicleType, servicesProvided FROM gallery_items ORDER BY id DESC LIMIT 20;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2cUtkmZNN9ExttW.fd5b20f622fb --database cP2ca2Nb9qAB97CQfMYV2n --execute SELECT id, title, afterImageUrl, vehicleType, servicesProvided FROM gallery_items ORDER BY id DESC LIMIT 20;",
+  "rows": [
+    {
+      "id": "90015",
+      "title": "workshop project additional 4",
+      "afterImageUrl": "https://files.manuscdn.com/user_upload_by_module/session_file/310519663219924624/BYgLmVGMpVhuSEZl.jpg",
+      "vehicleType": "Car",
+      "servicesProvided": "Custom Paint"
+    },
+    {
+      "id": "90014",
+      "title": "workshop project additional 3",
+      "afterImageUrl": "https://files.manuscdn.com/user_upload_by_module/session_file/310519663219924624/XIoeHVbYbnMxeubc.jpg",
+      "vehicleType": "Car",
+      "servicesProvided": "Custom Paint"
+    },
+    {
+      "id": "90013",
+      "title": "workshop project additional 2",
+      "afterImageUrl": "https://files.manuscdn.com/user_upload_by_module/session_file/310519663219924624/KgfEPOobdnEiwLCD.jpg",
+      "vehicleType": "Car",
+      "servicesProvided": "Custom Paint"
+    },
+    {
+      "id": "90012",
+      "title": "workshop project additional 1",
+      "afterImageUrl": "https://files.manuscdn.com/user_upload_by_module/session_file/310519663219924624/mBFhjECsucEBfeeA.jpg",
+      "vehicleType": "Car",
+      "servicesProvided": "Custom Paint"
+    },
+    {
+      "id": "90011",
+      "title": "burgundy engine bay custom paint",
+      "afterImageUrl": "https://files.manuscdn.com/user_upload_by_module/session_file/310519663219924624/aknCPmCVoDcAxYkS.jpg",
+      "vehicleType": "Car",
+      "servicesProvided": "Engine Bay Paint, Custom Paint"
+    },
+    {
+      "id": "90010",
+      "title": "sedan workshop yellow masking full view",
+      "afterImageUrl": "https://files.manuscdn.com/user_upload_by_module/session_file/310519663219924624/UegslFaFYcwgIlyD.jpg",
+      "vehicleType": "Sedan",
+      "servicesProvided": "Panel Preparation, Paint Prep"
+    },
+    {
+      "id": "90009",
+      "title": "car body orange burgundy paint detail",
+      "afterImageUrl": "https://files.manuscdn.com/user_upload_by_module/session_file/310519663219924624/QwKoiCRHVdVszrvx.jpg",
+      "vehicleType": "Car",
+      "servicesProvided": "Custom Paint, Color Matching"
+    },
+    {
+      "id": "90008",
+      "title": "sedan workshop yellow masking tape",
+      "afterImageUrl": "https://files.manuscdn.com/user_upload_by_module/session_file/310519663219924624/CaynrWTDBnKmgSGZ.jpg",
+      "vehicleType": "Sedan",
+      "servicesProvided": "Panel Preparation, Paint Prep"
+    },
+    {
+      "id": "90007",
+      "title": "moonshine custom van airbrush art",
+      "afterImageUrl": "https://files.manuscdn.com/user_upload_by_module/session_file/310519663219924624/OWxjRhsAvQitRMSz.jpg",
+      "vehicleType": "Van",
+      "servicesProvided": "Airbrush Art, Custom Paint"
+    },
+    {
+      "id": "90006",
+      "title": "painter working blue motorcycle parts",
+      "afterImageUrl": "https://files.manuscdn.com/user_upload_by_module/session_file/310519663219924624/haSYkbmEypPfQOBk.jpg",
+      "vehicleType": "Motorcycle",
+      "servicesProvided": "Custom Paint, Detailing"
+    },
+    {
+      "id": "90005",
+      "title": "blue motorcycle parts custom paint",
+      "afterImageUrl": "https://files.manuscdn.com/user_upload_by_module/session_file/310519663219924624/gomgZtkvLiONXcPj.jpg",
+      "vehicleType": "Motorcycle",
+      "servicesProvided": "Custom Paint, Parts Refinishing"
+    },
+    {
+      "id": "90004",
+      "title": "white custom ute rear angle",
+      "afterImageUrl": "https://files.manuscdn.com/user_upload_by_module/session_file/310519663219924624/HfBpkktbXifKpArH.jpg",
+      "vehicleType": "Ute",
+      "servicesProvided": "Custom Paint, Panel Work"
+    },
+    {
+      "id": "90003",
+      "title": "silver holden sedan side view",
+      "afterImageUrl": "https://files.manuscdn.com/user_upload_by_module/session_file/310519663219924624/yHHRjDgaDGEVXKbk.jpg",
+      "vehicleType": "Sedan",
+      "servicesProvided": "Custom Paint, Wheel Upgrade"
+    },
+    {
+      "id": "90002",
+      "title": "caspers paintworks logo motorcycle",
+      "afterImageUrl": "https://files.manuscdn.com/user_upload_by_module/session_file/310519663219924624/EFNiWZaNuBBTgXTo.jpg",
+      "vehicleType": "Branding",
+      "servicesProvided": "Logo Design, Branding"
+    },
+    {
+      "id": "90001",
+      "title": "silver holden sedan front angle",
+      "afterImageUrl": "https://files.manuscdn.com/user_upload_by_module/session_file/310519663219924624/ZsAWZtGEeeRpYsQf.jpg",
+      "vehicleType": "Sedan",
+      "servicesProvided": "Custom Paint, Wheel Upgrade"
+    },
+    {
+      "id": "30002",
+      "title": "1967 Mustang Custom Paint",
+      "afterImageUrl": "https://example.com/after.jpg",
+      "vehicleType": "NULL",
+      "servicesProvided": "NULL"
+    },
+    {
+      "id": "30001",
+      "title": "1967 Mustang Custom Paint",
+      "afterImageUrl": "https://example.com/after.jpg",
+      "vehicleType": "NULL",
+      "servicesProvided": "NULL"
+    },
+    {
+      "id": "1",
+      "title": "1967 Mustang Custom Paint",
+      "afterImageUrl": "https://example.com/after.jpg",
+      "vehicleType": "NULL",
+      "servicesProvided": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttitle\tafterImageUrl\tvehicleType\tservicesProvided\n90015\tworkshop project additional 4\thttps://files.manuscdn.com/user_upload_by_module/session_file/310519663219924624/BYgLmVGMpVhuSEZl.jpg\tCar\tCustom Paint\n90014\tworkshop project additional 3\thttps://files.manuscdn.com/user_upload_by_module/session_file/310519663219924624/XIoeHVbYbnMxeubc.jpg\tCar\tCustom Paint\n90013\tworkshop project additional 2\thttps://files.manuscdn.com/user_upload_by_module/session_file/310519663219924624/KgfEPOobdnEiwLCD.jpg\tCar\tCustom Paint\n90012\tworkshop project additional 1\thttps://files.manuscdn.com/user_upload_by_module/session_file/310519663219924624/mBFhjECsucEBfeeA.jpg\tCar\tCustom Paint\n90011\tburgundy engine bay custom paint\thttps://files.manuscdn.com/user_upload_by_module/session_file/310519663219924624/aknCPmCVoDcAxYkS.jpg\tCar\tEngine Bay Paint, Custom Paint\n90010\tsedan workshop yellow masking full view\thttps://files.manuscdn.com/user_upload_by_module/session_file/310519663219924624/UegslFaFYcwgIlyD.jpg\tSedan\tPanel Preparation, Paint Prep\n90009\tcar body orange burgundy paint detail\thttps://files.manuscdn.com/user_upload_by_module/session_file/310519663219924624/QwKoiCRHVdVszrvx.jpg\tCar\tCustom Paint, Color Matching\n90008\tsedan workshop yellow masking tape\thttps://files.manuscdn.com/user_upload_by_module/session_file/310519663219924624/CaynrWTDBnKmgSGZ.jpg\tSedan\tPanel Preparation, Paint Prep\n90007\tmoonshine custom van airbrush art\thttps://files.manuscdn.com/user_upload_by_module/session_file/310519663219924624/OWxjRhsAvQitRMSz.jpg\tVan\tAirbrush Art, Custom Paint\n90006\tpainter working blue motorcycle parts\thttps://files.manuscdn.com/user_upload_by_module/session_file/310519663219924624/haSYkbmEypPfQOBk.jpg\tMotorcycle\tCustom Paint, Detailing\n90005\tblue motorcycle parts custom paint\thttps://files.manuscdn.com/user_upload_by_module/session_file/310519663219924624/gomgZtkvLiONXcPj.jpg\tMotorcycle\tCustom Paint, Parts Refinishing\n90004\twhite custom ute rear angle\thttps://files.manuscdn.com/user_upload_by_module/session_file/310519663219924624/HfBpkktbXifKpArH.jpg\tUte\tCustom Paint, Panel Work\n90003\tsilver holden sedan side view\thttps://files.manuscdn.com/user_upload_by_module/session_file/310519663219924624/yHHRjDgaDGEVXKbk.jpg\tSedan\tCustom Paint, Wheel Upgrade\n90002\tcaspers paintworks logo motorcycle\thttps://files.manuscdn.com/user_upload_by_module/session_file/310519663219924624/EFNiWZaNuBBTgXTo.jpg\tBranding\tLogo Design, Branding\n90001\tsilver holden sedan front angle\thttps://files.manuscdn.com/user_upload_by_module/session_file/310519663219924624/ZsAWZtGEeeRpYsQf.jpg\tSedan\tCustom Paint, Wheel Upgrade\n30002\t1967 Mustang Custom Paint\thttps://example.com/after.jpg\tNULL\tNULL\n30001\t1967 Mustang Custom Paint\thttps://example.com/after.jpg\tNULL\tNULL\n1\t1967 Mustang Custom Paint\thttps://example.com/after.jpg\tNULL\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 1512
+}

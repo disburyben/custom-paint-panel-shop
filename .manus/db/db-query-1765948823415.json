@@ -1,0 +1,64 @@
+{
+  "query": "SELECT table_name FROM information_schema.tables WHERE table_schema = DATABASE();",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2cUtkmZNN9ExttW.fd5b20f622fb --database cP2ca2Nb9qAB97CQfMYV2n --execute SELECT table_name FROM information_schema.tables WHERE table_schema = DATABASE();",
+  "rows": [
+    {
+      "table_name": "__drizzle_migrations"
+    },
+    {
+      "table_name": "users"
+    },
+    {
+      "table_name": "quote_files"
+    },
+    {
+      "table_name": "quote_submissions"
+    },
+    {
+      "table_name": "portfolio_items"
+    },
+    {
+      "table_name": "team_members"
+    },
+    {
+      "table_name": "cart_items"
+    },
+    {
+      "table_name": "gift_certificates"
+    },
+    {
+      "table_name": "order_items"
+    },
+    {
+      "table_name": "orders"
+    },
+    {
+      "table_name": "product_variants"
+    },
+    {
+      "table_name": "products"
+    },
+    {
+      "table_name": "business_info"
+    },
+    {
+      "table_name": "gallery_items"
+    },
+    {
+      "table_name": "services"
+    },
+    {
+      "table_name": "testimonials"
+    },
+    {
+      "table_name": "contact_submissions"
+    },
+    {
+      "table_name": "sprayers"
+    }
+  ],
+  "messages": [],
+  "stdout": "table_name\n__drizzle_migrations\nusers\nquote_files\nquote_submissions\nportfolio_items\nteam_members\ncart_items\ngift_certificates\norder_items\norders\nproduct_variants\nproducts\nbusiness_info\ngallery_items\nservices\ntestimonials\ncontact_submissions\nsprayers\n",
+  "stderr": "",
+  "execution_time_ms": 1530
+}

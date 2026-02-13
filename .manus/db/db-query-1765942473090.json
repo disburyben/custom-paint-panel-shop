@@ -1,0 +1,13 @@
+{
+  "query": "SELECT COUNT(*) as total FROM gallery_items WHERE afterImageUrl LIKE '%1765942%';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2cUtkmZNN9ExttW.fd5b20f622fb --database cP2ca2Nb9qAB97CQfMYV2n --execute SELECT COUNT(*) as total FROM gallery_items WHERE afterImageUrl LIKE '%1765942%';",
+  "rows": [
+    {
+      "total": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "total\n0\n",
+  "stderr": "",
+  "execution_time_ms": 1555
+}

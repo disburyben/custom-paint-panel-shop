@@ -1,0 +1,41 @@
+{
+  "version": "7",
+  "dialect": "mysql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1764771370846,
+      "tag": "0000_calm_landau",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1764771465909,
+      "tag": "0001_funny_lorna_dane",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1765024334168,
+      "tag": "0002_funny_silver_centurion",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1765450442721,
+      "tag": "0003_large_zodiak",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1765455363670,
+      "tag": "0004_smiling_tyger_tiger",
+      "breakpoints": true
+    }
+  ]
+}

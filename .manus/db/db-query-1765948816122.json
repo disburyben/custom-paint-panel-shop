@@ -1,0 +1,64 @@
+{
+  "query": "SHOW TABLES;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2cUtkmZNN9ExttW.fd5b20f622fb --database cP2ca2Nb9qAB97CQfMYV2n --execute SHOW TABLES;",
+  "rows": [
+    {
+      "Tables_in_cP2ca2Nb9qAB97CQfMYV2n": "__drizzle_migrations"
+    },
+    {
+      "Tables_in_cP2ca2Nb9qAB97CQfMYV2n": "business_info"
+    },
+    {
+      "Tables_in_cP2ca2Nb9qAB97CQfMYV2n": "cart_items"
+    },
+    {
+      "Tables_in_cP2ca2Nb9qAB97CQfMYV2n": "contact_submissions"
+    },
+    {
+      "Tables_in_cP2ca2Nb9qAB97CQfMYV2n": "gallery_items"
+    },
+    {
+      "Tables_in_cP2ca2Nb9qAB97CQfMYV2n": "gift_certificates"
+    },
+    {
+      "Tables_in_cP2ca2Nb9qAB97CQfMYV2n": "order_items"
+    },
+    {
+      "Tables_in_cP2ca2Nb9qAB97CQfMYV2n": "orders"
+    },
+    {
+      "Tables_in_cP2ca2Nb9qAB97CQfMYV2n": "portfolio_items"
+    },
+    {
+      "Tables_in_cP2ca2Nb9qAB97CQfMYV2n": "product_variants"
+    },
+    {
+      "Tables_in_cP2ca2Nb9qAB97CQfMYV2n": "products"
+    },
+    {
+      "Tables_in_cP2ca2Nb9qAB97CQfMYV2n": "quote_files"
+    },
+    {
+      "Tables_in_cP2ca2Nb9qAB97CQfMYV2n": "quote_submissions"
+    },
+    {
+      "Tables_in_cP2ca2Nb9qAB97CQfMYV2n": "services"
+    },
+    {
+      "Tables_in_cP2ca2Nb9qAB97CQfMYV2n": "sprayers"
+    },
+    {
+      "Tables_in_cP2ca2Nb9qAB97CQfMYV2n": "team_members"
+    },
+    {
+      "Tables_in_cP2ca2Nb9qAB97CQfMYV2n": "testimonials"
+    },
+    {
+      "Tables_in_cP2ca2Nb9qAB97CQfMYV2n": "users"
+    }
+  ],
+  "messages": [],
+  "stdout": "Tables_in_cP2ca2Nb9qAB97CQfMYV2n\n__drizzle_migrations\nbusiness_info\ncart_items\ncontact_submissions\ngallery_items\ngift_certificates\norder_items\norders\nportfolio_items\nproduct_variants\nproducts\nquote_files\nquote_submissions\nservices\nsprayers\nteam_members\ntestimonials\nusers\n",
+  "stderr": "",
+  "execution_time_ms": 1531
+}

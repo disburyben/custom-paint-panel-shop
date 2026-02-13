@@ -1,0 +1,9 @@
+{
+  "query": "SELECT id, title FROM gallery_items WHERE title LIKE '%Mustang%' OR title LIKE '%mustang%';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2cUtkmZNN9ExttW.fd5b20f622fb --database cP2ca2Nb9qAB97CQfMYV2n --execute SELECT id, title FROM gallery_items WHERE title LIKE '%Mustang%' OR title LIKE '%mustang%';",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 1555
+}

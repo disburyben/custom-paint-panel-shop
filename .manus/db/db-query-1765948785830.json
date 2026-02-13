@@ -1,0 +1,26 @@
+{
+  "query": "SELECT 'gallery_items' as table_name, COUNT(*) as count FROM gallery_items UNION ALL SELECT 'testimonials', COUNT(*) FROM testimonials UNION ALL SELECT 'team_members', COUNT(*) FROM team_members UNION ALL SELECT 'services', COUNT(*) FROM services;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2cUtkmZNN9ExttW.fd5b20f622fb --database cP2ca2Nb9qAB97CQfMYV2n --execute SELECT 'gallery_items' as table_name, COUNT(*) as count FROM gallery_items UNION ALL SELECT 'testimonials', COUNT(*) FROM testimonials UNION ALL SELECT 'team_members', COUNT(*) FROM team_members UNION ALL SELECT 'services', COUNT(*) FROM services;",
+  "rows": [
+    {
+      "table_name": "team_members",
+      "count": "3"
+    },
+    {
+      "table_name": "testimonials",
+      "count": "3"
+    },
+    {
+      "table_name": "services",
+      "count": "1"
+    },
+    {
+      "table_name": "gallery_items",
+      "count": "49"
+    }
+  ],
+  "messages": [],
+  "stdout": "table_name\tcount\nteam_members\t3\ntestimonials\t3\nservices\t1\ngallery_items\t49\n",
+  "stderr": "",
+  "execution_time_ms": 1543
+}
