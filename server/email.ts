@@ -1,5 +1,26 @@
+import nodemailer from "nodemailer";
 import { generateQuoteConfirmationHTML, generateAdminNotificationHTML } from "./emailTemplate";
 import { ENV } from "./_core/env";
+
+// Create reusable transporter using GoDaddy SMTP
+function createTransporter() {
+  if (!ENV.smtpUser || !ENV.smtpPass) {
+    console.warn("⚠️  SMTP credentials not configured. Emails will be logged to console only.");
+    return null;
+  }
+
+  return nodemailer.createTransport({
+    host: ENV.smtpHost,
+    port: ENV.smtpPort,
+    secure: ENV.smtpPort === 465, // true for 465, false for 587
+    auth: {
+      user: ENV.smtpUser,
+      pass: ENV.smtpPass,
+    },
+  });
+}
+
+const transporter = createTransporter();
 
 interface QuoteConfirmationData {
   customerName: string;
@@ -13,8 +34,6 @@ interface QuoteConfirmationData {
   description?: string | null;
 }
 
-
-
 /**
  * Send quote confirmation email to customer
  */
@@ -23,25 +42,25 @@ export async function sendQuoteConfirmationEmail(
 ): Promise<void> {
   try {
     const emailHtml = generateQuoteConfirmationHTML(data);
+    const subject = `Quote Request Received - Reference #${data.quoteId}`;
 
-    // Log the email (in production, this would use an email service like SendGrid, Resend, etc.)
-    console.log("=== QUOTE CONFIRMATION EMAIL ===");
-    console.log(`To: ${data.customerEmail}`);
-    console.log(`Subject: Quote Request Received - Reference #${data.quoteId}`);
-    console.log("HTML Body:");
-    console.log(emailHtml);
-    console.log("=== END EMAIL ===");
-
-    // TODO: In production, integrate with an email service:
-    // Example with Resend:
-    // await resend.emails.send({
-    //   from: 'Caspers Paintworks <quotes@casperspaintworks.com.au>',
-    //   to: data.customerEmail,
-    //   subject: `Quote Request Received - Reference #${data.quoteId}`,
-    //   html: emailHtml,
-    // });
+    if (transporter) {
+      await transporter.sendMail({
+        from: `"Caspers Paintworks" <${ENV.smtpUser}>`,
+        to: data.customerEmail,
+        subject,
+        html: emailHtml,
+      });
+      console.log(`✅ Confirmation email sent to ${data.customerEmail}`);
+    } else {
+      // Fallback: log to console when SMTP isn't configured
+      console.log("=== QUOTE CONFIRMATION EMAIL (console only — SMTP not configured) ===");
+      console.log(`To: ${data.customerEmail}`);
+      console.log(`Subject: ${subject}`);
+      console.log("=== END EMAIL ===");
+    }
   } catch (error) {
-    console.error("Failed to send quote confirmation email:", error);
+    console.error("❌ Failed to send quote confirmation email:", error);
     // Don't throw - we don't want email failures to block quote submission
   }
 }
@@ -67,10 +86,9 @@ export async function sendAdminNotificationEmail(
   data: AdminNotificationData
 ): Promise<void> {
   try {
-    // Construct dashboard URL (use production URL or localhost for dev)
-    const dashboardUrl = ENV.isProduction 
-      ? "https://your-domain.com/admin" 
-      : "http://localhost:3000/admin";
+    const dashboardUrl = ENV.isProduction
+      ? "https://casperspaintworks.com.au/admin"
+      : "http://localhost:3001/admin";
 
     const emailHtml = generateAdminNotificationHTML({
       ...data,
@@ -78,26 +96,26 @@ export async function sendAdminNotificationEmail(
       dashboardUrl,
     });
 
-    // TODO: Replace with your admin email address
-    const adminEmail = "admin@casperspaintworks.com.au";
+    const adminEmail = "enquiries@casperspaintworks.com.au";
+    const subject = `🚨 New Quote Request #${data.quoteId} - ${data.customerName}`;
 
-    // Log the email (in production, this would use an email service)
-    console.log("=== ADMIN NOTIFICATION EMAIL ===");
-    console.log(`To: ${adminEmail}`);
-    console.log(`Subject: 🚨 New Quote Request #${data.quoteId} - ${data.customerName}`);
-    console.log("HTML Body:");
-    console.log(emailHtml);
-    console.log("=== END EMAIL ===");
-
-    // TODO: In production, integrate with an email service:
-    // await resend.emails.send({
-    //   from: 'Caspers Paintworks <noreply@casperspaintworks.com.au>',
-    //   to: adminEmail,
-    //   subject: `🚨 New Quote Request #${data.quoteId} - ${data.customerName}`,
-    //   html: emailHtml,
-    // });
+    if (transporter) {
+      await transporter.sendMail({
+        from: `"Caspers Paintworks" <${ENV.smtpUser}>`,
+        to: adminEmail,
+        subject,
+        html: emailHtml,
+      });
+      console.log(`✅ Admin notification email sent to ${adminEmail}`);
+    } else {
+      // Fallback: log to console when SMTP isn't configured
+      console.log("=== ADMIN NOTIFICATION EMAIL (console only — SMTP not configured) ===");
+      console.log(`To: ${adminEmail}`);
+      console.log(`Subject: ${subject}`);
+      console.log("=== END EMAIL ===");
+    }
   } catch (error) {
-    console.error("Failed to send admin notification email:", error);
+    console.error("❌ Failed to send admin notification email:", error);
     // Don't throw - we don't want email failures to block quote submission
   }
 }

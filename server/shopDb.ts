@@ -1,9 +1,9 @@
 import { getDb } from "./db";
-import { 
-  products, 
-  productVariants, 
-  cartItems, 
-  orders, 
+import {
+  products,
+  productVariants,
+  cartItems,
+  orders,
   orderItems,
   giftCertificates,
   type Product,
@@ -124,7 +124,7 @@ export async function deleteVariant(id: number) {
 export async function getCartItems(userId: number | null, sessionId: string | null) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
-  
+
   const conditions = [];
   if (userId) {
     conditions.push(eq(cartItems.userId, userId));
@@ -133,7 +133,7 @@ export async function getCartItems(userId: number | null, sessionId: string | nu
   } else {
     return [];
   }
-  
+
   return await db.select().from(cartItems)
     .where(and(...conditions))
     .orderBy(desc(cartItems.createdAt));
@@ -142,7 +142,7 @@ export async function getCartItems(userId: number | null, sessionId: string | nu
 export async function addToCart(data: InsertCartItem) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
-  
+
   // Check if item already exists in cart
   const conditions = [];
   if (data.userId) {
@@ -154,11 +154,11 @@ export async function addToCart(data: InsertCartItem) {
   if (data.variantId) {
     conditions.push(eq(cartItems.variantId, data.variantId));
   }
-  
+
   const existing = await db.select().from(cartItems)
     .where(and(...conditions))
     .limit(1);
-  
+
   if (existing.length > 0) {
     // Update quantity
     await db.update(cartItems)
@@ -175,7 +175,7 @@ export async function addToCart(data: InsertCartItem) {
 export async function updateCartItem(id: number, quantity: number) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
-  
+
   if (quantity <= 0) {
     await db.delete(cartItems).where(eq(cartItems.id, id));
   } else {
@@ -194,14 +194,14 @@ export async function removeFromCart(id: number) {
 export async function clearCart(userId: number | null, sessionId: string | null) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
-  
+
   const conditions = [];
   if (userId) {
     conditions.push(eq(cartItems.userId, userId));
   } else if (sessionId) {
     conditions.push(eq(cartItems.sessionId, sessionId));
   }
-  
+
   if (conditions.length > 0) {
     await db.delete(cartItems).where(and(...conditions));
   }
@@ -274,6 +274,12 @@ export async function createOrderItem(data: InsertOrderItem) {
 /**
  * GIFT CERTIFICATES
  */
+
+export async function getAllGiftCertificates() {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  return await db.select().from(giftCertificates).orderBy(desc(giftCertificates.createdAt));
+}
 
 export async function getGiftCertificateByCode(code: string) {
   const db = await getDb();

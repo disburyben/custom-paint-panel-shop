@@ -13,7 +13,7 @@ export default function About() {
             </h1>
             <div className="space-y-6 text-muted-foreground text-lg leading-relaxed">
               <p>
-                Caspers Paintworks is Adelaide's premier destination for automotive styling. Located in Para Hills, South Australia, we started with a simple mission: to provide a level of automotive finish that exceeds factory standards.
+                Caspers Paintworks is Adelaide's premier destination for automotive styling. Located in Roseworthy, South Australia, we started with a simple mission: to provide a level of automotive finish that exceeds factory standards.
               </p>
               <p>
                 We are not just technicians; we are artists and engineers. We understand that your vehicle is an extension of your personality, a piece of history, or a high-performance machine that deserves to look as fast as it drives.
@@ -25,13 +25,13 @@ export default function About() {
           </div>
           <div className="relative">
             <div className="absolute inset-0 bg-primary/20 translate-x-4 translate-y-4" />
-            <video 
-              src="/images/owner-painting-video.mp4" 
-              autoPlay 
-              loop 
-              muted 
+            <video
+              src="/images/owner-painting-video.mp4"
+              autoPlay
+              loop
+              muted
               playsInline
-              className="relative z-10 w-full border border-border grayscale hover:grayscale-0 transition-all duration-500 object-cover aspect-[4/5]" 
+              className="relative z-10 w-full border border-border grayscale hover:grayscale-0 transition-all duration-500 object-cover aspect-[4/5]"
             />
           </div>
         </div>

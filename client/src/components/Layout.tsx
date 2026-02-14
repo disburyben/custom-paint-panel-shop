@@ -39,12 +39,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       >
         <div className="container flex items-center justify-between">
           <Link href="/">
-            <div className="flex items-center gap-2 cursor-pointer group">
-              <div className="w-10 h-10 bg-primary skew-x-[-10deg] flex items-center justify-center border border-primary-foreground/20 group-hover:shadow-[0_0_15px_var(--primary)] transition-shadow duration-300">
-                <span className="font-heading font-bold text-2xl text-primary-foreground skew-x-[10deg]">
-                  CP
-                </span>
-              </div>
+            <div className="flex items-center cursor-pointer group">
               <img src="/images/logo-full.png" alt="Caspers Paintworks" className="h-12 w-auto object-contain" />
             </div>
           </Link>
@@ -68,8 +63,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               </Link>
             ))}
             <Link href="/contact">
-              <Button 
-                variant="default" 
+              <Button
+                variant="default"
                 className="skew-x-[-10deg] font-heading uppercase tracking-wider hover:shadow-[0_0_20px_var(--primary)] transition-all duration-300"
               >
                 <span className="skew-x-[10deg]">Get Quote</span>
@@ -115,11 +110,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <footer className="bg-card border-t border-border py-16 relative overflow-hidden">
         {/* Grid Background Effect */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none" />
-        
+
         <div className="container relative z-10">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
             <div className="col-span-1 md:col-span-1">
-             <div className="mb-6">
+              <div className="mb-6">
                 <img src="/images/logo-full.png" alt="Caspers Paintworks" className="h-16 w-auto object-contain" />
               </div>              <p className="text-muted-foreground text-sm leading-relaxed mb-6">
                 Taking all Automotive Paintwork Enquiries! Premium automotive restoration and custom paint services in Adelaide.
@@ -150,15 +145,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <ul className="space-y-4 text-sm text-muted-foreground">
                 <li className="flex items-start gap-3">
                   <Phone className="w-5 h-5 text-primary shrink-0" />
-                  <span>0466 254 055</span>
+                  <a href="tel:+61466254055" className="hover:text-primary transition-colors">+61 466 254 055</a>
                 </li>
                 <li className="flex items-start gap-3">
                   <Mail className="w-5 h-5 text-primary shrink-0" />
-                  <span>admin@casperspaintworks.com.au</span>
+                  <a href="mailto:enquiries@casperspaintworks.com.au" className="hover:text-primary transition-colors">enquiries@casperspaintworks.com.au</a>
                 </li>
                 <li className="flex items-start gap-3">
                   <div className="w-5 h-5 text-primary shrink-0 font-heading font-bold">AD</div>
-                  <span>33 Ayfield Road,<br />Para Hills West, SA</span>
+                  <a href="https://maps.google.com/?q=16+Flett+Road+Roseworthy+SA" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">16 Flett Road,<br />Roseworthy, SA</a>
                 </li>
               </ul>
             </div>
@@ -168,11 +163,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li className="flex justify-between border-b border-border/50 pb-2">
                   <span>Mon - Fri</span>
-                  <span className="text-foreground font-medium">8:30 AM - 4:30 PM</span>
+                  <span className="text-foreground font-medium">8:00 AM - 6:00 PM</span>
                 </li>
                 <li className="flex justify-between border-b border-border/50 pb-2">
                   <span>Saturday</span>
-                  <span className="text-destructive">Closed</span>
+                  <span className="text-foreground font-medium">9:00 AM - 2:00 PM</span>
                 </li>
                 <li className="flex justify-between pb-2">
                   <span>Sunday</span>

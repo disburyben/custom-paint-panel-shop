@@ -263,13 +263,13 @@ export function generateQuoteConfirmationHTML(data: QuoteConfirmationData): stri
               </p>
 
               <p style="margin: 0 0 20px 0; line-height: 1.6; font-size: 16px;">
-                If you have any questions or need to provide additional information, please don't hesitate to reach out to us at <a href="mailto:enquiries@casperspaintworks.com" style="color: #f97316; text-decoration: none;">enquiries@casperspaintworks.com</a>.
+                If you have any questions or need to provide additional information, please don't hesitate to reach out to us at <a href="mailto:enquiries@casperspaintworks.com.au" style="color: #f97316; text-decoration: none;">enquiries@casperspaintworks.com.au</a>.
               </p>
 
               <p style="margin: 30px 0 0 0; line-height: 1.6; font-size: 16px;">
                 Best regards,<br>
                 <strong style="color: #ffffff;">The Caspers Paintworks Team</strong><br>
-                <span style="color: #999999; font-size: 14px;">Para Hills, Adelaide, South Australia</span>
+                <span style="color: #999999; font-size: 14px;">16 Flett Road, Roseworthy, South Australia</span>
               </p>
             </td>
           </tr>

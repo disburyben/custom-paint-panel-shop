@@ -25,21 +25,21 @@ export default function Contact() {
                   <MapPin className="w-6 h-6 text-primary shrink-0 mt-1" />
                   <div>
                     <h4 className="font-bold uppercase mb-1">Visit Us</h4>
-                    <p className="text-muted-foreground">Para Hills<br />Adelaide, South Australia</p>
+                    <a href="https://maps.google.com/?q=16+Flett+Road+Roseworthy+SA" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">16 Flett Road,<br />Roseworthy, SA</a>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
                   <Phone className="w-6 h-6 text-primary shrink-0 mt-1" />
                   <div>
                     <h4 className="font-bold uppercase mb-1">Call Us</h4>
-                    <p className="text-muted-foreground">(555) 123-4567</p>
+                    <a href="tel:+61466254055" className="text-muted-foreground hover:text-primary transition-colors">+61 466 254 055</a>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
                   <Mail className="w-6 h-6 text-primary shrink-0 mt-1" />
                   <div>
                     <h4 className="font-bold uppercase mb-1">Email Us</h4>
-                    <p className="text-muted-foreground">enquiries@casperspaintworks.com</p>
+                    <a href="mailto:enquiries@casperspaintworks.com.au" className="text-muted-foreground hover:text-primary transition-colors">enquiries@casperspaintworks.com.au</a>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
@@ -56,15 +56,15 @@ export default function Contact() {
 
             {/* Map */}
             <div className="h-[300px] border border-border bg-card relative overflow-hidden grayscale hover:grayscale-0 transition-all duration-500">
-               <MapView 
+              <MapView
                 className="w-full h-full"
                 onMapReady={(map: google.maps.Map) => {
                   new google.maps.Marker({
-                    position: { lat: -34.8333, lng: 138.6500 }, // Para Hills, SA
+                    position: { lat: -34.5279, lng: 138.7419 }, // Roseworthy, SA
                     map: map,
                     title: "Caspers Paintworks"
                   });
-                  map.setCenter({ lat: -34.8333, lng: 138.6500 });
+                  map.setCenter({ lat: -34.5279, lng: 138.7419 });
                   map.setZoom(14);
                 }}
               />

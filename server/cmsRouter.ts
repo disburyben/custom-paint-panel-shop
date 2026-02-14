@@ -1,4 +1,5 @@
-import { router, adminProcedure, publicProcedure } from "./_core/trpc";
+import { router, publicProcedure } from "./_core/trpc";
+import { adminSessionProcedure as adminProcedure } from "./adminAuth";
 import { z } from "zod";
 import { nanoid } from "nanoid";
 import { storagePut } from "./storage";

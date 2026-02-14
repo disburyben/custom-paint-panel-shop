@@ -8,4 +8,8 @@ export const ENV = {
   forgeApiUrl: process.env.BUILT_IN_FORGE_API_URL ?? "",
   forgeApiKey: process.env.BUILT_IN_FORGE_API_KEY ?? "",
   adminPassword: process.env.ADMIN_PASSWORD ?? "",
+  smtpHost: process.env.SMTP_HOST ?? "smtpout.secureserver.net",
+  smtpPort: parseInt(process.env.SMTP_PORT ?? "465"),
+  smtpUser: process.env.SMTP_USER ?? "",
+  smtpPass: process.env.SMTP_PASS ?? "",
 };

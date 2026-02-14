@@ -3,9 +3,11 @@ import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import { TRPCError } from "@trpc/server";
-import { adminAuthRouter } from "./adminAuth";
+import { adminAuthRouter, adminSessionProcedure } from "./adminAuth";
 import { teamRouter } from "./teamRouter";
 import { cmsRouter } from "./cmsRouter";
+import { shopRouter } from "./shopRouter";
+import { dashboardRouter } from "./dashboardRouter";
 import { z } from "zod";
 import { createQuoteSubmission, addQuoteFile, getAllQuoteSubmissions, getQuoteSubmissionById, getQuoteFiles, updateQuoteStatus } from "./db";
 import { storagePut } from "./storage";
@@ -14,11 +16,13 @@ import { notifyOwner } from "./_core/notification";
 import { sendQuoteConfirmationEmail, sendAdminNotificationEmail } from "./email";
 
 export const appRouter = router({
-    // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
+  // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
   system: systemRouter,
   adminAuth: adminAuthRouter,
   team: teamRouter,
   cms: cmsRouter,
+  shop: shopRouter,
+  dashboard: dashboardRouter,
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
     logout: publicProcedure.mutation(({ ctx }) => {
@@ -32,7 +36,7 @@ export const appRouter = router({
 
   quotes: router({
     /**
-     * Submit a new quote request
+     * Submit a new quote request (public)
      */
     submit: publicProcedure
       .input(z.object({
@@ -40,22 +44,22 @@ export const appRouter = router({
         name: z.string().min(1, "Name is required"),
         email: z.string().email("Valid email is required"),
         phone: z.string().optional(),
-        
+
         // Vehicle Information
         vehicleType: z.string().min(1, "Vehicle type is required"),
         vehicleMake: z.string().optional(),
         vehicleModel: z.string().optional(),
         vehicleYear: z.string().optional(),
-        
+
         // Service Information
         serviceType: z.string().min(1, "Service type is required"),
         paintFinish: z.string().optional(),
-        
+
         // Additional Details
         description: z.string().optional(),
         budget: z.string().optional(),
         timeline: z.string().optional(),
-        
+
         // Files (base64 encoded images)
         files: z.array(z.object({
           fileName: z.string(),
@@ -87,14 +91,14 @@ export const appRouter = router({
               // Decode base64 to buffer
               const base64Data = file.fileData.replace(/^data:image\/\w+;base64,/, '');
               const buffer = Buffer.from(base64Data, 'base64');
-              
+
               // Generate unique file key
               const fileExtension = file.fileName.split('.').pop() || 'jpg';
               const fileKey = `quotes/${quoteId}/${nanoid()}.${fileExtension}`;
-              
+
               // Upload to S3
               const { url } = await storagePut(fileKey, buffer, file.fileType);
-              
+
               // Save file metadata to database
               await addQuoteFile({
                 quoteId: Number(quoteId),
@@ -149,35 +153,21 @@ export const appRouter = router({
       }),
 
     /**
-     * Get all quote submissions (admin only)
+     * Get all quote submissions (admin only — uses adminSessionProcedure)
      */
-    list: publicProcedure.query(async ({ ctx }) => {
-      // Check admin session cookie
-      const isAdminAuthenticated = ctx.req.cookies?.['admin_session'] === 'authenticated';
-      
-      if (!isAdminAuthenticated) {
-        throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Admin authentication required' });
-      }
-      
+    list: adminSessionProcedure.query(async () => {
       return await getAllQuoteSubmissions();
     }),
 
     /**
      * Update quote status (admin only)
      */
-    updateStatus: publicProcedure
+    updateStatus: adminSessionProcedure
       .input(z.object({
         id: z.number(),
         status: z.enum(["new", "reviewed", "quoted", "accepted", "declined", "completed"]),
       }))
-      .mutation(async ({ ctx, input }) => {
-        // Check admin session cookie
-        const isAdminAuthenticated = ctx.req.cookies?.['admin_session'] === 'authenticated';
-        
-        if (!isAdminAuthenticated) {
-          throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Admin authentication required' });
-        }
-        
+      .mutation(async ({ input }) => {
         const quote = await getQuoteSubmissionById(input.id);
         if (!quote) {
           throw new TRPCError({ code: 'NOT_FOUND', message: 'Quote not found' });
@@ -188,21 +178,22 @@ export const appRouter = router({
       }),
 
     /**
-     * Get a single quote with its files
+     * Get a single quote with its files (admin only)
      */
-    getById: publicProcedure
+    getById: adminSessionProcedure
       .input(z.object({ id: z.number() }))
       .query(async ({ input }) => {
         const quote = await getQuoteSubmissionById(input.id);
         if (!quote) {
-          throw new Error("Quote not found");
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Quote not found' });
         }
-        
+
         const files = await getQuoteFiles(input.id);
-        
+
         return { quote, files };
       }),
   }),
 });
 
 export type AppRouter = typeof appRouter;
+
