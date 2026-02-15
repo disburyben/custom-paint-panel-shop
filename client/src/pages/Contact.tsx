@@ -39,7 +39,7 @@ export default function Contact() {
                   <Mail className="w-6 h-6 text-primary shrink-0 mt-1" />
                   <div>
                     <h4 className="font-bold uppercase mb-1">Email Us</h4>
-                    <a href="mailto:enquiries@casperspaintworks.com.au" className="text-muted-foreground hover:text-primary transition-colors">enquiries@casperspaintworks.com.au</a>
+                    <a href="mailto:admin@casperspaintworks.com.au" className="text-muted-foreground hover:text-primary transition-colors">admin@casperspaintworks.com.au</a>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">

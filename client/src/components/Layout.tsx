@@ -149,7 +149,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 </li>
                 <li className="flex items-start gap-3">
                   <Mail className="w-5 h-5 text-primary shrink-0" />
-                  <a href="mailto:enquiries@casperspaintworks.com.au" className="hover:text-primary transition-colors">enquiries@casperspaintworks.com.au</a>
+                  <a href="mailto:admin@casperspaintworks.com.au" className="hover:text-primary transition-colors">admin@casperspaintworks.com.au</a>
                 </li>
                 <li className="flex items-start gap-3">
                   <div className="w-5 h-5 text-primary shrink-0 font-heading font-bold">AD</div>

@@ -96,7 +96,7 @@ export async function sendAdminNotificationEmail(
       dashboardUrl,
     });
 
-    const adminEmail = "enquiries@casperspaintworks.com.au";
+    const adminEmail = "admin@casperspaintworks.com.au";
     const subject = `🚨 New Quote Request #${data.quoteId} - ${data.customerName}`;
 
     if (transporter) {

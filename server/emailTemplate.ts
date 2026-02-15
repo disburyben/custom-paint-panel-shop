@@ -263,7 +263,7 @@ export function generateQuoteConfirmationHTML(data: QuoteConfirmationData): stri
               </p>
 
               <p style="margin: 0 0 20px 0; line-height: 1.6; font-size: 16px;">
-                If you have any questions or need to provide additional information, please don't hesitate to reach out to us at <a href="mailto:enquiries@casperspaintworks.com.au" style="color: #f97316; text-decoration: none;">enquiries@casperspaintworks.com.au</a>.
+                If you have any questions or need to provide additional information, please don't hesitate to reach out to us at <a href="mailto:admin@casperspaintworks.com.au" style="color: #f97316; text-decoration: none;">admin@casperspaintworks.com.au</a>.
               </p>
 
               <p style="margin: 30px 0 0 0; line-height: 1.6; font-size: 16px;">
