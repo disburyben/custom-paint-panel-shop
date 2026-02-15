@@ -1,0 +1,35 @@
+# Database - MySQL Connection String
+# Example: mysql://USER:PASSWORD@HOST:PORT/DATABASE
+DATABASE_URL="mysql://root:password@localhost:3306/custom_panel_shop"
+
+# App Identity
+# Unique ID for this application instance
+VITE_APP_ID="my-custom-panel-shop"
+
+# Security
+# Secret used for signing JWTs and cookies
+JWT_SECRET="replace-with-secure-random-string-at-least-32-chars"
+# Password for admin access
+ADMIN_PASSWORD="admin_password_change_me"
+
+# Authentication & OAuth
+# The URL of your OAuth provider (or this server if self-hosting auth)
+OAUTH_SERVER_URL="http://localhost:3000"
+# The OpenID of the owner/admin user
+OWNER_OPEN_ID="user_owner_id"
+
+# Forge API (External Integration)
+# URL for the Forge API
+BUILT_IN_FORGE_API_URL="https://api.forge.com"
+# API Key for Forge
+BUILT_IN_FORGE_API_KEY="forge_api_key_placeholder"
+
+# Client-side Configuration
+# URL for the OAuth portal (visible to browser)
+VITE_OAUTH_PORTAL_URL="http://localhost:3000"
+
+# Email SMTP (GoDaddy)
+SMTP_HOST="smtpout.secureserver.net"
+SMTP_PORT="465"
+SMTP_USER="admin@casperspaintworks.com.au"
+SMTP_PASS="Password123!"
