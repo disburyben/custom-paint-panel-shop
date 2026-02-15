@@ -29,14 +29,14 @@ app.use(
 
 // Debug endpoint (REMOVE AFTER TESTING)
 app.get("/api/debug-env", (req, res) => {
+  const allKeys = Object.keys(process.env).sort();
   res.json({
     hasAdminPassword: !!process.env.ADMIN_PASSWORD,
     adminPasswordLength: (process.env.ADMIN_PASSWORD || "").length,
     hasJwtSecret: !!process.env.JWT_SECRET,
     nodeEnv: process.env.NODE_ENV,
-    envKeys: Object.keys(process.env).filter(k =>
-      ["ADMIN_PASSWORD", "JWT_SECRET", "VITE_APP_ID", "DATABASE_URL", "SMTP_HOST"].includes(k)
-    ),
+    totalEnvVars: allKeys.length,
+    allKeys: allKeys,
   });
 });
 
