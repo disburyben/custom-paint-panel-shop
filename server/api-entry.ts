@@ -27,17 +27,5 @@ app.use(
   })
 );
 
-// Debug endpoint (REMOVE AFTER TESTING)
-app.get("/api/debug-env", (req, res) => {
-  const allKeys = Object.keys(process.env).sort();
-  res.json({
-    hasAdminPassword: !!process.env.ADMIN_PASSWORD,
-    adminPasswordLength: (process.env.ADMIN_PASSWORD || "").length,
-    hasJwtSecret: !!process.env.JWT_SECRET,
-    nodeEnv: process.env.NODE_ENV,
-    totalEnvVars: allKeys.length,
-    allKeys: allKeys,
-  });
-});
-
 export default app;
+
