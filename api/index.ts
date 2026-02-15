@@ -1,30 +1,5 @@
-import "dotenv/config";
-import express from "express";
-import cookieParser from "cookie-parser";
-import { createExpressMiddleware } from "@trpc/server/adapters/express";
-import { registerOAuthRoutes } from "../server/_core/oauth";
-import { appRouter } from "../server/routers";
-import { createContext } from "../server/_core/context";
-
-const app = express();
-
-// Configure body parser with larger size limit for file uploads
-app.use(express.json({ limit: "50mb" }));
-app.use(express.urlencoded({ limit: "50mb", extended: true }));
-
-// Cookie parser for admin authentication
-app.use(cookieParser());
-
-// OAuth callback under /api/oauth/callback
-registerOAuthRoutes(app);
-
-// tRPC API
-app.use(
-  "/api/trpc",
-  createExpressMiddleware({
-    router: appRouter,
-    createContext,
-  })
-);
-
-export default app;
+// This file is the Vercel serverless function entry point.
+// The actual Express app is bundled into handler.js by esbuild during build.
+// We re-export it here so Vercel can detect and compile this simple stub,
+// while all imports are already resolved in the bundled handler.
+export { default } from "./handler.js";

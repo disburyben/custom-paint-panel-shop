@@ -2,6 +2,11 @@
     "installCommand": "npm install --legacy-peer-deps",
     "buildCommand": "npm run build",
     "outputDirectory": "dist/public",
+    "functions": {
+        "api/index.ts": {
+            "includeFiles": "api/handler.js"
+        }
+    },
     "rewrites": [
         {
             "source": "/api/(.*)",
