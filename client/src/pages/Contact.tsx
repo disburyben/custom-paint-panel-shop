@@ -1,5 +1,4 @@
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
-import { MapView } from "@/components/Map";
 import QuoteWizard from "@/components/QuoteWizard";
 
 export default function Contact() {
@@ -56,19 +55,18 @@ export default function Contact() {
 
             {/* Map */}
             <div className="h-[300px] border border-border bg-card relative overflow-hidden grayscale hover:grayscale-0 transition-all duration-500">
-              <MapView
-                className="w-full h-full"
-                onMapReady={(map: google.maps.Map) => {
-                  new google.maps.Marker({
-                    position: { lat: -34.5279, lng: 138.7419 }, // Roseworthy, SA
-                    map: map,
-                    title: "Caspers Paintworks"
-                  });
-                  map.setCenter({ lat: -34.5279, lng: 138.7419 });
-                  map.setZoom(14);
-                }}
+              <iframe
+                title="Caspers Paintworks Location"
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                loading="lazy"
+                allowFullScreen
+                referrerPolicy="no-referrer-when-downgrade"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3271.5!2d138.7419!3d-34.5279!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6ab7f0000000001%3A0x1!2s16+Flett+Rd%2C+Roseworthy+SA+5371!5e0!3m2!1sen!2sau!4v1"
               />
             </div>
+
           </div>
 
           {/* Quote Wizard */}
