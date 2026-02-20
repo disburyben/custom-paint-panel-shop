@@ -7,10 +7,12 @@ import { Link } from "wouter";
 import { Plus, Edit2, Trash2, Eye, EyeOff } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
 export default function BlogManager() {
   const [isCreating, setIsCreating] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<number | null>(null);
   const [formData, setFormData] = useState({
     title: "",
     excerpt: "",
@@ -106,13 +108,21 @@ export default function BlogManager() {
   };
 
   const handleDelete = (id: number) => {
-    if (confirm("Are you sure you want to delete this blog post?")) {
-      deleteMutation.mutate({ id });
-    }
+    setConfirmDelete(id);
   };
 
   return (
     <div className="space-y-6">
+      <ConfirmDialog
+        open={confirmDelete !== null}
+        title="Delete blog post?"
+        description="This will permanently delete the post and cannot be undone."
+        onConfirm={() => {
+          if (confirmDelete !== null) deleteMutation.mutate({ id: confirmDelete });
+          setConfirmDelete(null);
+        }}
+        onCancel={() => setConfirmDelete(null)}
+      />
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>

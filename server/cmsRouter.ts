@@ -429,21 +429,43 @@ export const cmsRouter = router({
           title: z.string().min(1),
           description: z.string().optional(),
           category: z.string().min(1),
-          beforeImageUrl: z.string().min(1),
-          afterImageUrl: z.string().min(1),
+          beforeImage: z.object({
+            fileData: z.string(),
+            fileName: z.string(),
+            fileType: z.string(),
+          }),
+          afterImage: z.object({
+            fileData: z.string(),
+            fileName: z.string(),
+            fileType: z.string(),
+          }),
           isFeatured: z.boolean().default(false),
         })
       )
       .mutation(async ({ input }) => {
+        // Upload before image
+        const beforeBase64 = input.beforeImage.fileData.replace(/^data:image\/\w+;base64,/, '');
+        const beforeBuffer = Buffer.from(beforeBase64, 'base64');
+        const beforeExt = input.beforeImage.fileName.split('.').pop() || 'jpg';
+        const beforeKey = `gallery/${nanoid()}-before.${beforeExt}`;
+        const { url: beforeImageUrl } = await storagePut(beforeKey, beforeBuffer, input.beforeImage.fileType);
+
+        // Upload after image
+        const afterBase64 = input.afterImage.fileData.replace(/^data:image\/\w+;base64,/, '');
+        const afterBuffer = Buffer.from(afterBase64, 'base64');
+        const afterExt = input.afterImage.fileName.split('.').pop() || 'jpg';
+        const afterKey = `gallery/${nanoid()}-after.${afterExt}`;
+        const { url: afterImageUrl } = await storagePut(afterKey, afterBuffer, input.afterImage.fileType);
+
         return await createGalleryItem({
           title: input.title,
           description: input.description || null,
           category: input.category,
           isFeatured: input.isFeatured ? 1 : 0,
-          beforeImageKey: `gallery/${nanoid()}-before`,
-          beforeImageUrl: input.beforeImageUrl,
-          afterImageKey: `gallery/${nanoid()}-after`,
-          afterImageUrl: input.afterImageUrl,
+          beforeImageKey: beforeKey,
+          beforeImageUrl,
+          afterImageKey: afterKey,
+          afterImageUrl,
         });
       }),
 
@@ -457,10 +479,21 @@ export const cmsRouter = router({
           category: z.string().optional(),
           isFeatured: z.boolean().optional(),
           isActive: z.boolean().optional(),
+          // Optional image replacements
+          beforeImage: z.object({
+            fileData: z.string(),
+            fileName: z.string(),
+            fileType: z.string(),
+          }).optional(),
+          afterImage: z.object({
+            fileData: z.string(),
+            fileName: z.string(),
+            fileType: z.string(),
+          }).optional(),
         })
       )
       .mutation(async ({ input }) => {
-        const { id, ...data } = input;
+        const { id, beforeImage, afterImage, ...data } = input;
         const updateData: any = {};
 
         if (data.title) updateData.title = data.title;
@@ -468,6 +501,28 @@ export const cmsRouter = router({
         if (data.category) updateData.category = data.category;
         if (data.isFeatured !== undefined) updateData.isFeatured = data.isFeatured ? 1 : 0;
         if (data.isActive !== undefined) updateData.isActive = data.isActive ? 1 : 0;
+
+        // Upload new before image if provided
+        if (beforeImage) {
+          const base64 = beforeImage.fileData.replace(/^data:image\/\w+;base64,/, '');
+          const buffer = Buffer.from(base64, 'base64');
+          const ext = beforeImage.fileName.split('.').pop() || 'jpg';
+          const key = `gallery/${nanoid()}-before.${ext}`;
+          const { url } = await storagePut(key, buffer, beforeImage.fileType);
+          updateData.beforeImageKey = key;
+          updateData.beforeImageUrl = url;
+        }
+
+        // Upload new after image if provided
+        if (afterImage) {
+          const base64 = afterImage.fileData.replace(/^data:image\/\w+;base64,/, '');
+          const buffer = Buffer.from(base64, 'base64');
+          const ext = afterImage.fileName.split('.').pop() || 'jpg';
+          const key = `gallery/${nanoid()}-after.${ext}`;
+          const { url } = await storagePut(key, buffer, afterImage.fileType);
+          updateData.afterImageKey = key;
+          updateData.afterImageUrl = url;
+        }
 
         return await updateGalleryItem(id, updateData);
       }),

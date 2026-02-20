@@ -6,10 +6,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Plus, Edit2, Trash2 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
 export default function ServicesManager() {
   const [isCreating, setIsCreating] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<number | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -114,9 +116,7 @@ export default function ServicesManager() {
   };
 
   const handleDelete = (id: number) => {
-    if (confirm("Are you sure you want to delete this service?")) {
-      deleteMutation.mutate({ id });
-    }
+    setConfirmDelete(id);
   };
 
   const addFeature = () => {
@@ -138,6 +138,16 @@ export default function ServicesManager() {
 
   return (
     <div className="space-y-6">
+      <ConfirmDialog
+        open={confirmDelete !== null}
+        title="Delete service?"
+        description="This will permanently delete the service and cannot be undone."
+        onConfirm={() => {
+          if (confirmDelete !== null) deleteMutation.mutate({ id: confirmDelete });
+          setConfirmDelete(null);
+        }}
+        onCancel={() => setConfirmDelete(null)}
+      />
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>

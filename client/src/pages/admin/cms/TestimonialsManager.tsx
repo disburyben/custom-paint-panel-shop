@@ -6,10 +6,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Plus, Edit2, Trash2, Check, X } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
 export default function TestimonialsManager() {
   const [isCreating, setIsCreating] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<number | null>(null);
   const [formData, setFormData] = useState({
     customerName: "",
     customerTitle: "",
@@ -104,9 +106,7 @@ export default function TestimonialsManager() {
   };
 
   const handleDelete = (id: number) => {
-    if (confirm("Are you sure you want to delete this testimonial?")) {
-      deleteMutation.mutate({ id });
-    }
+    setConfirmDelete(id);
   };
 
   const toggleApproval = (testimonial: any) => {
@@ -118,6 +118,16 @@ export default function TestimonialsManager() {
 
   return (
     <div className="space-y-6">
+      <ConfirmDialog
+        open={confirmDelete !== null}
+        title="Delete testimonial?"
+        description="This will permanently delete the testimonial and cannot be undone."
+        onConfirm={() => {
+          if (confirmDelete !== null) deleteMutation.mutate({ id: confirmDelete });
+          setConfirmDelete(null);
+        }}
+        onCancel={() => setConfirmDelete(null)}
+      />
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>

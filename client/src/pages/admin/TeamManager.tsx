@@ -8,12 +8,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { Pencil, Trash2, Plus, Upload } from "lucide-react";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
 export default function AdminTeam() {
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [editingMember, setEditingMember] = useState<any>(null);
   const [showPortfolioDialog, setShowPortfolioDialog] = useState(false);
   const [selectedMemberId, setSelectedMemberId] = useState<number | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
 
   const { data: teamMembers, refetch } = trpc.team.adminList.useQuery();
   const createMember = trpc.team.create.useMutation();
@@ -25,7 +27,7 @@ export default function AdminTeam() {
   const handleCreateMember = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    
+
     try {
       await createMember.mutateAsync({
         name: formData.get("name") as string,
@@ -34,7 +36,7 @@ export default function AdminTeam() {
         specialty: formData.get("specialty") as string,
         displayOrder: parseInt(formData.get("displayOrder") as string) || 0,
       });
-      
+
       toast.success("Team member added successfully");
       setShowAddDialog(false);
       refetch();
@@ -63,29 +65,21 @@ export default function AdminTeam() {
   };
 
   const handleDeleteMember = async (id: number) => {
-    if (!confirm("Are you sure? This will delete the team member and all their portfolio items.")) return;
-    
-    try {
-      await deleteMember.mutateAsync({ id });
-      toast.success("Team member deleted");
-      refetch();
-    } catch (error) {
-      toast.error("Failed to delete team member");
-    }
+    setConfirmDeleteId(id);
   };
 
   const handleAddPortfolioItem = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!selectedMemberId) return;
-    
+
     const formData = new FormData(e.currentTarget);
     const fileInput = formData.get("image") as File;
-    
+
     if (!fileInput || fileInput.size === 0) {
       toast.error("Please select an image");
       return;
     }
-    
+
     try {
       const reader = new FileReader();
       reader.onloadend = async () => {
@@ -112,6 +106,24 @@ export default function AdminTeam() {
 
   return (
     <div className="min-h-screen bg-black text-white p-8">
+      <ConfirmDialog
+        open={confirmDeleteId !== null}
+        title="Delete team member?"
+        description="This will delete the team member and all their portfolio items. This cannot be undone."
+        onConfirm={async () => {
+          if (confirmDeleteId !== null) {
+            try {
+              await deleteMember.mutateAsync({ id: confirmDeleteId });
+              toast.success("Team member deleted");
+              refetch();
+            } catch {
+              toast.error("Failed to delete team member");
+            }
+          }
+          setConfirmDeleteId(null);
+        }}
+        onCancel={() => setConfirmDeleteId(null)}
+      />
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <div>

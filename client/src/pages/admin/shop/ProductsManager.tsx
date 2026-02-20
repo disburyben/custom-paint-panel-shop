@@ -1,4 +1,5 @@
 import { useState } from "react";
+
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -38,6 +39,7 @@ import {
     StarOff,
     Loader2,
 } from "lucide-react";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
 /** Format cents → display price */
 function formatPrice(cents: number) {
@@ -48,6 +50,8 @@ export default function ProductsManager() {
     const [searchTerm, setSearchTerm] = useState("");
     const [showCreateDialog, setShowCreateDialog] = useState(false);
     const [editingProduct, setEditingProduct] = useState<any>(null);
+    const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
+    const [confirmDeleteName, setConfirmDeleteName] = useState("");
 
     const {
         data: products,
@@ -92,6 +96,16 @@ export default function ProductsManager() {
 
     return (
         <div className="space-y-6">
+            <ConfirmDialog
+                open={confirmDeleteId !== null}
+                title={`Delete "${confirmDeleteName}"?`}
+                description="This action cannot be undone."
+                onConfirm={() => {
+                    if (confirmDeleteId !== null) deleteMutation.mutate({ id: confirmDeleteId });
+                    setConfirmDeleteId(null);
+                }}
+                onCancel={() => setConfirmDeleteId(null)}
+            />
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
@@ -251,13 +265,8 @@ export default function ProductsManager() {
                                                     variant="ghost"
                                                     size="icon"
                                                     onClick={() => {
-                                                        if (
-                                                            confirm(
-                                                                `Delete "${product.name}"? This cannot be undone.`
-                                                            )
-                                                        ) {
-                                                            deleteMutation.mutate({ id: product.id });
-                                                        }
+                                                        setConfirmDeleteId(product.id);
+                                                        setConfirmDeleteName(product.name);
                                                     }}
                                                 >
                                                     <Trash2 className="h-4 w-4 text-destructive" />
