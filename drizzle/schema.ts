@@ -1,24 +1,19 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
+import { integer, pgEnum, pgTable, serial, text, timestamp, varchar } from "drizzle-orm/pg-core";
 
 /**
  * Core user table backing auth flow.
- * Extend this file with additional tables as your product grows.
- * Columns use camelCase to match both database fields and generated types.
  */
-export const users = mysqlTable("users", {
-  /**
-   * Surrogate primary key. Auto-incremented numeric value managed by the database.
-   * Use this for relations between tables.
-   */
-  id: int("id").autoincrement().primaryKey(),
-  /** Manus OAuth identifier (openId) returned from the OAuth callback. Unique per user. */
+export const roleEnum = pgEnum("role", ["user", "admin"]);
+
+export const users = pgTable("users", {
+  id: serial("id").primaryKey(),
   openId: varchar("openId", { length: 64 }).notNull().unique(),
   name: text("name"),
   email: varchar("email", { length: 320 }),
   loginMethod: varchar("loginMethod", { length: 64 }),
-  role: mysqlEnum("role", ["user", "admin"]).default("user").notNull(),
+  role: roleEnum("role").default("user").notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
 });
 
@@ -28,55 +23,41 @@ export type InsertUser = typeof users.$inferInsert;
 /**
  * Quote submissions from the Get a Quote wizard
  */
-export const quoteSubmissions = mysqlTable("quote_submissions", {
-  id: int("id").autoincrement().primaryKey(),
-  
-  // Customer Information
+export const quoteStatusEnum = pgEnum("quote_status", ["new", "reviewed", "quoted", "accepted", "declined", "completed"]);
+
+export const quoteSubmissions = pgTable("quote_submissions", {
+  id: serial("id").primaryKey(),
   name: varchar("name", { length: 255 }).notNull(),
   email: varchar("email", { length: 320 }).notNull(),
   phone: varchar("phone", { length: 50 }),
-  
-  // Vehicle Information
-  vehicleType: varchar("vehicleType", { length: 100 }).notNull(), // 'car', 'motorcycle', 'truck', 'suv'
+  vehicleType: varchar("vehicleType", { length: 100 }).notNull(),
   vehicleMake: varchar("vehicleMake", { length: 100 }),
   vehicleModel: varchar("vehicleModel", { length: 100 }),
   vehicleYear: varchar("vehicleYear", { length: 10 }),
-  
-  // Service Information
-  serviceType: varchar("serviceType", { length: 100 }).notNull(), // 'custom-paint', 'restoration', 'collision-repair', 'detailing'
-  paintFinish: varchar("paintFinish", { length: 100 }), // 'matte', 'gloss', 'satin', 'candy', 'pearl'
-  
-  // Additional Details
+  serviceType: varchar("serviceType", { length: 100 }).notNull(),
+  paintFinish: varchar("paintFinish", { length: 100 }),
   description: text("description"),
   budget: varchar("budget", { length: 50 }),
   timeline: varchar("timeline", { length: 50 }),
-  
-  // Status
-  status: mysqlEnum("status", ["new", "reviewed", "quoted", "accepted", "declined", "completed"]).default("new").notNull(),
-  
-  // Metadata
+  status: quoteStatusEnum("status").default("new").notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
 
 export type QuoteSubmission = typeof quoteSubmissions.$inferSelect;
 export type InsertQuoteSubmission = typeof quoteSubmissions.$inferInsert;
 
 /**
- * Files uploaded with quote submissions (vehicle photos, reference images)
+ * Files uploaded with quote submissions
  */
-export const quoteFiles = mysqlTable("quote_files", {
-  id: int("id").autoincrement().primaryKey(),
-  quoteId: int("quoteId").notNull(),
-  
-  // S3 Storage Information
-  fileKey: varchar("fileKey", { length: 500 }).notNull(), // S3 key for the file
-  fileUrl: varchar("fileUrl", { length: 1000 }).notNull(), // Public URL to access the file
-  fileName: varchar("fileName", { length: 255 }).notNull(), // Original filename
-  fileType: varchar("fileType", { length: 100 }), // MIME type (image/jpeg, image/png, etc.)
-  fileSize: int("fileSize"), // File size in bytes
-  
-  // Metadata
+export const quoteFiles = pgTable("quote_files", {
+  id: serial("id").primaryKey(),
+  quoteId: integer("quoteId").notNull(),
+  fileKey: varchar("fileKey", { length: 500 }).notNull(),
+  fileUrl: varchar("fileUrl", { length: 1000 }).notNull(),
+  fileName: varchar("fileName", { length: 255 }).notNull(),
+  fileType: varchar("fileType", { length: 100 }),
+  fileSize: integer("fileSize"),
   uploadedAt: timestamp("uploadedAt").defaultNow().notNull(),
 });
 
@@ -84,129 +65,92 @@ export type QuoteFile = typeof quoteFiles.$inferSelect;
 export type InsertQuoteFile = typeof quoteFiles.$inferInsert;
 
 /**
- * Team members (owner and employees) for gallery showcase
+ * Team members
  */
-export const teamMembers = mysqlTable("team_members", {
-  id: int("id").autoincrement().primaryKey(),
-  
-  // Profile Information
+export const teamMembers = pgTable("team_members", {
+  id: serial("id").primaryKey(),
   name: varchar("name", { length: 255 }).notNull(),
-  title: varchar("title", { length: 255 }).notNull(), // e.g., "Master Painter", "Restoration Specialist"
-  bio: text("bio"), // Short bio about the team member
-  specialty: varchar("specialty", { length: 255 }), // e.g., "Custom Candy Finishes", "Classic Car Restoration"
-  
-  // Headshot Image
-  headshotKey: varchar("headshotKey", { length: 500 }), // S3 key for headshot
-  headshotUrl: varchar("headshotUrl", { length: 1000 }), // Public URL for headshot
-  
-  // Display Settings
-  displayOrder: int("displayOrder").default(0).notNull(), // Order to display on gallery page
-  isActive: int("isActive").default(1).notNull(), // 1 = active, 0 = hidden
-  
-  // Metadata
+  title: varchar("title", { length: 255 }).notNull(),
+  bio: text("bio"),
+  specialty: varchar("specialty", { length: 255 }),
+  headshotKey: varchar("headshotKey", { length: 500 }),
+  headshotUrl: varchar("headshotUrl", { length: 1000 }),
+  displayOrder: integer("displayOrder").default(0).notNull(),
+  isActive: integer("isActive").default(1).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
 
 export type TeamMember = typeof teamMembers.$inferSelect;
 export type InsertTeamMember = typeof teamMembers.$inferInsert;
 
 /**
- * Portfolio items for each team member (their individual work)
+ * Portfolio items for each team member
  */
-export const portfolioItems = mysqlTable("portfolio_items", {
-  id: int("id").autoincrement().primaryKey(),
-  teamMemberId: int("teamMemberId").notNull(), // Foreign key to team_members
-  
-  // Project Information
-  title: varchar("title", { length: 255 }).notNull(), // e.g., "1967 Mustang Candy Apple Red"
-  description: text("description"), // Details about the project
-  category: varchar("category", { length: 100 }), // e.g., "Custom Paint", "Restoration", "Collision Repair"
-  
-  // Image Information
-  imageKey: varchar("imageKey", { length: 500 }).notNull(), // S3 key for portfolio image
-  imageUrl: varchar("imageUrl", { length: 1000 }).notNull(), // Public URL for image
-  
-  // Display Settings
-  displayOrder: int("displayOrder").default(0).notNull(),
-  isFeatured: int("isFeatured").default(0).notNull(), // 1 = featured, 0 = normal
-  
-  // Metadata
+export const portfolioItems = pgTable("portfolio_items", {
+  id: serial("id").primaryKey(),
+  teamMemberId: integer("teamMemberId").notNull(),
+  title: varchar("title", { length: 255 }).notNull(),
+  description: text("description"),
+  category: varchar("category", { length: 100 }),
+  imageKey: varchar("imageKey", { length: 500 }).notNull(),
+  imageUrl: varchar("imageUrl", { length: 1000 }).notNull(),
+  displayOrder: integer("displayOrder").default(0).notNull(),
+  isFeatured: integer("isFeatured").default(0).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
 
 export type PortfolioItem = typeof portfolioItems.$inferSelect;
 export type InsertPortfolioItem = typeof portfolioItems.$inferInsert;
-/**
- * E-COMMERCE TABLES
- */
 
 /**
- * Products - Merchandise and Gift Certificates
+ * Products
  */
-export const products = mysqlTable("products", {
-  id: int("id").autoincrement().primaryKey(),
+export const productTypeEnum = pgEnum("product_type", ["merchandise", "gift_certificate"]);
+
+export const products = pgTable("products", {
+  id: serial("id").primaryKey(),
   name: varchar("name", { length: 255 }).notNull(),
   slug: varchar("slug", { length: 255 }).notNull().unique(),
   description: text("description"),
-  type: mysqlEnum("type", ["merchandise", "gift_certificate"]).notNull(),
-  
-  // Pricing
-  basePrice: int("basePrice").notNull(), // Price in cents
-  compareAtPrice: int("compareAtPrice"), // Original price for sale items
-  
-  // Inventory
-  trackInventory: int("trackInventory").default(1).notNull(), // Boolean: 1 = track, 0 = don't track
-  inventoryQuantity: int("inventoryQuantity").default(0),
-  allowBackorder: int("allowBackorder").default(0).notNull(),
-  
-  // Product Details
-  category: varchar("category", { length: 100 }), // 'apparel', 'accessories', 'gift_certificate'
-  images: text("images"), // JSON array of image URLs
-  
-  // Variants Support
-  hasVariants: int("hasVariants").default(0).notNull(), // Boolean: 1 = has variants, 0 = simple product
-  
-  // SEO & Display
-  featured: int("featured").default(0).notNull(),
-  displayOrder: int("displayOrder").default(0),
-  isActive: int("isActive").default(1).notNull(),
-  
-  // Metadata
-  stripeProductId: varchar("stripeProductId", { length: 255 }), // Stripe Product ID
-  stripePriceId: varchar("stripePriceId", { length: 255 }), // Stripe Price ID for simple products
-  
+  type: productTypeEnum("type").notNull(),
+  basePrice: integer("basePrice").notNull(),
+  compareAtPrice: integer("compareAtPrice"),
+  trackInventory: integer("trackInventory").default(1).notNull(),
+  inventoryQuantity: integer("inventoryQuantity").default(0),
+  allowBackorder: integer("allowBackorder").default(0).notNull(),
+  category: varchar("category", { length: 100 }),
+  images: text("images"),
+  hasVariants: integer("hasVariants").default(0).notNull(),
+  featured: integer("featured").default(0).notNull(),
+  displayOrder: integer("displayOrder").default(0),
+  isActive: integer("isActive").default(1).notNull(),
+  stripeProductId: varchar("stripeProductId", { length: 255 }),
+  stripePriceId: varchar("stripePriceId", { length: 255 }),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
 
 export type Product = typeof products.$inferSelect;
 export type InsertProduct = typeof products.$inferInsert;
 
 /**
- * Product Variants - For products with size/color options
+ * Product Variants
  */
-export const productVariants = mysqlTable("product_variants", {
-  id: int("id").autoincrement().primaryKey(),
-  productId: int("productId").notNull(),
-  
-  // Variant Options
-  name: varchar("name", { length: 255 }).notNull(), // e.g., "Large / Black"
+export const productVariants = pgTable("product_variants", {
+  id: serial("id").primaryKey(),
+  productId: integer("productId").notNull(),
+  name: varchar("name", { length: 255 }).notNull(),
   sku: varchar("sku", { length: 100 }).unique(),
-  size: varchar("size", { length: 50 }), // S, M, L, XL, 2XL
-  color: varchar("color", { length: 50 }), // Black, White, Grey, Orange
-  
-  // Pricing & Inventory
-  price: int("price").notNull(), // Price in cents (can differ from base product)
-  inventoryQuantity: int("inventoryQuantity").default(0),
-  
-  // Stripe Integration
-  stripePriceId: varchar("stripePriceId", { length: 255 }), // Stripe Price ID for this variant
-  
-  isActive: int("isActive").default(1).notNull(),
+  size: varchar("size", { length: 50 }),
+  color: varchar("color", { length: 50 }),
+  price: integer("price").notNull(),
+  inventoryQuantity: integer("inventoryQuantity").default(0),
+  stripePriceId: varchar("stripePriceId", { length: 255 }),
+  isActive: integer("isActive").default(1).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
 
 export type ProductVariant = typeof productVariants.$inferSelect;
@@ -215,19 +159,16 @@ export type InsertProductVariant = typeof productVariants.$inferInsert;
 /**
  * Shopping Cart
  */
-export const cartItems = mysqlTable("cart_items", {
-  id: int("id").autoincrement().primaryKey(),
-  userId: int("userId"), // NULL for guest carts
-  sessionId: varchar("sessionId", { length: 255 }), // For guest users
-  
-  productId: int("productId").notNull(),
-  variantId: int("variantId"), // NULL if simple product
-  
-  quantity: int("quantity").default(1).notNull(),
-  price: int("price").notNull(), // Price at time of adding to cart (cents)
-  
+export const cartItems = pgTable("cart_items", {
+  id: serial("id").primaryKey(),
+  userId: integer("userId"),
+  sessionId: varchar("sessionId", { length: 255 }),
+  productId: integer("productId").notNull(),
+  variantId: integer("variantId"),
+  quantity: integer("quantity").default(1).notNull(),
+  price: integer("price").notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
 
 export type CartItem = typeof cartItems.$inferSelect;
@@ -236,41 +177,31 @@ export type InsertCartItem = typeof cartItems.$inferInsert;
 /**
  * Orders
  */
-export const orders = mysqlTable("orders", {
-  id: int("id").autoincrement().primaryKey(),
-  orderNumber: varchar("orderNumber", { length: 50 }).notNull().unique(), // e.g., "ORD-20231215-001"
-  
-  // Customer Info
-  userId: int("userId"), // NULL for guest checkout
+export const orderPaymentStatusEnum = pgEnum("order_payment_status", ["pending", "paid", "failed", "refunded"]);
+export const orderStatusEnum = pgEnum("order_status", ["pending", "processing", "shipped", "delivered", "cancelled"]);
+
+export const orders = pgTable("orders", {
+  id: serial("id").primaryKey(),
+  orderNumber: varchar("orderNumber", { length: 50 }).notNull().unique(),
+  userId: integer("userId"),
   customerEmail: varchar("customerEmail", { length: 320 }).notNull(),
   customerName: varchar("customerName", { length: 255 }).notNull(),
   customerPhone: varchar("customerPhone", { length: 50 }),
-  
-  // Shipping Address
-  shippingAddress: text("shippingAddress").notNull(), // JSON object
-  
-  // Order Totals (all in cents)
-  subtotal: int("subtotal").notNull(),
-  shippingCost: int("shippingCost").default(0).notNull(),
-  tax: int("tax").default(0).notNull(),
-  discount: int("discount").default(0),
-  total: int("total").notNull(),
-  
-  // Payment
+  shippingAddress: text("shippingAddress").notNull(),
+  subtotal: integer("subtotal").notNull(),
+  shippingCost: integer("shippingCost").default(0).notNull(),
+  tax: integer("tax").default(0).notNull(),
+  discount: integer("discount").default(0),
+  total: integer("total").notNull(),
   stripePaymentIntentId: varchar("stripePaymentIntentId", { length: 255 }),
   stripeCheckoutSessionId: varchar("stripeCheckoutSessionId", { length: 255 }),
-  paymentStatus: mysqlEnum("paymentStatus", ["pending", "paid", "failed", "refunded"]).default("pending").notNull(),
-  
-  // Fulfillment
-  status: mysqlEnum("status", ["pending", "processing", "shipped", "delivered", "cancelled"]).default("pending").notNull(),
+  paymentStatus: orderPaymentStatusEnum("paymentStatus").default("pending").notNull(),
+  status: orderStatusEnum("status").default("pending").notNull(),
   trackingNumber: varchar("trackingNumber", { length: 255 }),
   shippingCarrier: varchar("shippingCarrier", { length: 100 }),
-  
-  // Metadata
-  notes: text("notes"), // Internal admin notes
-  
+  notes: text("notes"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
   shippedAt: timestamp("shippedAt"),
   deliveredAt: timestamp("deliveredAt"),
 });
@@ -281,22 +212,17 @@ export type InsertOrder = typeof orders.$inferInsert;
 /**
  * Order Items
  */
-export const orderItems = mysqlTable("order_items", {
-  id: int("id").autoincrement().primaryKey(),
-  orderId: int("orderId").notNull(),
-  
-  productId: int("productId").notNull(),
-  variantId: int("variantId"), // NULL if simple product
-  
-  // Snapshot of product at time of purchase
+export const orderItems = pgTable("order_items", {
+  id: serial("id").primaryKey(),
+  orderId: integer("orderId").notNull(),
+  productId: integer("productId").notNull(),
+  variantId: integer("variantId"),
   productName: varchar("productName", { length: 255 }).notNull(),
-  variantName: varchar("variantName", { length: 255 }), // e.g., "Large / Black"
+  variantName: varchar("variantName", { length: 255 }),
   productImage: varchar("productImage", { length: 500 }),
-  
-  quantity: int("quantity").notNull(),
-  price: int("price").notNull(), // Price per item in cents
-  total: int("total").notNull(), // quantity * price
-  
+  quantity: integer("quantity").notNull(),
+  price: integer("price").notNull(),
+  total: integer("total").notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 
@@ -304,25 +230,22 @@ export type OrderItem = typeof orderItems.$inferSelect;
 export type InsertOrderItem = typeof orderItems.$inferInsert;
 
 /**
- * Gift Certificate Codes
+ * Gift Certificates
  */
-export const giftCertificates = mysqlTable("gift_certificates", {
-  id: int("id").autoincrement().primaryKey(),
-  code: varchar("code", { length: 50 }).notNull().unique(), // e.g., "GIFT-ABC123"
-  
-  orderId: int("orderId"), // Order that purchased this certificate
-  orderItemId: int("orderItemId"),
-  
-  amount: int("amount").notNull(), // Value in cents
-  balance: int("balance").notNull(), // Remaining balance in cents
-  
+export const giftCertStatusEnum = pgEnum("gift_cert_status", ["active", "redeemed", "expired", "cancelled"]);
+
+export const giftCertificates = pgTable("gift_certificates", {
+  id: serial("id").primaryKey(),
+  code: varchar("code", { length: 50 }).notNull().unique(),
+  orderId: integer("orderId"),
+  orderItemId: integer("orderItemId"),
+  amount: integer("amount").notNull(),
+  balance: integer("balance").notNull(),
   recipientEmail: varchar("recipientEmail", { length: 320 }),
   recipientName: varchar("recipientName", { length: 255 }),
   message: text("message"),
-  
-  status: mysqlEnum("status", ["active", "redeemed", "expired", "cancelled"]).default("active").notNull(),
-  
-  expiresAt: timestamp("expiresAt"), // NULL = no expiration
+  status: giftCertStatusEnum("status").default("active").notNull(),
+  expiresAt: timestamp("expiresAt"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   redeemedAt: timestamp("redeemedAt"),
 });
@@ -331,174 +254,119 @@ export type GiftCertificate = typeof giftCertificates.$inferSelect;
 export type InsertGiftCertificate = typeof giftCertificates.$inferInsert;
 
 /**
- * CMS TABLES FOR CONTENT MANAGEMENT
- */
-
-/**
  * Blog Posts
  */
-export const blogPosts = mysqlTable("blog_posts", {
-  id: int("id").autoincrement().primaryKey(),
-  
-  // Content
+export const blogPosts = pgTable("blog_posts", {
+  id: serial("id").primaryKey(),
   title: varchar("title", { length: 255 }).notNull(),
-  slug: varchar("slug", { length: 255 }).notNull().unique(), // URL-friendly slug
-  excerpt: text("excerpt"), // Short summary for listings
-  content: text("content").notNull(), // Full HTML content (from rich text editor)
-  
-  // Featured Image
+  slug: varchar("slug", { length: 255 }).notNull().unique(),
+  excerpt: text("excerpt"),
+  content: text("content").notNull(),
   featuredImageKey: varchar("featuredImageKey", { length: 500 }),
   featuredImageUrl: varchar("featuredImageUrl", { length: 1000 }),
-  
-  // Metadata
-  category: varchar("category", { length: 100 }), // e.g., 'news', 'project-showcase', 'tips'
-  tags: text("tags"), // JSON array of tags
-  
-  // Publishing
-  isPublished: int("isPublished").default(0).notNull(), // 1 = published, 0 = draft
+  category: varchar("category", { length: 100 }),
+  tags: text("tags"),
+  isPublished: integer("isPublished").default(0).notNull(),
   publishedAt: timestamp("publishedAt"),
-  
-  // Display
-  displayOrder: int("displayOrder").default(0).notNull(),
-  isFeatured: int("isFeatured").default(0).notNull(),
-  
-  // Metadata
+  displayOrder: integer("displayOrder").default(0).notNull(),
+  isFeatured: integer("isFeatured").default(0).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
 
 export type BlogPost = typeof blogPosts.$inferSelect;
 export type InsertBlogPost = typeof blogPosts.$inferInsert;
 
 /**
- * Testimonials / Customer Reviews
+ * Testimonials
  */
-export const testimonials = mysqlTable("testimonials", {
-  id: int("id").autoincrement().primaryKey(),
-  
-  // Customer Info
+export const testimonials = pgTable("testimonials", {
+  id: serial("id").primaryKey(),
   customerName: varchar("customerName", { length: 255 }).notNull(),
-  customerTitle: varchar("customerTitle", { length: 255 }), // e.g., "1967 Mustang Owner"
-  customerImage: varchar("customerImage", { length: 1000 }), // Optional customer photo
-  
-  // Review Content
-  quote: text("quote").notNull(), // The testimonial text
-  rating: int("rating").default(5).notNull(), // 1-5 star rating
-  
-  // Metadata
-  isApproved: int("isApproved").default(0).notNull(), // 1 = approved, 0 = pending
-  displayOrder: int("displayOrder").default(0).notNull(),
-  isFeatured: int("isFeatured").default(0).notNull(),
-  
+  customerTitle: varchar("customerTitle", { length: 255 }),
+  customerImage: varchar("customerImage", { length: 1000 }),
+  quote: text("quote").notNull(),
+  rating: integer("rating").default(5).notNull(),
+  isApproved: integer("isApproved").default(0).notNull(),
+  displayOrder: integer("displayOrder").default(0).notNull(),
+  isFeatured: integer("isFeatured").default(0).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
 
 export type Testimonial = typeof testimonials.$inferSelect;
 export type InsertTestimonial = typeof testimonials.$inferInsert;
 
 /**
- * Services (editable via CMS)
+ * Services
  */
-export const services = mysqlTable("services", {
-  id: int("id").autoincrement().primaryKey(),
-  
-  // Service Details
-  name: varchar("name", { length: 255 }).notNull(), // e.g., "Custom Paint"
+export const services = pgTable("services", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
   slug: varchar("slug", { length: 255 }).notNull().unique(),
-  description: text("description").notNull(), // Full service description
-  shortDescription: varchar("shortDescription", { length: 500 }), // Brief description for cards
-  
-  // Pricing
-  startingPrice: int("startingPrice"), // Price in cents
-  priceDescription: varchar("priceDescription", { length: 255 }), // e.g., "Starting at $500"
-  
-  // Service Details
-  features: text("features"), // JSON array of features/benefits
-  turnaroundTime: varchar("turnaroundTime", { length: 255 }), // e.g., "2-4 weeks"
-  
-  // Images
-  iconKey: varchar("iconKey", { length: 500 }), // S3 key for service icon
-  iconUrl: varchar("iconUrl", { length: 1000 }), // Public URL
-  imageKey: varchar("imageKey", { length: 500 }), // S3 key for service image
-  imageUrl: varchar("imageUrl", { length: 1000 }), // Public URL
-  
-  // Display
-  displayOrder: int("displayOrder").default(0).notNull(),
-  isActive: int("isActive").default(1).notNull(),
-  
+  description: text("description").notNull(),
+  shortDescription: varchar("shortDescription", { length: 500 }),
+  startingPrice: integer("startingPrice"),
+  priceDescription: varchar("priceDescription", { length: 255 }),
+  features: text("features"),
+  turnaroundTime: varchar("turnaroundTime", { length: 255 }),
+  iconKey: varchar("iconKey", { length: 500 }),
+  iconUrl: varchar("iconUrl", { length: 1000 }),
+  imageKey: varchar("imageKey", { length: 500 }),
+  imageUrl: varchar("imageUrl", { length: 1000 }),
+  displayOrder: integer("displayOrder").default(0).notNull(),
+  isActive: integer("isActive").default(1).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
 
 export type Service = typeof services.$inferSelect;
 export type InsertService = typeof services.$inferInsert;
 
 /**
- * Business Information (contact, hours, social media, etc.)
+ * Business Information
  */
-export const businessInfo = mysqlTable("business_info", {
-  id: int("id").autoincrement().primaryKey(),
-  
-  // Contact Information
+export const businessInfo = pgTable("business_info", {
+  id: serial("id").primaryKey(),
   businessName: varchar("businessName", { length: 255 }).notNull(),
   phone: varchar("phone", { length: 50 }).notNull(),
   email: varchar("email", { length: 320 }).notNull(),
   address: text("address").notNull(),
-  
-  // Business Hours (stored as JSON)
-  businessHours: text("businessHours").notNull(), // JSON object with day: {open, close}
-  
-  // Social Media
+  businessHours: text("businessHours").notNull(),
   instagram: varchar("instagram", { length: 255 }),
   facebook: varchar("facebook", { length: 255 }),
   twitter: varchar("twitter", { length: 255 }),
   youtube: varchar("youtube", { length: 255 }),
-  
-  // About
-  aboutText: text("aboutText"), // Company description
-  mission: text("mission"), // Company mission
-  
-  // Statistics
-  yearsInBusiness: int("yearsInBusiness"),
-  projectsCompleted: int("projectsCompleted"),
-  satisfactionRate: int("satisfactionRate"), // 0-100
-  
-  // Logo & Images
+  aboutText: text("aboutText"),
+  mission: text("mission"),
+  yearsInBusiness: integer("yearsInBusiness"),
+  projectsCompleted: integer("projectsCompleted"),
+  satisfactionRate: integer("satisfactionRate"),
   logoUrl: varchar("logoUrl", { length: 1000 }),
   heroImageUrl: varchar("heroImageUrl", { length: 1000 }),
-  
-  // Metadata (usually only one record)
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
 
 export type BusinessInfo = typeof businessInfo.$inferSelect;
 export type InsertBusinessInfo = typeof businessInfo.$inferInsert;
 
 /**
- * Gallery Items (before/after project showcase)
+ * Gallery Items
  */
-export const galleryItems = mysqlTable("gallery_items", {
-  id: int("id").autoincrement().primaryKey(),
-  
-  // Project Info
-  title: varchar("title", { length: 255 }).notNull(), // e.g., "1967 Mustang Candy Apple Red"
+export const galleryItems = pgTable("gallery_items", {
+  id: serial("id").primaryKey(),
+  title: varchar("title", { length: 255 }).notNull(),
   description: text("description"),
-  category: varchar("category", { length: 100 }).notNull(), // 'custom-paint', 'restoration', 'collision-repair'
-  
-  // Images
+  category: varchar("category", { length: 100 }).notNull(),
   beforeImageKey: varchar("beforeImageKey", { length: 500 }).notNull(),
   beforeImageUrl: varchar("beforeImageUrl", { length: 1000 }).notNull(),
   afterImageKey: varchar("afterImageKey", { length: 500 }).notNull(),
   afterImageUrl: varchar("afterImageUrl", { length: 1000 }).notNull(),
-  
-  // Display
-  displayOrder: int("displayOrder").default(0).notNull(),
-  isFeatured: int("isFeatured").default(0).notNull(),
-  isActive: int("isActive").default(1).notNull(),
-  
+  displayOrder: integer("displayOrder").default(0).notNull(),
+  isFeatured: integer("isFeatured").default(0).notNull(),
+  isActive: integer("isActive").default(1).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
 
 export type GalleryItem = typeof galleryItems.$inferSelect;

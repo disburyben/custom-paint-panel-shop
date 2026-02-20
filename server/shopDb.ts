@@ -56,8 +56,8 @@ export async function getProductBySlug(slug: string) {
 export async function createProduct(data: InsertProduct) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
-  const result = await db.insert(products).values(data);
-  return { id: Number(result[0].insertId) };
+  const result = await db.insert(products).values(data).returning({ id: products.id });
+  return { id: result[0].id };
 }
 
 export async function updateProduct(id: number, data: Partial<InsertProduct>) {
@@ -99,8 +99,8 @@ export async function getVariantById(id: number) {
 export async function createVariant(data: InsertProductVariant) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
-  const result = await db.insert(productVariants).values(data);
-  return { id: Number(result[0].insertId) };
+  const result = await db.insert(productVariants).values(data).returning({ id: productVariants.id });
+  return { id: result[0].id };
 }
 
 export async function updateVariant(id: number, data: Partial<InsertProductVariant>) {
@@ -167,8 +167,8 @@ export async function addToCart(data: InsertCartItem) {
     return { id: existing[0].id };
   } else {
     // Insert new item
-    const result = await db.insert(cartItems).values(data);
-    return { id: Number(result[0].insertId) };
+    const result = await db.insert(cartItems).values(data).returning({ id: cartItems.id });
+    return { id: result[0].id };
   }
 }
 
@@ -243,8 +243,8 @@ export async function getUserOrders(userId: number) {
 export async function createOrder(data: InsertOrder) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
-  const result = await db.insert(orders).values(data);
-  return { id: Number(result[0].insertId) };
+  const result = await db.insert(orders).values(data).returning({ id: orders.id });
+  return { id: result[0].id };
 }
 
 export async function updateOrder(id: number, data: Partial<InsertOrder>) {
@@ -267,8 +267,8 @@ export async function getOrderItems(orderId: number) {
 export async function createOrderItem(data: InsertOrderItem) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
-  const result = await db.insert(orderItems).values(data);
-  return { id: Number(result[0].insertId) };
+  const result = await db.insert(orderItems).values(data).returning({ id: orderItems.id });
+  return { id: result[0].id };
 }
 
 /**
@@ -293,8 +293,8 @@ export async function getGiftCertificateByCode(code: string) {
 export async function createGiftCertificate(data: InsertGiftCertificate) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
-  const result = await db.insert(giftCertificates).values(data);
-  return { id: Number(result[0].insertId) };
+  const result = await db.insert(giftCertificates).values(data).returning({ id: giftCertificates.id });
+  return { id: result[0].id };
 }
 
 export async function updateGiftCertificate(id: number, data: Partial<InsertGiftCertificate>) {

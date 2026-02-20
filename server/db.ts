@@ -1,5 +1,6 @@
 import { eq } from "drizzle-orm";
-import { drizzle } from "drizzle-orm/mysql2";
+import { drizzle } from "drizzle-orm/neon-http";
+import { neon } from "@neondatabase/serverless";
 import { InsertUser, users, quoteSubmissions, InsertQuoteSubmission, quoteFiles, InsertQuoteFile, teamMembers, InsertTeamMember, portfolioItems, InsertPortfolioItem } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -9,7 +10,8 @@ let _db: ReturnType<typeof drizzle> | null = null;
 export async function getDb() {
   if (!_db && process.env.DATABASE_URL) {
     try {
-      _db = drizzle(process.env.DATABASE_URL);
+      const sql = neon(process.env.DATABASE_URL);
+      _db = drizzle(sql);
     } catch (error) {
       console.warn("[Database] Failed to connect:", error);
       _db = null;
@@ -68,7 +70,8 @@ export async function upsertUser(user: InsertUser): Promise<void> {
       updateSet.lastSignedIn = new Date();
     }
 
-    await db.insert(users).values(values).onDuplicateKeyUpdate({
+    await db.insert(users).values(values).onConflictDoUpdate({
+      target: users.openId,
       set: updateSet,
     });
   } catch (error) {
@@ -98,8 +101,8 @@ export async function createQuoteSubmission(quote: InsertQuoteSubmission) {
     throw new Error("Database not available");
   }
 
-  const result = await db.insert(quoteSubmissions).values(quote);
-  return result[0].insertId;
+  const result = await db.insert(quoteSubmissions).values(quote).returning({ id: quoteSubmissions.id });
+  return result[0].id;
 }
 
 /**
@@ -170,22 +173,22 @@ export async function updateQuoteStatus(id: number, status: "new" | "reviewed" |
 export async function createTeamMember(member: InsertTeamMember) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
-  
-  const [result] = await db.insert(teamMembers).values(member);
-  return result.insertId;
+
+  const result = await db.insert(teamMembers).values(member).returning({ id: teamMembers.id });
+  return result[0].id;
 }
 
 export async function getAllTeamMembers() {
   const db = await getDb();
   if (!db) return [];
-  
+
   return await db.select().from(teamMembers).orderBy(teamMembers.displayOrder);
 }
 
 export async function getTeamMemberById(id: number) {
   const db = await getDb();
   if (!db) return null;
-  
+
   const [member] = await db.select().from(teamMembers).where(eq(teamMembers.id, id));
   return member || null;
 }
@@ -193,17 +196,15 @@ export async function getTeamMemberById(id: number) {
 export async function updateTeamMember(id: number, updates: Partial<InsertTeamMember>) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
-  
+
   await db.update(teamMembers).set(updates).where(eq(teamMembers.id, id));
 }
 
 export async function deleteTeamMember(id: number) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
-  
-  // Delete all portfolio items first
+
   await db.delete(portfolioItems).where(eq(portfolioItems.teamMemberId, id));
-  // Then delete the team member
   await db.delete(teamMembers).where(eq(teamMembers.id, id));
 }
 
@@ -214,15 +215,15 @@ export async function deleteTeamMember(id: number) {
 export async function createPortfolioItem(item: InsertPortfolioItem) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
-  
-  const [result] = await db.insert(portfolioItems).values(item);
-  return result.insertId;
+
+  const result = await db.insert(portfolioItems).values(item).returning({ id: portfolioItems.id });
+  return result[0].id;
 }
 
 export async function getPortfolioItemsByTeamMember(teamMemberId: number) {
   const db = await getDb();
   if (!db) return [];
-  
+
   return await db.select().from(portfolioItems)
     .where(eq(portfolioItems.teamMemberId, teamMemberId))
     .orderBy(portfolioItems.displayOrder);
@@ -231,20 +232,20 @@ export async function getPortfolioItemsByTeamMember(teamMemberId: number) {
 export async function getAllPortfolioItems() {
   const db = await getDb();
   if (!db) return [];
-  
+
   return await db.select().from(portfolioItems).orderBy(portfolioItems.displayOrder);
 }
 
 export async function updatePortfolioItem(id: number, updates: Partial<InsertPortfolioItem>) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
-  
+
   await db.update(portfolioItems).set(updates).where(eq(portfolioItems.id, id));
 }
 
 export async function deletePortfolioItem(id: number) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
-  
+
   await db.delete(portfolioItems).where(eq(portfolioItems.id, id));
 }
