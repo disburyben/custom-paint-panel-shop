@@ -34,9 +34,10 @@ interface UploadedFile {
 
 export default function QuoteWizard() {
   const [currentStep, setCurrentStep] = useState<Step>("vehicle");
+  const [submitted, setSubmitted] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  
+
   const [formData, setFormData] = useState({
     vehicleType: "",
     vehicleMake: "",
@@ -54,8 +55,7 @@ export default function QuoteWizard() {
 
   const submitQuote = trpc.quotes.submit.useMutation({
     onSuccess: () => {
-      toast.success("Quote request submitted successfully! We'll be in touch soon.");
-      // Reset form
+      setSubmitted(true);
       setFormData({
         vehicleType: "",
         vehicleMake: "",
@@ -131,7 +131,7 @@ export default function QuoteWizard() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.name || !formData.email) {
       toast.error("Please fill in all required fields");
       return;
@@ -159,6 +159,25 @@ export default function QuoteWizard() {
     center: { x: 0, opacity: 1 },
     exit: { x: -50, opacity: 0 },
   };
+
+  if (submitted) {
+    return (
+      <div className="w-full max-w-2xl mx-auto bg-black/50 backdrop-blur-md border border-white/10 p-12 rounded-xl shadow-2xl text-center">
+        <div className="w-20 h-20 rounded-full bg-green-500/20 border-2 border-green-500 flex items-center justify-center mx-auto mb-6">
+          <Check className="w-10 h-10 text-green-400" />
+        </div>
+        <h2 className="text-3xl font-heading font-bold text-white uppercase mb-4">Request Received!</h2>
+        <p className="text-white/70 text-lg mb-2">Thanks, we've got your quote request.</p>
+        <p className="text-white/50 mb-8">We'll be in touch within 1–2 business days with your personalised quote.</p>
+        <Button
+          onClick={() => setSubmitted(false)}
+          className="bg-white text-black hover:bg-white/90"
+        >
+          Submit Another Request
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-2xl mx-auto bg-black/50 backdrop-blur-md border border-white/10 p-8 rounded-xl shadow-2xl">
@@ -288,7 +307,7 @@ export default function QuoteWizard() {
                     />
                   </div>
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="description" className="text-white">Tell us about your project</Label>
                   <Textarea
@@ -299,7 +318,7 @@ export default function QuoteWizard() {
                     onChange={(e) => updateData("description", e.target.value)}
                   />
                 </div>
-                
+
                 <div>
                   <input
                     ref={fileInputRef}
@@ -317,7 +336,7 @@ export default function QuoteWizard() {
                     <p className="text-sm text-white font-medium">Upload Photos</p>
                     <p className="text-xs text-white/50 mt-1">Click to browse (max 5MB each)</p>
                   </div>
-                  
+
                   {uploadedFiles.length > 0 && (
                     <div className="mt-4 grid grid-cols-3 gap-2">
                       {uploadedFiles.map((file, index) => (
@@ -401,10 +420,10 @@ export default function QuoteWizard() {
           >
             <ArrowLeft className="w-4 h-4 mr-2" /> Back
           </Button>
-          
+
           {currentStep === "contact" ? (
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               className="bg-white text-black hover:bg-white/90"
               disabled={submitQuote.isPending}
             >
