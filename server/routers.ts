@@ -115,11 +115,15 @@ export const appRouter = router({
           }
         }
 
-        // Notify owner
-        await notifyOwner({
-          title: "New Quote Request",
-          content: `${input.name} has submitted a quote request for ${input.vehicleType} ${input.serviceType}`,
-        });
+        // Notify owner (non-critical — ignore errors if not configured)
+        try {
+          await notifyOwner({
+            title: "New Quote Request",
+            content: `${input.name} has submitted a quote request for ${input.vehicleType} ${input.serviceType}`,
+          });
+        } catch (e) {
+          console.warn("[Quote] notifyOwner failed (non-critical):", e);
+        }
 
         // Send confirmation email to customer
         await sendQuoteConfirmationEmail({
