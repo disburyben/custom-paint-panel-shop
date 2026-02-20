@@ -10,7 +10,7 @@ VITE_APP_ID="my-custom-panel-shop"
 # Secret used for signing JWTs and cookies
 JWT_SECRET="replace-with-secure-random-string-at-least-32-chars"
 # Password for admin access
-ADMIN_PASSWORD="admin_password_change_me"
+ADMIN_PASSWORD="SecureAdmin"
 
 # Authentication & OAuth
 # The URL of your OAuth provider (or this server if self-hosting auth)
