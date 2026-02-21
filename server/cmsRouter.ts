@@ -3,6 +3,7 @@ import { adminSessionProcedure as adminProcedure } from "./adminAuth";
 import { z } from "zod";
 import { nanoid } from "nanoid";
 import { storagePut } from "./storage";
+import { put as blobPut } from "@vercel/blob";
 import {
   createBlogPost,
   updateBlogPost,
@@ -443,29 +444,29 @@ export const cmsRouter = router({
         })
       )
       .mutation(async ({ input }) => {
-        // Upload before image
-        const beforeBase64 = input.beforeImage.fileData.replace(/^data:image\/\w+;base64,/, '');
-        const beforeBuffer = Buffer.from(beforeBase64, 'base64');
-        const beforeExt = input.beforeImage.fileName.split('.').pop() || 'jpg';
-        const beforeKey = `gallery/${nanoid()}-before.${beforeExt}`;
-        const { url: beforeImageUrl } = await storagePut(beforeKey, beforeBuffer, input.beforeImage.fileType);
+        // Helper: decode base64 → Buffer → Blob → upload to Vercel Blob
+        async function uploadImage(img: { fileData: string; fileName: string; fileType: string }, suffix: string) {
+          const base64 = img.fileData.replace(/^data:image\/\w+;base64,/, '');
+          const buffer = Buffer.from(base64, 'base64');
+          const ext = img.fileName.split('.').pop() || 'jpg';
+          const key = `gallery/${nanoid()}-${suffix}.${ext}`;
+          const blob = new Blob([buffer], { type: img.fileType });
+          const result = await blobPut(key, blob, { access: 'public', contentType: img.fileType });
+          return { key, url: result.url };
+        }
 
-        // Upload after image
-        const afterBase64 = input.afterImage.fileData.replace(/^data:image\/\w+;base64,/, '');
-        const afterBuffer = Buffer.from(afterBase64, 'base64');
-        const afterExt = input.afterImage.fileName.split('.').pop() || 'jpg';
-        const afterKey = `gallery/${nanoid()}-after.${afterExt}`;
-        const { url: afterImageUrl } = await storagePut(afterKey, afterBuffer, input.afterImage.fileType);
+        const before = await uploadImage(input.beforeImage, 'before');
+        const after = await uploadImage(input.afterImage, 'after');
 
         return await createGalleryItem({
           title: input.title,
           description: input.description || null,
           category: input.category,
           isFeatured: input.isFeatured ? 1 : 0,
-          beforeImageKey: beforeKey,
-          beforeImageUrl,
-          afterImageKey: afterKey,
-          afterImageUrl,
+          beforeImageKey: before.key,
+          beforeImageUrl: before.url,
+          afterImageKey: after.key,
+          afterImageUrl: after.url,
         });
       }),
 
@@ -502,24 +503,24 @@ export const cmsRouter = router({
         if (data.isFeatured !== undefined) updateData.isFeatured = data.isFeatured ? 1 : 0;
         if (data.isActive !== undefined) updateData.isActive = data.isActive ? 1 : 0;
 
-        // Upload new before image if provided
-        if (beforeImage) {
-          const base64 = beforeImage.fileData.replace(/^data:image\/\w+;base64,/, '');
+        async function uploadImage(img: { fileData: string; fileName: string; fileType: string }, suffix: string) {
+          const base64 = img.fileData.replace(/^data:image\/\w+;base64,/, '');
           const buffer = Buffer.from(base64, 'base64');
-          const ext = beforeImage.fileName.split('.').pop() || 'jpg';
-          const key = `gallery/${nanoid()}-before.${ext}`;
-          const { url } = await storagePut(key, buffer, beforeImage.fileType);
+          const ext = img.fileName.split('.').pop() || 'jpg';
+          const key = `gallery/${nanoid()}-${suffix}.${ext}`;
+          const blob = new Blob([buffer], { type: img.fileType });
+          const result = await blobPut(key, blob, { access: 'public', contentType: img.fileType });
+          return { key, url: result.url };
+        }
+
+        if (beforeImage) {
+          const { key, url } = await uploadImage(beforeImage, 'before');
           updateData.beforeImageKey = key;
           updateData.beforeImageUrl = url;
         }
 
-        // Upload new after image if provided
         if (afterImage) {
-          const base64 = afterImage.fileData.replace(/^data:image\/\w+;base64,/, '');
-          const buffer = Buffer.from(base64, 'base64');
-          const ext = afterImage.fileName.split('.').pop() || 'jpg';
-          const key = `gallery/${nanoid()}-after.${ext}`;
-          const { url } = await storagePut(key, buffer, afterImage.fileType);
+          const { key, url } = await uploadImage(afterImage, 'after');
           updateData.afterImageKey = key;
           updateData.afterImageUrl = url;
         }
