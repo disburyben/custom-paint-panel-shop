@@ -3,7 +3,6 @@ import { adminSessionProcedure as adminProcedure } from "./adminAuth";
 import { z } from "zod";
 import { nanoid } from "nanoid";
 import { storagePut } from "./storage";
-import { put as blobPut } from "@vercel/blob";
 import {
   createBlogPost,
   updateBlogPost,
@@ -430,43 +429,21 @@ export const cmsRouter = router({
           title: z.string().min(1),
           description: z.string().optional(),
           category: z.string().min(1),
-          beforeImage: z.object({
-            fileData: z.string(),
-            fileName: z.string(),
-            fileType: z.string(),
-          }),
-          afterImage: z.object({
-            fileData: z.string(),
-            fileName: z.string(),
-            fileType: z.string(),
-          }),
+          beforeImageUrl: z.string().min(1),
+          afterImageUrl: z.string().min(1),
           isFeatured: z.boolean().default(false),
         })
       )
       .mutation(async ({ input }) => {
-        // Helper: decode base64 → Buffer → Blob → upload to Vercel Blob
-        async function uploadImage(img: { fileData: string; fileName: string; fileType: string }, suffix: string) {
-          const base64 = img.fileData.replace(/^data:image\/\w+;base64,/, '');
-          const buffer = Buffer.from(base64, 'base64');
-          const ext = img.fileName.split('.').pop() || 'jpg';
-          const key = `gallery/${nanoid()}-${suffix}.${ext}`;
-          const blob = new Blob([buffer], { type: img.fileType });
-          const result = await blobPut(key, blob, { access: 'public', contentType: img.fileType });
-          return { key, url: result.url };
-        }
-
-        const before = await uploadImage(input.beforeImage, 'before');
-        const after = await uploadImage(input.afterImage, 'after');
-
         return await createGalleryItem({
           title: input.title,
           description: input.description || null,
           category: input.category,
           isFeatured: input.isFeatured ? 1 : 0,
-          beforeImageKey: before.key,
-          beforeImageUrl: before.url,
-          afterImageKey: after.key,
-          afterImageUrl: after.url,
+          beforeImageKey: `gallery/${nanoid()}-before`,
+          beforeImageUrl: input.beforeImageUrl,
+          afterImageKey: `gallery/${nanoid()}-after`,
+          afterImageUrl: input.afterImageUrl,
         });
       }),
 
@@ -478,53 +455,22 @@ export const cmsRouter = router({
           title: z.string().optional(),
           description: z.string().optional(),
           category: z.string().optional(),
+          beforeImageUrl: z.string().optional(),
+          afterImageUrl: z.string().optional(),
           isFeatured: z.boolean().optional(),
           isActive: z.boolean().optional(),
-          // Optional image replacements
-          beforeImage: z.object({
-            fileData: z.string(),
-            fileName: z.string(),
-            fileType: z.string(),
-          }).optional(),
-          afterImage: z.object({
-            fileData: z.string(),
-            fileName: z.string(),
-            fileType: z.string(),
-          }).optional(),
         })
       )
       .mutation(async ({ input }) => {
-        const { id, beforeImage, afterImage, ...data } = input;
+        const { id, ...data } = input;
         const updateData: any = {};
-
         if (data.title) updateData.title = data.title;
         if (data.description !== undefined) updateData.description = data.description;
         if (data.category) updateData.category = data.category;
+        if (data.beforeImageUrl) updateData.beforeImageUrl = data.beforeImageUrl;
+        if (data.afterImageUrl) updateData.afterImageUrl = data.afterImageUrl;
         if (data.isFeatured !== undefined) updateData.isFeatured = data.isFeatured ? 1 : 0;
         if (data.isActive !== undefined) updateData.isActive = data.isActive ? 1 : 0;
-
-        async function uploadImage(img: { fileData: string; fileName: string; fileType: string }, suffix: string) {
-          const base64 = img.fileData.replace(/^data:image\/\w+;base64,/, '');
-          const buffer = Buffer.from(base64, 'base64');
-          const ext = img.fileName.split('.').pop() || 'jpg';
-          const key = `gallery/${nanoid()}-${suffix}.${ext}`;
-          const blob = new Blob([buffer], { type: img.fileType });
-          const result = await blobPut(key, blob, { access: 'public', contentType: img.fileType });
-          return { key, url: result.url };
-        }
-
-        if (beforeImage) {
-          const { key, url } = await uploadImage(beforeImage, 'before');
-          updateData.beforeImageKey = key;
-          updateData.beforeImageUrl = url;
-        }
-
-        if (afterImage) {
-          const { key, url } = await uploadImage(afterImage, 'after');
-          updateData.afterImageKey = key;
-          updateData.afterImageUrl = url;
-        }
-
         return await updateGalleryItem(id, updateData);
       }),
 
