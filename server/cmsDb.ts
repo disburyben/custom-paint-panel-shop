@@ -1,4 +1,5 @@
 import { getDb } from "./db";
+import { neon } from "@neondatabase/serverless";
 import {
   blogPosts,
   testimonials,
@@ -16,12 +17,40 @@ import {
   BusinessInfo,
   GalleryItem,
 } from "../drizzle/schema";
-import { eq, desc, and, asc } from "drizzle-orm";
+import { eq, desc, and, asc, sql } from "drizzle-orm";
 
 const getDbInstance = async () => {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   return db;
+};
+
+// Run once: migrate gallery_items from before/after columns to images JSON array
+let galleryMigrationDone = false;
+async function runGalleryMigrationIfNeeded() {
+  if (galleryMigrationDone) return;
+  if (!process.env.DATABASE_URL) return;
+  galleryMigrationDone = true;
+  try {
+    const sql = neon(process.env.DATABASE_URL);
+    // Add new columns if they don't exist yet
+    await sql`ALTER TABLE gallery_items ADD COLUMN IF NOT EXISTS "images" text NOT NULL DEFAULT '[]'`;
+    await sql`ALTER TABLE gallery_items ADD COLUMN IF NOT EXISTS "coverImageUrl" varchar(1000)`;
+    // Drop old columns if they still exist
+    await sql`ALTER TABLE gallery_items DROP COLUMN IF EXISTS "beforeImageKey"`;
+    await sql`ALTER TABLE gallery_items DROP COLUMN IF EXISTS "beforeImageUrl"`;
+    await sql`ALTER TABLE gallery_items DROP COLUMN IF EXISTS "afterImageKey"`;
+    await sql`ALTER TABLE gallery_items DROP COLUMN IF EXISTS "afterImageUrl"`;
+    console.log("[cmsDb] Gallery migration applied");
+  } catch (e) {
+    console.warn("[cmsDb] Gallery migration skipped:", e);
+  }
+}
+
+// Call migration before any gallery operation
+const getDbWithMigration = async () => {
+  await runGalleryMigrationIfNeeded();
+  return getDbInstance();
 };
 
 /**
@@ -262,7 +291,7 @@ export async function updateBusinessInfo(data: Partial<InsertBusinessInfo>) {
  */
 
 export async function createGalleryItem(data: InsertGalleryItem) {
-  const db = await getDbInstance();
+  const db = await getDbWithMigration();
   const result = await db.insert(galleryItems).values(data);
   return result;
 }
@@ -271,7 +300,7 @@ export async function updateGalleryItem(
   id: number,
   data: Partial<InsertGalleryItem>
 ) {
-  const db = await getDbInstance();
+  const db = await getDbWithMigration();
   const result = await db
     .update(galleryItems)
     .set(data)
@@ -280,13 +309,13 @@ export async function updateGalleryItem(
 }
 
 export async function deleteGalleryItem(id: number) {
-  const db = await getDbInstance();
+  const db = await getDbWithMigration();
   const result = await db.delete(galleryItems).where(eq(galleryItems.id, id));
   return result;
 }
 
 export async function getGalleryItemById(id: number): Promise<GalleryItem | null> {
-  const db = await getDbInstance();
+  const db = await getDbWithMigration();
   const result = await db
     .select()
     .from(galleryItems)
@@ -298,7 +327,7 @@ export async function getGalleryItemById(id: number): Promise<GalleryItem | null
 export async function getAllGalleryItems(
   active: boolean = true
 ): Promise<GalleryItem[]> {
-  const db = await getDbInstance();
+  const db = await getDbWithMigration();
   const query = db.select().from(galleryItems);
 
   if (active) {
@@ -315,8 +344,8 @@ export async function getGalleryItemsByCategory(
   category: string,
   active: boolean = true
 ): Promise<GalleryItem[]> {
-  const db = await getDbInstance();
-  
+  const db = await getDbWithMigration();
+
   if (active) {
     return await db
       .select()
@@ -340,7 +369,7 @@ export async function getGalleryItemsByCategory(
 }
 
 export async function getFeaturedGalleryItems(limit: number = 6): Promise<GalleryItem[]> {
-  const db = await getDbInstance();
+  const db = await getDbWithMigration();
   return await db
     .select()
     .from(galleryItems)

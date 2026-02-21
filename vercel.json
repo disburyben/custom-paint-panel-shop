@@ -1,6 +1,6 @@
 {
     "installCommand": "npm install --legacy-peer-deps",
-    "buildCommand": "npm run build && npx drizzle-kit generate && npx drizzle-kit migrate",
+    "buildCommand": "npm run build",
     "outputDirectory": "dist/public",
     "functions": {
         "api/index.ts": {
