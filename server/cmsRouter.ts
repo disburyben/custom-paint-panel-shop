@@ -429,22 +429,21 @@ export const cmsRouter = router({
           title: z.string().min(1),
           description: z.string().optional(),
           category: z.string().min(1),
-          beforeImageUrl: z.string().min(1),
-          afterImageUrl: z.string().min(1),
+          images: z.array(z.string().min(1)).min(1, "At least one image URL is required"),
           isFeatured: z.boolean().default(false),
         })
       )
       .mutation(async ({ input }) => {
+        const imagesJson = JSON.stringify(input.images);
+        const coverImageUrl = input.images[0] ?? null;
         return await createGalleryItem({
           title: input.title,
           description: input.description || null,
           category: input.category,
           isFeatured: input.isFeatured ? 1 : 0,
-          beforeImageKey: `gallery/${nanoid()}-before`,
-          beforeImageUrl: input.beforeImageUrl,
-          afterImageKey: `gallery/${nanoid()}-after`,
-          afterImageUrl: input.afterImageUrl,
-        });
+          images: imagesJson,
+          coverImageUrl,
+        } as any);
       }),
 
     // Admin: Update gallery item
@@ -455,22 +454,23 @@ export const cmsRouter = router({
           title: z.string().optional(),
           description: z.string().optional(),
           category: z.string().optional(),
-          beforeImageUrl: z.string().optional(),
-          afterImageUrl: z.string().optional(),
+          images: z.array(z.string().min(1)).optional(),
           isFeatured: z.boolean().optional(),
           isActive: z.boolean().optional(),
         })
       )
       .mutation(async ({ input }) => {
-        const { id, ...data } = input;
+        const { id, images, ...data } = input;
         const updateData: any = {};
         if (data.title) updateData.title = data.title;
         if (data.description !== undefined) updateData.description = data.description;
         if (data.category) updateData.category = data.category;
-        if (data.beforeImageUrl) updateData.beforeImageUrl = data.beforeImageUrl;
-        if (data.afterImageUrl) updateData.afterImageUrl = data.afterImageUrl;
         if (data.isFeatured !== undefined) updateData.isFeatured = data.isFeatured ? 1 : 0;
         if (data.isActive !== undefined) updateData.isActive = data.isActive ? 1 : 0;
+        if (images) {
+          updateData.images = JSON.stringify(images);
+          updateData.coverImageUrl = images[0] ?? null;
+        }
         return await updateGalleryItem(id, updateData);
       }),
 

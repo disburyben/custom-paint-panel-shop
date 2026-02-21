@@ -358,10 +358,8 @@ export const galleryItems = pgTable("gallery_items", {
   title: varchar("title", { length: 255 }).notNull(),
   description: text("description"),
   category: varchar("category", { length: 100 }).notNull(),
-  beforeImageKey: varchar("beforeImageKey", { length: 500 }).notNull(),
-  beforeImageUrl: varchar("beforeImageUrl", { length: 1000 }).notNull(),
-  afterImageKey: varchar("afterImageKey", { length: 500 }).notNull(),
-  afterImageUrl: varchar("afterImageUrl", { length: 1000 }).notNull(),
+  images: text("images").notNull().default("[]"),          // JSON array of URL strings
+  coverImageUrl: varchar("coverImageUrl", { length: 1000 }), // first image shown as thumbnail
   displayOrder: integer("displayOrder").default(0).notNull(),
   isFeatured: integer("isFeatured").default(0).notNull(),
   isActive: integer("isActive").default(1).notNull(),
