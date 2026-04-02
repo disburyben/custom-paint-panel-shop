@@ -481,4 +481,30 @@ export const cmsRouter = router({
         return await deleteGalleryItem(input.id);
       }),
   }),
+
+  /**
+   * FILE UPLOAD
+   */
+  upload: adminProcedure
+    .input(
+      z.object({
+        fileName: z.string(),
+        fileType: z.string(),
+        fileData: z.string(), // base64 encoded
+      })
+    )
+    .mutation(async ({ input }) => {
+      try {
+        const base64Data = input.fileData.replace(/^data:image\/\w+;base64,/, "");
+        const buffer = Buffer.from(base64Data, "base64");
+
+        const fileExtension = input.fileName.split(".").pop() || "jpg";
+        const fileKey = `cms/${nanoid()}.${fileExtension}`;
+
+        const { url } = await storagePut(fileKey, buffer, input.fileType);
+        return { url, key: fileKey };
+      } catch (error: any) {
+        throw new Error(`Upload failed: ${error.message}`);
+      }
+    }),
 });

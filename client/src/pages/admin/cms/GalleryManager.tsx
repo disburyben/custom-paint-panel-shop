@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, Edit2, Trash2, X, Link as LinkIcon, Images } from "lucide-react";
+import { Plus, Edit2, Trash2, X, Link as LinkIcon, Images, Upload, Loader2 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
@@ -29,6 +29,8 @@ export default function GalleryManager() {
     isFeatured: false,
   });
   const [imageUrls, setImageUrls] = useState<string[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const utils = trpc.useUtils();
   const { data: items = [], isLoading } = trpc.cms.gallery.getAllAdmin.useQuery();
@@ -58,6 +60,61 @@ export default function GalleryManager() {
     },
     onError: (e) => toast.error(`Error: ${e.message}`),
   });
+
+  const uploadMutation = trpc.cms.upload.useMutation({
+    onSuccess: (data) => {
+      setImageUrls((prev) => [...prev, data.url]);
+      toast.success("Image uploaded");
+      setIsUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    },
+    onError: (e) => {
+      toast.error(`Upload error: ${e.message}`);
+      setIsUploading(false);
+    },
+  });
+
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    setIsUploading(true);
+    
+    // Upload files sequentially
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      if (!file.type.startsWith("image/")) {
+        toast.error(`${file.name} is not an image`);
+        continue;
+      }
+
+      const reader = new FileReader();
+      const uploadPromise = new Promise<void>((resolve, reject) => {
+        reader.onload = async (event) => {
+          const base64Data = event.target?.result as string;
+          uploadMutation.mutate({
+            fileName: file.name,
+            fileType: file.type,
+            fileData: base64Data,
+          }, {
+            onSuccess: () => resolve(),
+            onError: (err) => reject(err),
+          });
+        };
+        reader.onerror = () => reject(new Error("File read failed"));
+        reader.readAsDataURL(file);
+      });
+
+      try {
+        await uploadPromise;
+      } catch (err) {
+        console.error("Upload failed for file", file.name, err);
+      }
+    }
+    
+    setIsUploading(false);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
 
   const resetForm = () => {
     setFormData({ title: "", description: "", category: "custom-paint", isFeatured: false });
@@ -179,60 +236,106 @@ export default function GalleryManager() {
               </select>
             </div>
 
-            {/* Image URLs */}
             <div>
-              <label className="block text-sm font-medium mb-2">
-                Photos * <span className="text-muted-foreground font-normal">— paste Dropbox or direct image links, one at a time</span>
+              <label className="block text-sm font-medium mb-3">
+                Photos * <span className="text-muted-foreground font-normal">— upload files or paste direct links</span>
               </label>
 
-              {/* Add URL row */}
-              <div className="flex gap-2 mb-3">
-                <div className="relative flex-1">
-                  <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input
-                    value={newUrl}
-                    onChange={(e) => setNewUrl(e.target.value)}
-                    onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addUrl(); } }}
-                    placeholder="Paste image or Dropbox URL and press Enter..."
-                    className="pl-9"
+              {/* Upload and URL controls */}
+              <div className="flex flex-wrap gap-3 mb-4 p-4 border rounded-lg bg-muted/30">
+                {/* Direct Upload */}
+                <div className="space-y-2 flex-1 min-w-[240px]">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Upload from Device</p>
+                  <input
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    className="hidden"
+                    ref={fileInputRef}
+                    onChange={handleFileSelect}
                   />
+                  <Button 
+                    type="button" 
+                    variant="default"
+                    className="w-full h-10 gap-2 border-dashed border-2 hover:border-primary transition-all bg-background text-foreground hover:bg-accent"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isUploading}
+                  >
+                    {isUploading ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Upload className="w-4 h-4" />
+                    )}
+                    {isUploading ? "Uploading..." : "Select Images to Upload"}
+                  </Button>
                 </div>
-                <Button type="button" variant="outline" onClick={addUrl} className="gap-1 shrink-0">
-                  <Plus className="w-4 h-4" /> Add
-                </Button>
+
+                <div className="hidden md:flex items-center text-muted-foreground font-bold">OR</div>
+
+                {/* Paste URL */}
+                <div className="space-y-2 flex-1 min-w-[240px]">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Paste Image URL</p>
+                  <div className="flex gap-2">
+                    <div className="relative flex-1">
+                      <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                      <Input
+                        value={newUrl}
+                        onChange={(e) => setNewUrl(e.target.value)}
+                        onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addUrl(); } }}
+                        placeholder="Paste URL and press Enter..."
+                        className="pl-9 h-10"
+                      />
+                    </div>
+                    <Button type="button" variant="outline" onClick={addUrl} className="h-10 px-3">
+                      <Plus className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
               </div>
 
               {/* URL list with previews */}
               {imageUrls.length === 0 ? (
-                <div className="border-2 border-dashed border-border rounded-lg p-6 text-center text-muted-foreground">
-                  <Images className="w-8 h-8 mx-auto mb-2 opacity-40" />
-                  <p className="text-sm">No photos yet — paste a URL above and click Add</p>
+                <div className="border-2 border-dashed border-border rounded-lg p-10 text-center text-muted-foreground bg-muted/10">
+                  <Images className="w-10 h-10 mx-auto mb-3 opacity-20" />
+                  <p className="text-sm">No photos added yet</p>
+                  <p className="text-xs mt-1">Upload images or paste links to get started</p>
                 </div>
               ) : (
-                <div className="space-y-2">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                   {imageUrls.map((url, i) => (
-                    <div key={i} className="flex items-center gap-3 p-2 border border-border rounded-lg bg-muted/20 group">
+                    <div key={i} className="relative aspect-square border border-border rounded-lg overflow-hidden group bg-muted/20">
                       <img
                         src={toDirectUrl(url)}
                         alt={`Photo ${i + 1}`}
-                        className="w-16 h-12 object-cover rounded shrink-0"
-                        onError={(e) => { (e.currentTarget as HTMLImageElement).src = ""; (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+                        className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                        onError={(e) => { (e.currentTarget as HTMLImageElement).src = "https://placehold.co/400x400?text=Invalid+Image"; }}
                       />
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs text-muted-foreground truncate">{url}</p>
-                        {i === 0 && <span className="text-xs text-primary font-medium">Cover photo</span>}
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => removeUrl(i)}
+                          className="p-1.5 rounded-full bg-red-600 text-white hover:bg-red-700 transition-colors shadow-lg"
+                          title="Remove photo"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => removeUrl(i)}
-                        className="shrink-0 p-1 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
+                      {i === 0 && (
+                        <div className="absolute top-2 left-2 bg-primary text-primary-foreground text-[10px] font-bold px-1.5 py-0.5 rounded shadow-sm">
+                          COVER
+                        </div>
+                      )}
+                      <div className="absolute bottom-0 inset-x-0 bg-black/60 text-[10px] text-white px-2 py-1 truncate">
+                        {url.split('/').pop()}
+                      </div>
                     </div>
                   ))}
-                  <p className="text-xs text-muted-foreground">{imageUrls.length} photo{imageUrls.length !== 1 ? "s" : ""} in this album</p>
                 </div>
+              )}
+              {imageUrls.length > 0 && (
+                <p className="text-xs text-muted-foreground mt-3 font-medium">
+                  {imageUrls.length} photo{imageUrls.length !== 1 ? "s" : ""} in this album. Drag files to cover to reorder (coming soon).
+                </p>
               )}
             </div>
 
