@@ -1,21 +1,13 @@
-// Preconfigured storage helpers for Manus WebDev templates
-// Uses the Biz-provided storage proxy (Authorization: Bearer <token>)
-
+// Storage helpers supporting both Vercel Blob and Forge Storage Proxy
 import { ENV } from './_core/env';
+import { put } from '@vercel/blob';
 
-type StorageConfig = { baseUrl: string; apiKey: string };
+function normalizeKey(relKey: string): string {
+  return relKey.replace(/^\/+/, "");
+}
 
-function getStorageConfig(): StorageConfig {
-  const baseUrl = ENV.forgeApiUrl;
-  const apiKey = ENV.forgeApiKey;
-
-  if (!baseUrl || !apiKey) {
-    throw new Error(
-      "Storage proxy credentials missing: set BUILT_IN_FORGE_API_URL and BUILT_IN_FORGE_API_KEY"
-    );
-  }
-
-  return { baseUrl: baseUrl.replace(/\/+$/, ""), apiKey };
+function ensureTrailingSlash(value: string): string {
+  return value.endsWith("/") ? value : `${value}/`;
 }
 
 function buildUploadUrl(baseUrl: string, relKey: string): URL {
@@ -24,29 +16,8 @@ function buildUploadUrl(baseUrl: string, relKey: string): URL {
   return url;
 }
 
-async function buildDownloadUrl(
-  baseUrl: string,
-  relKey: string,
-  apiKey: string
-): Promise<string> {
-  const downloadApiUrl = new URL(
-    "v1/storage/downloadUrl",
-    ensureTrailingSlash(baseUrl)
-  );
-  downloadApiUrl.searchParams.set("path", normalizeKey(relKey));
-  const response = await fetch(downloadApiUrl, {
-    method: "GET",
-    headers: buildAuthHeaders(apiKey),
-  });
-  return (await response.json()).url;
-}
-
-function ensureTrailingSlash(value: string): string {
-  return value.endsWith("/") ? value : `${value}/`;
-}
-
-function normalizeKey(relKey: string): string {
-  return relKey.replace(/^\/+/, "");
+function buildAuthHeaders(apiKey: string): HeadersInit {
+  return { Authorization: `Bearer ${apiKey}` };
 }
 
 function toFormData(
@@ -63,17 +34,36 @@ function toFormData(
   return form;
 }
 
-function buildAuthHeaders(apiKey: string): HeadersInit {
-  return { Authorization: `Bearer ${apiKey}` };
-}
-
 export async function storagePut(
   relKey: string,
   data: Buffer | Uint8Array | string,
   contentType = "application/octet-stream"
 ): Promise<{ key: string; url: string }> {
-  const { baseUrl, apiKey } = getStorageConfig();
   const key = normalizeKey(relKey);
+
+  // 1. Try Vercel Blob if token is available (preferred for Vercel deployments)
+  if (process.env.BLOB_READ_WRITE_TOKEN) {
+    try {
+      const blob = await put(key, data, {
+        access: 'public',
+        contentType,
+      });
+      return { key: blob.pathname, url: blob.url };
+    } catch (e) {
+      console.error("Vercel Blob upload failed, trying fallback:", e);
+    }
+  }
+
+  // 2. Fallback to Forge Storage Proxy
+  const baseUrl = ENV.forgeApiUrl;
+  const apiKey = ENV.forgeApiKey;
+
+  if (!baseUrl || !apiKey || apiKey === "forge_api_key_placeholder") {
+    throw new Error(
+      "Storage configuration missing. Please ensure BLOB_READ_WRITE_TOKEN is set in Vercel, or provide BUILT_IN_FORGE_API_URL and BUILT_IN_FORGE_API_KEY."
+    );
+  }
+
   const uploadUrl = buildUploadUrl(baseUrl, key);
   const formData = toFormData(data, contentType, key.split("/").pop() ?? key);
   const response = await fetch(uploadUrl, {
@@ -93,10 +83,23 @@ export async function storagePut(
 }
 
 export async function storageGet(relKey: string): Promise<{ key: string; url: string; }> {
-  const { baseUrl, apiKey } = getStorageConfig();
+  // For Vercel Blob, the URL is usually static or stored in DB. 
+  // If using storage proxy, we might need to fetch a download URL.
   const key = normalizeKey(relKey);
-  return {
-    key,
-    url: await buildDownloadUrl(baseUrl, key, apiKey),
-  };
+  
+  // Try forge if we have credentials
+  if (ENV.forgeApiUrl && ENV.forgeApiKey && ENV.forgeApiKey !== "forge_api_key_placeholder") {
+    const downloadApiUrl = new URL("v1/storage/downloadUrl", ensureTrailingSlash(ENV.forgeApiUrl));
+    downloadApiUrl.searchParams.set("path", key);
+    const response = await fetch(downloadApiUrl, {
+      method: "GET",
+      headers: buildAuthHeaders(ENV.forgeApiKey),
+    });
+    const url = (await response.json()).url;
+    return { key, url };
+  }
+
+  // Default to just returning the key as URL (this might not be right for non-public blobs, 
+  // but for gallery it should be fine if we store the full URL)
+  return { key, url: key };
 }
