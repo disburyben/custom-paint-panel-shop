@@ -1,11 +1,14 @@
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Phone, Instagram, Facebook, Mail } from "lucide-react";
+import { Menu, X, Phone, Instagram, Facebook, Mail, ShoppingBag } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useCart } from "@/contexts/CartContext";
+import { CartSidebar } from "./CartSidebar";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
+  const { totalCount } = useCart();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -62,23 +65,48 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 </span>
               </Link>
             ))}
-            <Link href="/contact">
-              <Button
-                variant="default"
-                className="skew-x-[-10deg] font-heading uppercase tracking-wider hover:shadow-[0_0_20px_var(--primary)] transition-all duration-300"
-              >
-                <span className="skew-x-[10deg]">Get Quote</span>
-              </Button>
-            </Link>
+            
+            <div className="flex items-center gap-4 ml-4 pl-4 border-l">
+              <CartSidebar>
+                <button className="relative group p-2 text-muted-foreground hover:text-primary transition-colors">
+                  <ShoppingBag className="w-6 h-6" />
+                  {totalCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-primary text-black text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center border-2 border-background animate-in zoom-in">
+                      {totalCount}
+                    </span>
+                  )}
+                </button>
+              </CartSidebar>
+
+              <Link href="/contact">
+                <Button
+                  variant="default"
+                  className="skew-x-[-10deg] font-heading uppercase tracking-wider hover:shadow-[0_0_20px_var(--primary)] transition-all duration-300"
+                >
+                  <span className="skew-x-[10deg]">Get Quote</span>
+                </Button>
+              </Link>
+            </div>
           </nav>
 
-          {/* Mobile Menu Toggle */}
-          <button
-            className="md:hidden text-foreground"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          >
-            {isMobileMenuOpen ? <X /> : <Menu />}
-          </button>
+          <div className="flex items-center gap-4 md:hidden">
+            <CartSidebar>
+              <button className="relative p-2 text-foreground">
+                <ShoppingBag className="w-6 h-6" />
+                {totalCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-primary text-black text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center border-2 border-background">
+                    {totalCount}
+                  </span>
+                )}
+              </button>
+            </CartSidebar>
+            <button
+              className="text-foreground"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+              {isMobileMenuOpen ? <X /> : <Menu />}
+            </button>
+          </div>
         </div>
       </header>
 

@@ -240,10 +240,52 @@ export async function getUserOrders(userId: number) {
     .orderBy(desc(orders.createdAt));
 }
 
-export async function createOrder(data: InsertOrder) {
+export async function createOrder(data: any) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
+
+  // Generate a human-readable order number if missing
+  if (!data.orderNumber) {
+    const randomPart = Math.random().toString(36).substr(2, 5).toUpperCase();
+    const timestampPart = Date.now().toString().slice(-4);
+    data.orderNumber = `CPW-${randomPart}-${timestampPart}`;
+  }
+
+  // Calculate missing fields to satisfy Schema
+  data.subtotal = data.totalAmount; // Simplified for now
+  data.total = data.totalAmount;
+  data.updatedAt = new Date();
+
   const result = await db.insert(orders).values(data).returning({ id: orders.id });
+  return { id: result[0].id };
+}
+
+export async function createOrderItem(data: any) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  // 1. Fetch product/variant info to fill required fields like productName
+  const product = await db.select().from(products).where(eq(products.id, data.productId)).limit(1);
+  if (!product[0]) throw new Error("Product not found for order item");
+
+  let variantName = null;
+  if (data.variantId) {
+    const variant = await db.select().from(productVariants).where(eq(productVariants.id, data.variantId)).limit(1);
+    variantName = variant[0]?.name;
+  }
+
+  const result = await db.insert(orderItems).values({
+    orderId: data.orderId,
+    productId: data.productId,
+    variantId: data.variantId,
+    productName: product[0].name,
+    variantName: variantName,
+    productImage: JSON.parse(product[0].images || "[]")[0],
+    quantity: data.quantity,
+    price: data.priceAtTime,
+    total: data.priceAtTime * data.quantity,
+  }).returning({ id: orderItems.id });
+
   return { id: result[0].id };
 }
 
@@ -262,13 +304,6 @@ export async function getOrderItems(orderId: number) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   return await db.select().from(orderItems).where(eq(orderItems.orderId, orderId));
-}
-
-export async function createOrderItem(data: InsertOrderItem) {
-  const db = await getDb();
-  if (!db) throw new Error("Database not available");
-  const result = await db.insert(orderItems).values(data).returning({ id: orderItems.id });
-  return { id: result[0].id };
 }
 
 /**

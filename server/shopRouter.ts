@@ -178,6 +178,48 @@ export const shopRouter = router({
             return await shopDb.updateOrder(id, updates);
         }),
 
+    // ── Orders (public) ──────────────────────────────────────
+
+    /** Public: create new order */
+    createOrder: publicProcedure
+        .input(
+            z.object({
+                customerName: z.string().min(1),
+                customerEmail: z.string().email(),
+                shippingAddress: z.string().min(1),
+                totalAmount: z.number(), // in cents
+                items: z.string(), // json items
+                notes: z.string().optional(),
+            })
+        )
+        .mutation(async ({ input }) => {
+            // 1. Create the base order
+            const order = await shopDb.createOrder({
+                customerName: input.customerName,
+                customerEmail: input.customerEmail,
+                shippingAddress: input.shippingAddress,
+                totalAmount: input.totalAmount,
+                notes: input.notes,
+                status: "pending",
+                paymentStatus: "pending",
+            });
+
+            // 2. Parse and save order items
+            const cartItems = JSON.parse(input.items);
+            for (const item of cartItems) {
+                await shopDb.createOrderItem({
+                    orderId: order.id,
+                    productId: item.productId,
+                    variantId: item.variantId || null,
+                    quantity: item.quantity,
+                    priceAtTime: item.price,
+                });
+            }
+
+            return order;
+        }),
+
+
     // ── Gift Certificates (admin) ──────────────────────────
 
     /** Admin: list all gift certificates */

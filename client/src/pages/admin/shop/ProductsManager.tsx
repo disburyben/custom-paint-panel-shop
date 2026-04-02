@@ -738,13 +738,13 @@ function VariantsManagerDialog({
                                             <TableHead className="text-right">Actions</TableHead>
                                         </TableRow>
                                     </TableHeader>
-                                    <TableBody>
-                                        {variants.map((v: any) => (
-                                            <TableRow key={v.id}>
-                                                <TableCell className="font-medium">{v.groupName || v.name}</TableCell>
-                                                <TableCell>{v.color || "—"}</TableCell>
-                                                <TableCell className="font-mono">{formatPrice(v.price)}</TableCell>
-                                                <TableCell>{v.inventoryQuantity}</TableCell>
+                                        <TableBody>
+                                            {variants.map((v: any) => (
+                                                <TableRow key={v.id}>
+                                                    <TableCell className="font-medium">{v.name}</TableCell>
+                                                    <TableCell>{v.color || "—"}</TableCell>
+                                                    <TableCell className="font-mono">{formatPrice(v.price)}</TableCell>
+                                                    <TableCell>{v.inventoryQuantity}</TableCell>
                                                 <TableCell className="text-right">
                                                     <div className="flex justify-end gap-1">
                                                         <Button variant="ghost" size="icon" onClick={() => setEditingVariant(v)}>
