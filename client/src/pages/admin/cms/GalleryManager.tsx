@@ -61,26 +61,17 @@ export default function GalleryManager() {
     onError: (e) => toast.error(`Error: ${e.message}`),
   });
 
-  const uploadMutation = trpc.cms.upload.useMutation({
-    onSuccess: (data) => {
-      setImageUrls((prev) => [...prev, data.url]);
-      toast.success("Image uploaded");
-      setIsUploading(false);
-      if (fileInputRef.current) fileInputRef.current.value = "";
-    },
-    onError: (e) => {
-      toast.error(`Upload error: ${e.message}`);
-      setIsUploading(false);
-    },
-  });
+  const uploadMutation = trpc.cms.upload.useMutation();
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
     setIsUploading(true);
+    const total = files.length;
+    let successCount = 0;
     
-    // Upload files sequentially
+    // Process files
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       if (!file.type.startsWith("image/")) {
@@ -88,30 +79,31 @@ export default function GalleryManager() {
         continue;
       }
 
-      const reader = new FileReader();
-      const uploadPromise = new Promise<void>((resolve, reject) => {
-        reader.onload = async (event) => {
-          const base64Data = event.target?.result as string;
-          uploadMutation.mutate({
-            fileName: file.name,
-            fileType: file.type,
-            fileData: base64Data,
-          }, {
-            onSuccess: () => resolve(),
-            onError: (err) => reject(err),
-          });
-        };
-        reader.onerror = () => reject(new Error("File read failed"));
-        reader.readAsDataURL(file);
-      });
-
       try {
-        await uploadPromise;
-      } catch (err) {
-        console.error("Upload failed for file", file.name, err);
+        const base64Data = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = (event) => resolve(event.target?.result as string);
+          reader.onerror = () => reject(new Error("Read failed"));
+          reader.readAsDataURL(file);
+        });
+
+        const result = await uploadMutation.mutateAsync({
+          fileName: file.name,
+          fileType: file.type,
+          fileData: base64Data,
+        });
+
+        setImageUrls((prev) => [...prev, result.url]);
+        successCount++;
+      } catch (err: any) {
+        toast.error(`Failed to upload ${file.name}: ${err.message}`);
       }
     }
     
+    if (successCount > 0) {
+      toast.success(`Successfully uploaded ${successCount} of ${total} images`);
+    }
+
     setIsUploading(false);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
