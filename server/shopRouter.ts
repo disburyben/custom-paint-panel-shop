@@ -2,6 +2,7 @@ import { z } from "zod";
 import { router, publicProcedure } from "./_core/trpc";
 import { adminSessionProcedure } from "./adminAuth";
 import * as shopDb from "./shopDb";
+import { sendAdminShopOrderEmail } from "./email";
 
 export const shopRouter = router({
     // ── Products (public) ───────────────────────────────────
@@ -227,6 +228,16 @@ export const shopRouter = router({
                     priceAtTime: item.price,
                 });
             }
+
+            // 3. Send email to admin
+            await sendAdminShopOrderEmail({
+                orderId: order.id,
+                customerName: input.customerName,
+                customerEmail: input.customerEmail,
+                totalAmount: input.totalAmount,
+                shippingOption: input.shippingMethod || "shipping",
+                paymentOption: input.paymentMethod || "invoice",
+            }).catch(console.error);
 
             return order;
         }),

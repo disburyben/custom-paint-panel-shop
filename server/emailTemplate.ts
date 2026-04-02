@@ -26,6 +26,17 @@ interface AdminNotificationData {
   dashboardUrl: string;
 }
 
+export interface AdminShopOrderData {
+  orderId: number;
+  customerName: string;
+  customerEmail: string;
+  totalAmount: number;
+  shippingOption: string;
+  paymentOption: string;
+  submittedAt: Date;
+  dashboardUrl: string;
+}
+
 export function generateAdminNotificationHTML(data: AdminNotificationData): string {
   const vehicleInfo = [
     data.vehicleMake,
@@ -283,6 +294,99 @@ export function generateQuoteConfirmationHTML(data: QuoteConfirmationData): stri
               <p style="margin: 0; color: #666666; font-size: 12px;">
                 © ${new Date().getFullYear()} Caspers Paintworks. All rights reserved.
               </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+  `.trim();
+}
+
+export function generateAdminShopOrderHTML(data: AdminShopOrderData): string {
+  const formattedDate = data.submittedAt.toLocaleString('en-AU', {
+    timeZone: 'Australia/Adelaide',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+
+  const formattedAmount = `$${(data.totalAmount / 100).toFixed(2)}`;
+
+  return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Shop Order</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: Arial, Helvetica, sans-serif; background-color: #f5f5f5;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f5f5; padding: 40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);">
+          
+          <!-- Header -->
+          <tr>
+            <td style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 30px; text-align: center;">
+              <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700;">
+                🛒 New Merch Order Received
+              </h1>
+              <p style="margin: 8px 0 0 0; color: #ffffff; font-size: 14px; opacity: 0.9;">
+                Order #${data.orderId} • ${formattedDate}
+              </p>
+            </td>
+          </tr>
+
+          <!-- Content -->
+          <tr>
+            <td style="padding: 40px 30px;">
+              
+              <!-- Customer Info -->
+              <h2 style="margin: 0 0 20px 0; color: #1a1a1a; font-size: 20px; font-weight: 700; border-bottom: 2px solid #10b981; padding-bottom: 10px;">
+                Customer & Order Details
+              </h2>
+              
+              <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 30px;">
+                <tr>
+                  <td style="padding: 8px 0; color: #666666; font-size: 14px; width: 35%;">Name:</td>
+                  <td style="padding: 8px 0; color: #1a1a1a; font-size: 14px; font-weight: 600;">${data.customerName}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px 0; color: #666666; font-size: 14px;">Email:</td>
+                  <td style="padding: 8px 0;"><a href="mailto:${data.customerEmail}" style="color: #10b981; text-decoration: none; font-weight: 600;">${data.customerEmail}</a></td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px 0; color: #666666; font-size: 14px;">Total Amount:</td>
+                  <td style="padding: 8px 0; color: #1a1a1a; font-size: 14px; font-weight: 600;">${formattedAmount}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px 0; color: #666666; font-size: 14px;">Fulfillment:</td>
+                  <td style="padding: 8px 0; color: #1a1a1a; font-size: 14px; font-weight: 600;">${data.shippingOption === 'pickup' ? '🏪 Local Pickup' : '🚚 Shipping'}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px 0; color: #666666; font-size: 14px;">Payment Method:</td>
+                  <td style="padding: 8px 0; color: #1a1a1a; font-size: 14px; font-weight: 600;">${data.paymentOption === 'cash' ? '💵 Pay in Shop/Cash' : '🧾 Invoice Required'}</td>
+                </tr>
+              </table>
+
+              <!-- CTA Button -->
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td align="center" style="padding: 20px 0;">
+                    <a href="${data.dashboardUrl}" style="display: inline-block; background-color: #10b981; color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 6px; font-weight: 700; font-size: 16px;">
+                      View in Dashboard →
+                    </a>
+                  </td>
+                </tr>
+              </table>
+
             </td>
           </tr>
 

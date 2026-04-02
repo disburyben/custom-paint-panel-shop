@@ -187,13 +187,12 @@ function ProductDetailDialog({ product, open, onClose }: { product: any; open: b
   const [activeImg, setActiveImg] = useState(0);
   const [selectedVariant, setSelectedVariant] = useState<any>(null);
   const { addToCart, fulfillmentMode, paymentMode } = useCart();
-  const hideSizing = fulfillmentMode === "pickup" && paymentMode === "cash";
   
   const { data: detailData, isLoading: isDetailLoading } = trpc.shop.getProductBySlug.useQuery({ slug: product.slug });
   const variants = detailData?.variants ?? [];
 
   const handleAddToCart = () => {
-    if (product.hasVariants === 1 && !selectedVariant && !hideSizing) {
+    if (product.hasVariants === 1 && !selectedVariant) {
         toast.error("Please select a size first");
         return;
     }
@@ -289,7 +288,7 @@ function ProductDetailDialog({ product, open, onClose }: { product: any; open: b
                 </div>
 
                 {/* Sizing / Options */}
-                {product.hasVariants === 1 && !hideSizing && (
+                {product.hasVariants === 1 && (
                     <div className="space-y-4 mb-8">
                         <div className="flex items-center justify-between">
                             <label className="text-xs font-black uppercase tracking-widest">Select Size</label>

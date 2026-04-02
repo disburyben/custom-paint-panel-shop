@@ -1,5 +1,5 @@
 import nodemailer from "nodemailer";
-import { generateQuoteConfirmationHTML, generateAdminNotificationHTML } from "./emailTemplate";
+import { generateQuoteConfirmationHTML, generateAdminNotificationHTML, generateAdminShopOrderHTML, type AdminShopOrderData } from "./emailTemplate";
 import { ENV } from "./_core/env";
 
 // Create reusable transporter using GoDaddy SMTP
@@ -117,5 +117,46 @@ export async function sendAdminNotificationEmail(
   } catch (error) {
     console.error("❌ Failed to send admin notification email:", error);
     // Don't throw - we don't want email failures to block quote submission
+  }
+}
+
+/**
+ * Send admin notification email when a new shop order is submitted
+ */
+export async function sendAdminShopOrderEmail(
+  data: Omit<AdminShopOrderData, "submittedAt" | "dashboardUrl">
+): Promise<void> {
+  try {
+    const dashboardUrl = ENV.isProduction
+      ? "https://casperspaintworks.com.au/admin"
+      : "http://localhost:3001/admin";
+
+    const emailHtml = generateAdminShopOrderHTML({
+      ...data,
+      submittedAt: new Date(),
+      dashboardUrl,
+    });
+
+    const adminEmail = "admin@casperspaintworks.com.au";
+    const subject = `🛒 New Shop Order #${data.orderId} - ${data.customerName}`;
+
+    if (transporter) {
+      await transporter.sendMail({
+        from: `"Caspers Paintworks" <${ENV.smtpUser}>`,
+        to: adminEmail,
+        subject,
+        html: emailHtml,
+      });
+      console.log(`✅ Admin shop order email sent to ${adminEmail}`);
+    } else {
+      // Fallback: log to console when SMTP isn't configured
+      console.log("=== ADMIN SHOP ORDER EMAIL (console only — SMTP not configured) ===");
+      console.log(`To: ${adminEmail}`);
+      console.log(`Subject: ${subject}`);
+      console.log("=== END EMAIL ===");
+    }
+  } catch (error) {
+    console.error("❌ Failed to send admin shop order email:", error);
+    // Don't throw - we don't want email failures to block order submission 
   }
 }
