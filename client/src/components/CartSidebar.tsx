@@ -12,7 +12,7 @@ function formatPrice(cents: number) {
 }
 
 export function CartSidebar({ children }: { children: React.ReactNode }) {
-    const { items, totalAmount, totalCount, updateQuantity, removeFromCart, clearCart } = useCart();
+    const { items, totalAmount, totalCount, updateQuantity, removeFromCart, clearCart, fulfillmentMode, paymentMode } = useCart();
     const [open, setOpen] = useState(false);
     const [checkoutStep, setCheckoutStep] = useState<"cart" | "info" | "success">("cart");
     
@@ -33,7 +33,7 @@ export function CartSidebar({ children }: { children: React.ReactNode }) {
     });
 
     const handleCheckout = async () => {
-        if (!email || !name || !address) {
+        if (!email || !name || (fulfillmentMode === "shipping" && !address)) {
             toast.error("Please fill in all contact details");
             return;
         }
@@ -53,7 +53,11 @@ export function CartSidebar({ children }: { children: React.ReactNode }) {
             })))
         };
 
-        createOrder.mutate(orderData);
+        createOrder.mutate({ 
+            ...orderData, 
+            shippingMethod: fulfillmentMode, 
+            paymentMethod: paymentMode 
+        });
     };
 
     return (
@@ -141,7 +145,7 @@ export function CartSidebar({ children }: { children: React.ReactNode }) {
                                 className="space-y-6 p-1"
                             >
                                 <div className="space-y-4">
-                                    <h4 className="text-xs font-black uppercase tracking-widest text-primary">Shipping & Contact</h4>
+                                    <h4 className="text-xs font-black uppercase tracking-widest text-primary">Contact Details</h4>
                                     <div className="space-y-2">
                                         <label className="text-[10px] uppercase font-bold text-muted-foreground">Full Name</label>
                                         <input 
@@ -161,15 +165,17 @@ export function CartSidebar({ children }: { children: React.ReactNode }) {
                                             type="email"
                                         />
                                     </div>
-                                    <div className="space-y-2">
-                                        <label className="text-[10px] uppercase font-bold text-muted-foreground">Shipping Address</label>
-                                        <textarea 
-                                            value={address}
-                                            onChange={e => setAddress(e.target.value)}
-                                            className="w-full bg-muted/20 border border-white/10 rounded-md px-4 py-3 text-sm focus:border-primary outline-none transition-colors min-h-[100px]"
-                                            placeholder="123 Paint St, Melbourne VIC 3000"
-                                        />
-                                    </div>
+                                    {fulfillmentMode === "shipping" && (
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] uppercase font-bold text-muted-foreground">Shipping Address</label>
+                                            <textarea 
+                                                value={address}
+                                                onChange={e => setAddress(e.target.value)}
+                                                className="w-full bg-muted/20 border border-white/10 rounded-md px-4 py-3 text-sm focus:border-primary outline-none transition-colors min-h-[100px]"
+                                                placeholder="123 Paint St, Melbourne VIC 3000"
+                                            />
+                                        </div>
+                                    )}
                                 </div>
 
                                 <div className="p-4 rounded-xl bg-primary/5 border border-primary/10">
@@ -177,10 +183,21 @@ export function CartSidebar({ children }: { children: React.ReactNode }) {
                                         <CreditCard className="w-4 h-4 text-primary" />
                                         <span className="text-xs font-bold uppercase tracking-widest">Payment Method</span>
                                     </div>
-                                    <p className="text-[10px] text-muted-foreground mb-4">You will receive an invoice via email once the order is confirmed by our team.</p>
-                                    <div className="flex items-center gap-2 px-3 py-2 bg-white/5 border rounded-md grayscale opacity-50">
-                                        <span className="text-[10px] font-black uppercase">Stripe / Card (Coming Soon)</span>
-                                    </div>
+                                    {paymentMode === "cash" ? (
+                                        <>
+                                            <p className="text-[10px] text-muted-foreground mb-4">Pay securely in-store when picking up your order.</p>
+                                            <div className="flex items-center gap-2 px-3 py-2 bg-primary/20 border border-primary/30 rounded-md">
+                                                <span className="text-[10px] font-black uppercase text-primary">Pay in Cash</span>
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <p className="text-[10px] text-muted-foreground mb-4">You will receive an invoice via email once the order is confirmed by our team.</p>
+                                            <div className="flex items-center gap-2 px-3 py-2 bg-white/5 border rounded-md grayscale opacity-50">
+                                                <span className="text-[10px] font-black uppercase">Stripe / Card (Coming Soon)</span>
+                                            </div>
+                                        </>
+                                    )}
                                 </div>
 
                                 <Button 

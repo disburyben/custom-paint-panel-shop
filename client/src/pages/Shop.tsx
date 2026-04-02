@@ -33,6 +33,7 @@ function formatPrice(cents: number) {
 export default function Shop() {
   const { data: products, isLoading } = trpc.shop.listProducts.useQuery();
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const { fulfillmentMode, setFulfillmentMode, paymentMode, setPaymentMode } = useCart();
 
   return (
     <div className="min-h-screen bg-background pt-32 pb-20">
@@ -63,6 +64,26 @@ export default function Shop() {
             Quality gear for those who appreciate the perfect finish. 
             From premium apparel to gift certificates.
           </motion.p>
+        </div>
+
+        {/* Fulfillment Toggle */}
+        <div className="flex justify-center mb-12">
+            <div className="bg-muted/20 p-1.5 rounded-xl flex border border-white/5 space-x-2">
+                <button 
+                    onClick={() => { setFulfillmentMode("shipping"); setPaymentMode("invoice"); }} 
+                    className={`px-6 py-2.5 text-xs font-black uppercase tracking-widest rounded-lg transition-all 
+                        ${fulfillmentMode === "shipping" ? "bg-primary text-black shadow-lg" : "text-muted-foreground hover:text-white hover:bg-white/5"}`}
+                >
+                    🚚 Delivery
+                </button>
+                <button 
+                    onClick={() => { setFulfillmentMode("pickup"); setPaymentMode("cash"); }} 
+                    className={`px-6 py-2.5 text-xs font-black uppercase tracking-widest rounded-lg transition-all 
+                        ${fulfillmentMode === "pickup" ? "bg-primary text-black shadow-lg" : "text-muted-foreground hover:text-white hover:bg-white/5"}`}
+                >
+                    🏪 Pickup In-Store
+                </button>
+            </div>
         </div>
 
         {/* Loading State */}
@@ -165,13 +186,14 @@ function ProductDetailDialog({ product, open, onClose }: { product: any; open: b
   const images = JSON.parse(product.images || "[]");
   const [activeImg, setActiveImg] = useState(0);
   const [selectedVariant, setSelectedVariant] = useState<any>(null);
-  const { addToCart } = useCart();
+  const { addToCart, fulfillmentMode, paymentMode } = useCart();
+  const hideSizing = fulfillmentMode === "pickup" && paymentMode === "cash";
   
   const { data: detailData, isLoading: isDetailLoading } = trpc.shop.getProductBySlug.useQuery({ slug: product.slug });
   const variants = detailData?.variants ?? [];
 
   const handleAddToCart = () => {
-    if (product.hasVariants === 1 && !selectedVariant) {
+    if (product.hasVariants === 1 && !selectedVariant && !hideSizing) {
         toast.error("Please select a size first");
         return;
     }
@@ -267,7 +289,7 @@ function ProductDetailDialog({ product, open, onClose }: { product: any; open: b
                 </div>
 
                 {/* Sizing / Options */}
-                {product.hasVariants === 1 && (
+                {product.hasVariants === 1 && !hideSizing && (
                     <div className="space-y-4 mb-8">
                         <div className="flex items-center justify-between">
                             <label className="text-xs font-black uppercase tracking-widest">Select Size</label>

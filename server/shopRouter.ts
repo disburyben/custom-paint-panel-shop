@@ -171,6 +171,8 @@ export const shopRouter = router({
                 trackingNumber: z.string().optional(),
                 shippingCarrier: z.string().optional(),
                 notes: z.string().optional(),
+                shippingMethod: z.string().optional(),
+                paymentMethod: z.string().optional(),
             })
         )
         .mutation(async ({ input }) => {
@@ -190,16 +192,26 @@ export const shopRouter = router({
                 totalAmount: z.number(), // in cents
                 items: z.string(), // json items
                 notes: z.string().optional(),
+                shippingMethod: z.string().optional(),
+                paymentMethod: z.string().optional(),
             })
         )
         .mutation(async ({ input }) => {
+            let finalNotes = input.notes || "";
+            if (input.shippingMethod) {
+                finalNotes = `Shipping Method: ${input.shippingMethod}\n${finalNotes}`;
+            }
+            if (input.paymentMethod) {
+                finalNotes = `Payment Method: ${input.paymentMethod}\n${finalNotes}`;
+            }
+
             // 1. Create the base order
             const order = await shopDb.createOrder({
                 customerName: input.customerName,
                 customerEmail: input.customerEmail,
-                shippingAddress: input.shippingAddress,
+                shippingAddress: input.shippingAddress || "Local Pickup",
                 totalAmount: input.totalAmount,
-                notes: input.notes,
+                notes: finalNotes.trim(),
                 status: "pending",
                 paymentStatus: "pending",
             });

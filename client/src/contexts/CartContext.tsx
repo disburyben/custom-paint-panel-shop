@@ -19,6 +19,10 @@ interface CartContextType {
     clearCart: () => void;
     totalCount: number;
     totalAmount: number;
+    fulfillmentMode: "shipping" | "pickup";
+    setFulfillmentMode: (mode: "shipping" | "pickup") => void;
+    paymentMode: "invoice" | "card" | "cash";
+    setPaymentMode: (mode: "invoice" | "card" | "cash") => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -28,10 +32,24 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         const saved = localStorage.getItem("caspers_cart");
         return saved ? JSON.parse(saved) : [];
     });
+    const [fulfillmentMode, setFulfillmentMode] = useState<"shipping" | "pickup">(() => {
+        return (localStorage.getItem("caspers_fulfillment") as "shipping" | "pickup") || "shipping";
+    });
+    const [paymentMode, setPaymentMode] = useState<"invoice" | "card" | "cash">(() => {
+        return (localStorage.getItem("caspers_payment") as "invoice" | "card" | "cash") || "invoice";
+    });
 
     useEffect(() => {
         localStorage.setItem("caspers_cart", JSON.stringify(items));
     }, [items]);
+
+    useEffect(() => {
+        localStorage.setItem("caspers_fulfillment", fulfillmentMode);
+    }, [fulfillmentMode]);
+
+    useEffect(() => {
+        localStorage.setItem("caspers_payment", paymentMode);
+    }, [paymentMode]);
 
     const addToCart = (newItem: Omit<CartItem, "quantity">) => {
         setItems((prev) => {
@@ -76,6 +94,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
                 clearCart,
                 totalCount,
                 totalAmount,
+                fulfillmentMode,
+                setFulfillmentMode,
+                paymentMode,
+                setPaymentMode,
             }}
         >
             {children}
